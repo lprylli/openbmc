@@ -17,6 +17,7 @@ SRC_URI = " \
     file://avoid-absolute-path-when-searching-for-libdlpi.patch \
     file://add-ptest.patch \
     file://run-ptest \
+    file://0001-PPP-When-un-escaping-don-t-allocate-a-too-large-buff.patch \
 "
 
 SRC_URI[md5sum] = "a4ead41d371f91aa0a2287f589958bae"
@@ -27,7 +28,7 @@ inherit autotools-brokensep ptest
 PACKAGECONFIG ?= "openssl"
 
 PACKAGECONFIG[libcap-ng] = "--with-cap-ng,--without-cap-ng,libcap-ng"
-PACKAGECONFIG[openssl] = "--with-crypto,--without-openssl --without-crypto,openssl"
+PACKAGECONFIG[openssl] = "--with-crypto,--without-crypto,openssl"
 PACKAGECONFIG[smi] = "--with-smi,--without-smi,libsmi"
 # Note: CVE-2018-10103 (SMB - partially fixed, but SMB printing disabled)
 PACKAGECONFIG[smb] = "--enable-smb,--disable-smb"

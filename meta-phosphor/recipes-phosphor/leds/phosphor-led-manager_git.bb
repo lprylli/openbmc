@@ -3,9 +3,9 @@ DESCRIPTION = "Daemon to cater to triggering actions on LED groups"
 PR = "r1"
 PV = "1.0+git${SRCPV}"
 
-require ${PN}.inc
+require ${BPN}.inc
 
-inherit autotools pkgconfig pythonnative
+inherit autotools pkgconfig python3native
 inherit obmc-phosphor-dbus-service obmc-phosphor-systemd
 
 LED_MGR_PACKAGES = " \
@@ -20,17 +20,22 @@ DBUS_PACKAGES = "${PN}-ledmanager"
 
 SYSTEMD_PACKAGES = "${LED_MGR_PACKAGES}"
 
-DEPENDS += "python-pyyaml-native"
+DEPENDS += "${PYTHON_PN}-native"
+DEPENDS += "${PYTHON_PN}-pyyaml-native"
+DEPENDS += "${PYTHON_PN}-inflection-native"
 DEPENDS += "autoconf-archive-native"
-DEPENDS += "sdbusplus sdbusplus-native"
+DEPENDS += "sdbusplus ${PYTHON_PN}-sdbus++-native"
 DEPENDS += "systemd"
 DEPENDS += "phosphor-logging"
+DEPENDS += "nlohmann-json"
 
 DEPENDS += "virtual/${PN}-config-native"
 
+RDEPENDS_${PN}-ledmanager += "bash"
+
 S = "${WORKDIR}/git"
 
-FILES_${PN}-ledmanager += "${bindir}/phosphor-ledmanager"
+FILES_${PN}-ledmanager += "${bindir}/phosphor-ledmanager ${bindir}/led-set-all-groups-asserted.sh"
 FILES_${PN}-faultmonitor += "${bindir}/phosphor-fru-fault-monitor"
 
 DBUS_SERVICE_${PN}-ledmanager += "xyz.openbmc_project.LED.GroupManager.service"

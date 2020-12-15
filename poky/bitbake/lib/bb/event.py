@@ -10,18 +10,17 @@ BitBake build tools.
 # SPDX-License-Identifier: GPL-2.0-only
 #
 
-import os, sys
-import warnings
-import pickle
-import logging
-import atexit
-import traceback
 import ast
+import atexit
+import collections
+import logging
+import pickle
+import sys
 import threading
+import traceback
 
-import bb.utils
-import bb.compat
 import bb.exceptions
+import bb.utils
 
 # This is the pid for which we should generate the event. This is set when
 # the runqueue forks off.
@@ -57,7 +56,7 @@ def set_class_handlers(h):
     _handlers = h
 
 def clean_class_handlers():
-    return bb.compat.OrderedDict()
+    return collections.OrderedDict()
 
 # Internal
 _handlers = clean_class_handlers()
@@ -347,7 +346,7 @@ def set_UIHmask(handlerNum, level, debug_domains, mask):
 
 def getName(e):
     """Returns the name of a class or class instance"""
-    if getattr(e, "__name__", None) == None:
+    if getattr(e, "__name__", None) is None:
         return e.__class__.__name__
     else:
         return e.__name__
@@ -389,6 +388,10 @@ class RecipeEvent(Event):
 
 class RecipePreFinalise(RecipeEvent):
     """ Recipe Parsing Complete but not yet finalised"""
+
+class RecipePostKeyExpansion(RecipeEvent):
+    """ Recipe Parsing Complete but not yet finalised"""
+
 
 class RecipeTaskPreProcess(RecipeEvent):
     """
@@ -509,7 +512,7 @@ class NoProvider(Event):
         extra = ''
         if not self._reasons:
             if self._close_matches:
-                extra = ". Close matches:\n  %s" % '\n  '.join(self._close_matches)
+                extra = ". Close matches:\n  %s" % '\n  '.join(sorted(set(self._close_matches)))
 
         if self._dependees:
             msg = "Nothing %sPROVIDES '%s' (but %s %sDEPENDS on or otherwise requires it)%s" % (r, self._item, ", ".join(self._dependees), r, extra)

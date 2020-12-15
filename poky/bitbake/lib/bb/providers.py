@@ -92,11 +92,11 @@ def preferredVersionMatch(pe, pv, pr, preferred_e, preferred_v, preferred_r):
     Check if the version pe,pv,pr is the preferred one.
     If there is preferred version defined and ends with '%', then pv has to start with that version after removing the '%'
     """
-    if (pr == preferred_r or preferred_r == None):
-        if (pe == preferred_e or preferred_e == None):
+    if pr == preferred_r or preferred_r is None:
+        if pe == preferred_e or preferred_e is None:
             if preferred_v == pv:
                 return True
-            if preferred_v != None and preferred_v.endswith('%') and pv.startswith(preferred_v[:len(preferred_v)-1]):
+            if preferred_v is not None and preferred_v.endswith('%') and pv.startswith(preferred_v[:len(preferred_v)-1]):
                 return True
     return False
 
@@ -151,7 +151,7 @@ def findPreferredProvider(pn, cfgData, dataCache, pkg_pn = None, item = None):
         if item:
             itemstr = " (for item %s)" % item
         if preferred_file is None:
-            logger.info("preferred version %s of %s not available%s", pv_str, pn, itemstr)
+            logger.warn("preferred version %s of %s not available%s", pv_str, pn, itemstr)
             available_vers = []
             for file_set in pkg_pn:
                 for f in file_set:
@@ -163,7 +163,7 @@ def findPreferredProvider(pn, cfgData, dataCache, pkg_pn = None, item = None):
                         available_vers.append(ver_str)
             if available_vers:
                 available_vers.sort()
-                logger.info("versions of %s available: %s", pn, ' '.join(available_vers))
+                logger.warn("versions of %s available: %s", pn, ' '.join(available_vers))
         else:
             logger.debug(1, "selecting %s as PREFERRED_VERSION %s of package %s%s", preferred_file, pv_str, pn, itemstr)
 

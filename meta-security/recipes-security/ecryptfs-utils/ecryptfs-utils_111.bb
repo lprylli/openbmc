@@ -16,6 +16,7 @@ SRC_URI = "\
     file://ecryptfs-utils-CVE-2016-6224.patch \
     file://0001-avoid-race-condition.patch \
     file://ecryptfs.service \
+    file://define_musl_sword_type.patch \
     "
 
 SRC_URI[md5sum] = "83513228984f671930752c3518cac6fd"
@@ -41,7 +42,7 @@ PACKAGECONFIG[nss] = "--enable-nss,--disable-nss,nss,"
 PACKAGECONFIG[pam] = "--enable-pam,--disable-pam,libpam,"
 
 do_configure_prepend() {
-    export NSS_CFLAGS="-I${STAGING_INCDIR}/nspr4 -I${STAGING_INCDIR}/nss3"
+    export NSS_CFLAGS="-I${STAGING_INCDIR}/nspr -I${STAGING_INCDIR}/nss3"
     export NSS_LIBS="-L${STAGING_BASELIBDIR} -lssl3 -lsmime3 -lnss3 -lsoftokn3 -lnssutil3"
     export KEYUTILS_CFLAGS="-I${STAGING_INCDIR}"
     export KEYUTILS_LIBS="-L${STAGING_LIBDIR} -lkeyutils"

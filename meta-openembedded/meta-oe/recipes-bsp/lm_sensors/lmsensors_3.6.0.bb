@@ -7,13 +7,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe \
 DEPENDS = " \
     bison-native \
     flex-native \
-    rrdtool \
     virtual/libiconv \
 "
 
 SRC_URI = "git://github.com/lm-sensors/lm-sensors.git;protocol=https \
            file://fancontrol.init \
            file://sensord.init \
+           file://0001-Change-PIDFile-path-from-var-run-to-run.patch \
 "
 SRCREV = "1667b850a1ce38151dae17156276f981be6fb557"
 
@@ -91,12 +91,12 @@ ALLOW_EMPTY_${PN} = "1"
 RDEPENDS_${PN} += " \
     ${PN}-libsensors \
     ${PN}-sensors \
-    ${PN}-sensord \
+    ${@bb.utils.contains('PACKAGECONFIG', 'sensord', '${PN}-sensord', '', d)} \
     ${PN}-fancontrol \
     ${PN}-sensorsdetect \
     ${PN}-sensorsconfconvert \
     ${PN}-pwmconfig \
-    ${PN}-isatools \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'x86', '${PN}-isatools', '', d)} \
 "
 
 # libsensors packages

@@ -9,7 +9,7 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
 SRC_URI = "git://github.com/openbmc/phosphor-certificate-manager"
-SRCREV = "bddee63b9a630d5c6ec1a76552ecd4a7733b5ed6"
+SRCREV = "d2393f231c552524a51a9dc057b86679a82c51c3"
 
 inherit autotools \
         pkgconfig \
@@ -19,10 +19,8 @@ DEPENDS = " \
         autoconf-archive-native \
         openssl \
         phosphor-dbus-interfaces \
-        phosphor-dbus-interfaces-native \
         phosphor-logging \
         sdbusplus \
-        sdbusplus-native \
         sdeventplus \
         "
 
@@ -30,3 +28,7 @@ S = "${WORKDIR}/git"
 
 CERT_TMPL = "phosphor-certificate-manager@.service"
 SYSTEMD_SERVICE_${PN} = "${CERT_TMPL}"
+
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[ibm-hypervisor-cert] = "--enable-ca-cert-extension,,"
+SYSTEMD_SERVICE_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'ibm-hypervisor-cert', 'bmc-vmi-ca-manager.service', '', d)}"

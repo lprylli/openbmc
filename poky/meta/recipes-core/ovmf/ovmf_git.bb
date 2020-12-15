@@ -12,15 +12,15 @@ LIC_FILES_CHKSUM = "file://OvmfPkg/License.txt;md5=06357ddc23f46577c2aeaeaf7b776
 PACKAGECONFIG ??= ""
 PACKAGECONFIG[secureboot] = ",,,"
 
-SRC_URI = "gitsm://github.com/tianocore/edk2.git;branch=master;protocol=git \
-	file://0002-ovmf-update-path-to-native-BaseTools.patch \
-	file://0003-BaseTools-makefile-adjust-to-build-in-under-bitbake.patch \
-	file://0004-ovmf-enable-long-path-file.patch \
-	file://no-stack-protector-all-archs.patch \
+SRC_URI = "gitsm://github.com/tianocore/edk2.git;branch=master;protocol=https \
+           file://0001-ovmf-update-path-to-native-BaseTools.patch \
+           file://0002-BaseTools-makefile-adjust-to-build-in-under-bitbake.patch \
+           file://0003-ovmf-enable-long-path-file.patch \
+           file://0004-ovmf-Update-to-latest.patch \
         "
 
-PV = "edk2-stable201905"
-SRCREV="20d2e5a125e34fc8501026613a71549b2a1a3e54"
+PV = "edk2-stable202008"
+SRCREV = "06dc822d045c2bb42e497487935485302486e151"
 UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>edk2-stable.*)"
 
 inherit deploy
@@ -37,7 +37,7 @@ EDK_TOOLS_DIR="edk2_basetools"
 BUILD_OPTIMIZATION="-pipe"
 
 # OVMF supports IA only, although it could conceivably support ARM someday.
-COMPATIBLE_HOST='(i.86|x86_64).*'
+COMPATIBLE_HOST_class-target='(i.86|x86_64).*'
 
 # Additional build flags for OVMF with Secure Boot.
 # Fedora also uses "-D SMM_REQUIRE -D EXCLUDE_SHELL_FROM_FD".
@@ -220,7 +220,6 @@ do_deploy[depends] += "${DEPLOYDEP}"
 
 do_deploy() {
 }
-do_deploy[cleandirs] = "${DEPLOYDIR}"
 do_deploy_class-target() {
     # For use with "runqemu ovmf".
     for i in \

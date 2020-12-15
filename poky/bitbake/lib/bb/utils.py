@@ -24,7 +24,6 @@ import fnmatch
 import traceback
 import errno
 import signal
-import ast
 import collections
 import copy
 from subprocess import getstatusoutput
@@ -403,8 +402,8 @@ def better_exec(code, context, text = None, realfile = "<code>", pythonexception
         (t, value, tb) = sys.exc_info()
         try:
             _print_exception(t, value, tb, realfile, text, context)
-        except Exception as e:
-            logger.error("Exception handler error: %s" % str(e))
+        except Exception as e2:
+            logger.error("Exception handler error: %s" % str(e2))
 
         e = bb.BBHandledException(e)
         raise e
@@ -428,24 +427,11 @@ def fileslocked(files):
         for lockfile in files:
             locks.append(bb.utils.lockfile(lockfile))
 
-    yield
-
-    for lock in locks:
-        bb.utils.unlockfile(lock)
-
-@contextmanager
-def timeout(seconds):
-    def timeout_handler(signum, frame):
-        pass
-
-    original_handler = signal.signal(signal.SIGALRM, timeout_handler)
-
     try:
-        signal.alarm(seconds)
         yield
     finally:
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, original_handler)
+        for lock in locks:
+            bb.utils.unlockfile(lock)
 
 def lockfile(name, shared=False, retry=True, block=False):
     """
@@ -556,6 +542,20 @@ def sha1_file(filename):
     import hashlib
     return _hasher(hashlib.sha1(), filename)
 
+def sha384_file(filename):
+    """
+    Return the hex string representation of the SHA384 checksum of the filename
+    """
+    import hashlib
+    return _hasher(hashlib.sha384(), filename)
+
+def sha512_file(filename):
+    """
+    Return the hex string representation of the SHA512 checksum of the filename
+    """
+    import hashlib
+    return _hasher(hashlib.sha512(), filename)
+
 def preserved_envvars_exported():
     """Variables which are taken from the environment and placed in and exported
     from the metadata"""
@@ -566,7 +566,6 @@ def preserved_envvars_exported():
         'PATH',
         'PWD',
         'SHELL',
-        'TERM',
         'USER',
         'LC_ALL',
         'BBSERVER',
@@ -850,7 +849,7 @@ def copyfile(src, dest, newmtime = None, sstat = None):
             if destexists and not stat.S_ISDIR(dstat[stat.ST_MODE]):
                 os.unlink(dest)
             os.symlink(target, dest)
-            #os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+            os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
             return os.lstat(dest)
         except Exception as e:
             logger.warning("copyfile: failed to create symlink %s to %s (%s)" % (dest, target, e))
@@ -945,6 +944,17 @@ def which(path, item, direction = 0, history = False, executable=False):
         return "", hist
     return ""
 
+@contextmanager
+def umask(new_mask):
+    """
+    Context manager to set the umask to a specific mask, and restore it afterwards.
+    """
+    current_mask = os.umask(new_mask)
+    try:
+        yield
+    finally:
+        os.umask(current_mask)
+
 def to_boolean(string, default=None):
     if not string:
         return default
@@ -1025,6 +1035,43 @@ def filter(variable, checkvalues, d):
         checkvalues = set(checkvalues)
     return ' '.join(sorted(checkvalues & val))
 
+
+def get_referenced_vars(start_expr, d):
+    """
+    :return: names of vars referenced in start_expr (recursively), in quasi-BFS order (variables within the same level
+    are ordered arbitrarily)
+    """
+
+    seen = set()
+    ret = []
+
+    # The first entry in the queue is the unexpanded start expression
+    queue = collections.deque([start_expr])
+    # Subsequent entries will be variable names, so we need to track whether or not entry requires getVar
+    is_first = True
+
+    empty_data = bb.data.init()
+    while queue:
+        entry = queue.popleft()
+        if is_first:
+            # Entry is the start expression - no expansion needed
+            is_first = False
+            expression = entry
+        else:
+            # This is a variable name - need to get the value
+            expression = d.getVar(entry, False)
+            ret.append(entry)
+
+        # expandWithRefs is how we actually get the referenced variables in the expression. We call it using an empty
+        # data store because we only want the variables directly used in the expression. It returns a set, which is what
+        # dooms us to only ever be "quasi-BFS" rather than full BFS.
+        new_vars = empty_data.expandWithRefs(expression, None).references - set(seen)
+
+        queue.extend(new_vars)
+        seen.update(new_vars)
+    return ret
+
+
 def cpu_count():
     return multiprocessing.cpu_count()
 
@@ -1035,21 +1082,20 @@ def process_profilelog(fn, pout = None):
     # Either call with a list of filenames and set pout or a filename and optionally pout.
     if not pout:
         pout = fn + '.processed'
-    pout = open(pout, 'w')
-   
-    import pstats
-    if isinstance(fn, list):
-        p = pstats.Stats(*fn, stream=pout)
-    else:
-        p = pstats.Stats(fn, stream=pout)
-    p.sort_stats('time')
-    p.print_stats()
-    p.print_callers()
-    p.sort_stats('cumulative')
-    p.print_stats()
 
-    pout.flush()
-    pout.close()  
+    with open(pout, 'w') as pout:
+        import pstats
+        if isinstance(fn, list):
+            p = pstats.Stats(*fn, stream=pout)
+        else:
+            p = pstats.Stats(fn, stream=pout)
+        p.sort_stats('time')
+        p.print_stats()
+        p.print_callers()
+        p.sort_stats('cumulative')
+        p.print_stats()
+
+        pout.flush()
 
 #
 # Was present to work around multiprocessing pool bugs in python < 2.7.3
@@ -1422,13 +1468,19 @@ def edit_bblayers_conf(bblayers_conf, add, remove, edit_cb=None):
 
     return (notadded, notremoved)
 
-
-def get_file_layer(filename, d):
-    """Determine the collection (as defined by a layer's layer.conf file) containing the specified file"""
+def get_collection_res(d):
     collections = (d.getVar('BBFILE_COLLECTIONS') or '').split()
     collection_res = {}
     for collection in collections:
         collection_res[collection] = d.getVar('BBFILE_PATTERN_%s' % collection) or ''
+
+    return collection_res
+
+
+def get_file_layer(filename, d, collection_res={}):
+    """Determine the collection (as defined by a layer's layer.conf file) containing the specified file"""
+    if not collection_res:
+        collection_res = get_collection_res(d)
 
     def path_to_layer(path):
         # Use longest path so we handle nested layers
@@ -1441,12 +1493,13 @@ def get_file_layer(filename, d):
         return match
 
     result = None
-    bbfiles = (d.getVar('BBFILES') or '').split()
+    bbfiles = (d.getVar('BBFILES_PRIORITIZED') or '').split()
     bbfilesmatch = False
     for bbfilesentry in bbfiles:
-        if fnmatch.fnmatch(filename, bbfilesentry):
+        if fnmatch.fnmatchcase(filename, bbfilesentry):
             bbfilesmatch = True
             result = path_to_layer(bbfilesentry)
+            break
 
     if not bbfilesmatch:
         # Probably a bbclass
@@ -1560,3 +1613,29 @@ class LogCatcher(logging.Handler):
         self.messages.append(bb.build.logformatter.format(record))
     def contains(self, message):
         return (message in self.messages)
+
+def is_semver(version):
+    """
+        Is the version string following the semver semantic?
+
+        https://semver.org/spec/v2.0.0.html
+    """
+    regex = re.compile(
+    r"""
+    ^
+    (0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)
+    (?:-(
+        (?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)
+        (?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*
+    ))?
+    (?:\+(
+        [0-9a-zA-Z-]+
+        (?:\.[0-9a-zA-Z-]+)*
+    ))?
+    $
+    """, re.VERBOSE)
+
+    if regex.match(version) is None:
+        return False
+
+    return True

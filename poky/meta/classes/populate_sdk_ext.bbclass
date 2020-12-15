@@ -124,7 +124,7 @@ SDK_TITLE_task-populate-sdk-ext = "${@d.getVar('DISTRO_NAME') or d.getVar('DISTR
 def clean_esdk_builddir(d, sdkbasepath):
     """Clean up traces of the fake build for create_filtered_tasklist()"""
     import shutil
-    cleanpaths = 'cache conf/sanity_info tmp'.split()
+    cleanpaths = ['cache', 'tmp']
     for pth in cleanpaths:
         fullpth = os.path.join(sdkbasepath, pth)
         if os.path.isdir(fullpth):
@@ -179,7 +179,9 @@ def create_filtered_tasklist(d, sdkbasepath, tasklistfile, conf_initpath):
         # will effectively do
         clean_esdk_builddir(d, sdkbasepath)
     finally:
-        os.replace(sdkbasepath + '/conf/local.conf.bak', sdkbasepath + '/conf/local.conf')
+        localconf = sdkbasepath + '/conf/local.conf'
+        if os.path.exists(localconf + '.bak'):
+            os.replace(localconf + '.bak', localconf)
 
 python copy_buildsystem () {
     import re
@@ -308,8 +310,9 @@ python copy_buildsystem () {
         if os.path.exists(builddir + '/conf/auto.conf'):
             with open(builddir + '/conf/auto.conf', 'r') as f:
                 oldlines += f.readlines()
-        with open(builddir + '/conf/local.conf', 'r') as f:
-            oldlines += f.readlines()
+        if os.path.exists(builddir + '/conf/local.conf'):
+            with open(builddir + '/conf/local.conf', 'r') as f:
+                oldlines += f.readlines()
         (updated, newlines) = bb.utils.edit_metadata(oldlines, varlist, handle_var)
 
         with open(baseoutpath + '/conf/local.conf', 'w') as f:
@@ -386,9 +389,13 @@ python copy_buildsystem () {
         bb.utils.mkdirhier(os.path.join(baseoutpath, 'cache'))
         shutil.copyfile(builddir + '/cache/bb_unihashes.dat', baseoutpath + '/cache/bb_unihashes.dat')
 
-    # Write a templateconf.cfg
-    with open(baseoutpath + '/conf/templateconf.cfg', 'w') as f:
-        f.write('meta/conf\n')
+    # Use templateconf.cfg file from builddir if exists
+    if os.path.exists(builddir + '/conf/templateconf.cfg'):
+        shutil.copyfile(builddir + '/conf/templateconf.cfg', baseoutpath + '/conf/templateconf.cfg')
+    else:
+        # Write a templateconf.cfg
+        with open(baseoutpath + '/conf/templateconf.cfg', 'w') as f:
+            f.write('meta/conf\n')
 
     # Ensure any variables set from the external environment (by way of
     # BB_ENV_EXTRAWHITE) are set in the SDK's configuration
@@ -515,11 +522,17 @@ python copy_buildsystem () {
     # sdk_ext_postinst() below) thus the checksum we take here would always
     # be different.
     manifest_file_list = ['conf/*']
+    esdk_manifest_excludes = (d.getVar('ESDK_MANIFEST_EXCLUDES') or '').split()
+    esdk_manifest_excludes_list = []
+    for exclude_item in esdk_manifest_excludes:
+        esdk_manifest_excludes_list += glob.glob(os.path.join(baseoutpath, exclude_item))
     manifest_file = os.path.join(baseoutpath, 'conf', 'sdk-conf-manifest')
     with open(manifest_file, 'w') as f:
         for item in manifest_file_list:
             for fn in glob.glob(os.path.join(baseoutpath, item)):
                 if fn == manifest_file:
+                    continue
+                if fn in esdk_manifest_excludes_list:
                     continue
                 chksum = bb.utils.sha256_file(fn)
                 f.write('%s\t%s\n' % (chksum, os.path.relpath(fn, baseoutpath)))
@@ -611,8 +624,8 @@ sdk_ext_preinst() {
 		exit 1
 	fi
 	# The relocation script used by buildtools installer requires python
-	if ! command -v python > /dev/null; then
-		echo "ERROR: The installer requires python, please install it first"
+	if ! command -v python3 > /dev/null; then
+		echo "ERROR: The installer requires python3, please install it first"
 		exit 1
 	fi
 	missing_utils=""
@@ -647,7 +660,10 @@ sdk_ext_postinst() {
 
 		# Make sure when the user sets up the environment, they also get
 		# the buildtools-tarball tools in their path.
+		echo "# Save and reset OECORE_NATIVE_SYSROOT as buildtools may change it" >> $env_setup_script
+		echo "SAVED=\"\$OECORE_NATIVE_SYSROOT\"" >> $env_setup_script
 		echo ". $target_sdk_dir/buildtools/environment-setup*" >> $env_setup_script
+		echo "OECORE_NATIVE_SYSROOT=\"\$SAVED\"" >> $env_setup_script
 	fi
 
 	# Allow bitbake environment setup to be ran as part of this sdk.
@@ -670,7 +686,7 @@ sdk_ext_postinst() {
 		# current working directory when first ran, nor will it set $1 when
 		# sourcing a script. That is why this has to look so ugly.
 		LOGFILE="$target_sdk_dir/preparing_build_system.log"
-		sh -c ". buildtools/environment-setup* > $LOGFILE && cd $target_sdk_dir/`dirname ${oe_init_build_env_path}` && set $target_sdk_dir && . $target_sdk_dir/${oe_init_build_env_path} $target_sdk_dir >> $LOGFILE && python $target_sdk_dir/ext-sdk-prepare.py $LOGFILE '${SDK_INSTALL_TARGETS}'" || { echo "printf 'ERROR: this SDK was not fully installed and needs reinstalling\n'" >> $env_setup_script ; exit 1 ; }
+		sh -c ". buildtools/environment-setup* > $LOGFILE && cd $target_sdk_dir/`dirname ${oe_init_build_env_path}` && set $target_sdk_dir && . $target_sdk_dir/${oe_init_build_env_path} $target_sdk_dir >> $LOGFILE && python3 $target_sdk_dir/ext-sdk-prepare.py $LOGFILE '${SDK_INSTALL_TARGETS}'" || { echo "printf 'ERROR: this SDK was not fully installed and needs reinstalling\n'" >> $env_setup_script ; exit 1 ; }
 	fi
 	if [ -e $target_sdk_dir/ext-sdk-prepare.py ]; then
 		rm $target_sdk_dir/ext-sdk-prepare.py

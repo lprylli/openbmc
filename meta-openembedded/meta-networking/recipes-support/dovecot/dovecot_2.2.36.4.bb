@@ -19,7 +19,7 @@ DEPENDS = "openssl xz zlib bzip2 libcap icu libtirpc"
 CFLAGS += "-I${STAGING_INCDIR}/tirpc"
 LDFLAGS += "-ltirpc"
 
-inherit autotools pkgconfig systemd useradd
+inherit autotools pkgconfig systemd useradd gettext
 
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'ldap pam', d)}"
 
@@ -43,6 +43,10 @@ CACHED_CONFIGUREVARS += "i_cv_signed_size_t=no \
 # BSD needs kqueue and uclibc poll()
 EXTRA_OECONF = " --with-ioloop=epoll \
                  --with-systemdsystemunitdir=${systemd_unitdir}/system"
+
+# Uses hidden symbols
+# libssl_iostream_openssl.so: undefined reference to `ssl_iostream_handshake'
+LTO = ""
 
 SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = "dovecot.service dovecot.socket"

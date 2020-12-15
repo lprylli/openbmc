@@ -20,22 +20,24 @@ DBUS_PACKAGES = "${PN}-manager"
 
 SYSTEMD_PACKAGES = "${PN}-monitor"
 
-inherit autotools \
-        pkgconfig \
+inherit meson \
         obmc-phosphor-dbus-service \
-        pythonnative \
+        python3native \
         phosphor-debug-collector
 
 require phosphor-debug-collector.inc
 
 DEPENDS += " \
         phosphor-dbus-interfaces \
-        phosphor-dbus-interfaces-native \
         phosphor-logging \
         sdbusplus \
-        sdbusplus-native \
+        ${PYTHON_PN}-sdbus++-native \
         autoconf-archive-native \
         virtual/phosphor-debug-errors \
+        ${PYTHON_PN}-native \
+        ${PYTHON_PN}-pyyaml-native \
+        ${PYTHON_PN}-setuptools-native \
+        ${PYTHON_PN}-mako-native \
 "
 
 RDEPENDS_${PN}-manager += " \
@@ -67,9 +69,9 @@ FILES_${PN}-scripts += "${dreport_dir}"
 DBUS_SERVICE_${PN}-manager += "${MGR_SVC}"
 SYSTEMD_SERVICE_${PN}-monitor += "obmc-dump-monitor.service"
 
-EXTRA_OECONF = " \
-    BMC_DUMP_PATH=${bmc_dump_path} \
-    ERROR_MAP_YAML=${STAGING_DIR_NATIVE}/${datadir}/dump/errors_watch.yaml \
+EXTRA_OEMESON = " \
+    -DBMC_DUMP_PATH=${bmc_dump_path} \
+    -DERROR_MAP_YAML=${STAGING_DIR_NATIVE}/${datadir}/dump/errors_watch.yaml \
     "
 
 S = "${WORKDIR}/git"
@@ -175,8 +177,18 @@ python install_dreport_user_scripts() {
 #Enable ubifs-workaround by DISTRO_FEATURE obmc-ubi-fs.
 PACKAGECONFIG_append_df-obmc-ubi-fs = " ubifs-workaround"
 PACKAGECONFIG[ubifs-workaround] = " \
-       --enable-ubifs-workaround, \
-       --disable-ubifs-workaround \
+       -Dubifs-workaround=enabled, \
+       -Dubifs-workaround=disabled \
+"
+
+PACKAGECONFIG[host-dump-offload-pldm] = " \
+        -Dhost-dump-offload-transport=pldm,, \
+        pldm \
+        "
+
+PACKAGECONFIG[openpower-dumps-extension] = " \
+       -Dopenpower-dumps-extension=enabled, \
+       -Dopenpower-dumps-extension=disabled  \
 "
 
 do_install[postfuncs] += "install_dreport"

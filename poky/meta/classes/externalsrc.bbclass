@@ -73,9 +73,8 @@ python () {
 
         d.setVar('SRC_URI', ' '.join(local_srcuri))
 
-        if '{SRCPV}' in d.getVar('PV', False):
-            # Dummy value because the default function can't be called with blank SRC_URI
-            d.setVar('SRCPV', '999')
+        # Dummy value because the default function can't be called with blank SRC_URI
+        d.setVar('SRCPV', '999')
 
         if d.getVar('CONFIGUREOPT_DEPTRACK') == '--disable-dependency-tracking':
             d.setVar('CONFIGUREOPT_DEPTRACK', '')
@@ -86,7 +85,7 @@ python () {
             if task.endswith("_setscene"):
                 # sstate is never going to work for external source trees, disable it
                 bb.build.deltask(task, d)
-            else:
+            elif os.path.realpath(d.getVar('S')) == os.path.realpath(d.getVar('B')):
                 # Since configure will likely touch ${S}, ensure only we lock so one task has access at a time
                 d.appendVarFlag(task, "lockfiles", " ${S}/singletask.lock")
 

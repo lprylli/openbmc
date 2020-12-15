@@ -8,22 +8,23 @@ LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e3fc50a88d0a364313df4b21ef20c29e"
 
 inherit autotools pkgconfig
-inherit pythonnative
+inherit python3native
 inherit obmc-phosphor-dbus-service
 inherit phosphor-logging
 inherit phosphor-dbus-yaml
 
 DEPENDS += "autoconf-archive-native"
 DEPENDS += "systemd"
-DEPENDS += "python-mako-native"
-DEPENDS += "python-pyyaml-native"
-DEPENDS += "sdbusplus sdbusplus-native"
-DEPENDS += "phosphor-dbus-interfaces phosphor-dbus-interfaces-native"
+DEPENDS += "${PYTHON_PN}-mako-native"
+DEPENDS += "${PYTHON_PN}-pyyaml-native"
+DEPENDS += "${PYTHON_PN}-native"
+DEPENDS += "${PYTHON_PN}-sdbus++-native"
+DEPENDS += "sdbusplus"
+DEPENDS += "phosphor-dbus-interfaces"
 DEPENDS += "virtual/phosphor-logging-callouts"
-DEPENDS += "phosphor-logging-error-logs-native"
-DEPENDS += "phosphor-logging-native"
 DEPENDS += "libcereal"
 DEPENDS += "sdeventplus"
+DEPENDS_append_class-target = " packagegroup-obmc-yaml-providers"
 
 PACKAGE_BEFORE_PN = "${PN}-test"
 FILES_${PN}-test = "${bindir}/*-test"
@@ -54,7 +55,7 @@ FILES_phosphor-rsyslog-config += " \
 "
 
 SRC_URI += "git://github.com/openbmc/phosphor-logging"
-SRCREV = "51e927cc63034f998a2c6c54e7a324ab623d975a"
+SRCREV = "f10068d397f4613b526394afbae245087caacb9d"
 
 S = "${WORKDIR}/git"
 
@@ -62,7 +63,7 @@ S = "${WORKDIR}/git"
 # as they will not be available in host machine
 DEPENDS_remove_class-native = " \
         virtual/phosphor-logging-callouts \
-        sdbus++ \
+        sdbusplus \
         systemd \
         libcereal \
         sdeventplus \
@@ -72,7 +73,7 @@ DEPENDS_remove_class-native = " \
 # as they will not be available in host machine
 DEPENDS_remove_class-nativesdk = " \
         virtual/phosphor-logging-callouts \
-        sdbus++-native \
+        sdbusplus \
         libcereal \
         systemd \
         phosphor-dbus-interfaces \
@@ -96,7 +97,7 @@ PACKAGECONFIG[openpower-pels] = " \
         --enable-openpower-pel-extension, \
         --disable-openpower-pel-extension, \
         nlohmann-json nlohmann-fifo cli11 pldm, \
-        , \
+        python3, \
         "
 
 # Enable install_scripts during native and native SDK build
@@ -107,7 +108,7 @@ PACKAGECONFIG_add_class-nativesdk = "install_scripts"
 PACKAGECONFIG_remove_class-target = "install_scripts"
 
 EXTRA_OECONF = " \
-        YAML_DIR=${STAGING_DIR_NATIVE}${yaml_dir} \
+        YAML_DIR=${STAGING_DIR_TARGET}${yaml_dir} \
         CALLOUTS_YAML=${STAGING_DIR_NATIVE}${callouts_datadir}/callouts.yaml \
         "
 

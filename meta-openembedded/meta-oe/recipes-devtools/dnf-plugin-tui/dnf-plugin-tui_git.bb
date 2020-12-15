@@ -4,10 +4,10 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 SRC_URI = "git://github.com/ubinux/dnf-plugin-tui.git;branch=master "
-SRCREV = "31d6866d5eda02be9a6bfb1fca9e9095b12eecd1"
-PV = "1.0"
+SRCREV = "6d3fab9b9559b6a483fe668e39c29126cdbb58d8"
+PV = "1.2"
 
-SRC_URI_append_class-target = "file://oe-remote.repo.sample"
+SRC_URI_append_class-target = " file://oe-remote.repo.sample"
 
 inherit distutils3-base
 
@@ -37,3 +37,4 @@ RDEPENDS_${PN} += " \
 "
 
 BBCLASSEXTEND = "nativesdk"
+PNBLACKLIST[dnf-plugin-tui] ?= "${@bb.utils.contains('PACKAGE_CLASSES', 'package_rpm', '', 'does not build correctly without package_rpm in PACKAGE_CLASSES', d)}"

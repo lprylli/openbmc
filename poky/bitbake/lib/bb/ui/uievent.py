@@ -11,8 +11,12 @@ server and queue them for the UI to process. This process must be used to avoid
 client/server deadlocks.
 """
 
-import socket, threading, pickle, collections
+import collections, logging, pickle, socket, threading
 from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
+
+import bb
+
+logger = logging.getLogger(__name__)
 
 class BBUIEventQueue:
     def __init__(self, BBServer, clientinfo=("localhost, 0")):
@@ -46,7 +50,7 @@ class BBUIEventQueue:
                 self.EventHandle = ret
                 error = ""
 
-            if self.EventHandle != None:
+            if self.EventHandle is not None:
                 break
 
             errmsg = "Could not register UI event handler. Error: %s, host %s, "\

@@ -30,4 +30,4 @@ DEPENDS += " \
 
 S = "${WORKDIR}/git"
 SRC_URI = "git://github.com/openbmc/kcsbridge.git"
-SRCREV = "46525ae48db23333493ac927c12ed13a0e663de5"
+SRCREV = "4a4d1d03d99fabe089e649aa226ad4c61e71684e"

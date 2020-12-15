@@ -23,16 +23,15 @@ PACKAGECONFIG[systemd] = "--with-systemdsystemunitdir=${systemd_system_unitdir}"
 
 EXTRA_OECONF += "--disable-stripping"
 
-SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "sysstat.service"
-SYSTEMD_AUTO_ENABLE = "enable"
-
 do_configure_prepend() {
     export sa_lib_dir=${libexecdir}/sa
 }
 
 do_install() {
 	autotools_do_install
+
+	# Don't version the documentation
+	mv ${D}${docdir}/${BP} ${D}${docdir}/${BPN}
 
 	# don't install /var/log/sa when populating rootfs. Do it through volatile
 	rm -rf ${D}/var
@@ -63,6 +62,6 @@ pkg_postinst_${PN} () {
 	fi
 }
 
-FILES_${PN} += "${systemd_system_unitdir}"
+FILES_${PN} += "${systemd_system_unitdir} ${nonarch_base_libdir}/systemd"
 
 TARGET_CC_ARCH += "${LDFLAGS}"

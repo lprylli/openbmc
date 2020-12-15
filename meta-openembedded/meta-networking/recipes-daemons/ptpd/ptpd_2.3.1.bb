@@ -24,12 +24,15 @@ def get_sub(d):
 SRC_URI = "http://downloads.sourceforge.net/project/ptpd/ptpd/${@get_sub(d)}/ptpd-${PV}.tar.gz \
            file://ptpd-use-pkgconfig.patch \
            file://Fixed-100-CPU-using-issue-by-adding-minimum-POSIX-ti.patch \
+           file://0001-ptpd-Solve-memory-leak-for-function-NTPDCrequest.patch \
            file://ptpd.service \
            file://ptpd.conf \
 "
 
 SRC_URI[md5sum] = "253bab7ab51d969616ea811be1f132f3"
 SRC_URI[sha256sum] = "0dbf54dd2c178bd9fe62481d2c37513ee36636d8bf137cfdad96891490cdbf93"
+
+UPSTREAM_CHECK_URI = "http://sourceforge.net/projects/ptpd/files/releases"
 
 S = "${WORKDIR}/ptpd-${PV}"
 

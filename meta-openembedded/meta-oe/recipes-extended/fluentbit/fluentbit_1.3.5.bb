@@ -26,6 +26,8 @@ DEPENDS_append_libc-musl = " fts "
 
 INSANE_SKIP_${PN}-dev += "dev-elf"
 
+LTO = ""
+
 # Use CMake 'Unix Makefiles' generator
 OECMAKE_GENERATOR ?= "Unix Makefiles"
 
@@ -43,6 +45,9 @@ EXTRA_OECMAKE += "-DFLB_SHARED_LIB=Off -DFLB_EXAMPLES=Off "
 
 EXTRA_OECMAKE += "${@bb.utils.contains('DISTRO_FEATURES','systemd','-DFLB_SYSTEMD=On','',d)}"
 
+EXTRA_OECMAKE_append_riscv64 = " -DFLB_DEPS='atomic'"
+EXTRA_OECMAKE_append_riscv32 = " -DFLB_DEPS='atomic'"
+
 # Kafka Output plugin (disabled by default): note that when
 # enabling Kafka output plugin, the backend library librdkafka
 # requires 'openssl' as a dependency.
@@ -50,7 +55,9 @@ EXTRA_OECMAKE += "${@bb.utils.contains('DISTRO_FEATURES','systemd','-DFLB_SYSTEM
 # DEPENDS += "openssl "
 # EXTRA_OECMAKE += "-DFLB_OUT_KAFKA=On "
 
-inherit cmake systemd features_check
+inherit cmake systemd
+
+CFLAGS += "-fcommon"
 
 SYSTEMD_SERVICE_${PN} = "td-agent-bit.service"
 TARGET_CC_ARCH_append = " ${SELECTED_OPTIMIZATION}"

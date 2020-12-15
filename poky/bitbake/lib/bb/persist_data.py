@@ -12,14 +12,14 @@ currently, providing a key/value store accessed by 'domain'.
 #
 
 import collections
+import contextlib
+import functools
 import logging
 import os.path
+import sqlite3
 import sys
 import warnings
-from bb.compat import total_ordering
 from collections import Mapping
-import sqlite3
-import contextlib
 
 sqlversion = sqlite3.sqlite_version_info
 if sqlversion[0] < 3 or (sqlversion[0] == 3 and sqlversion[1] < 3):
@@ -28,7 +28,7 @@ if sqlversion[0] < 3 or (sqlversion[0] == 3 and sqlversion[1] < 3):
 
 logger = logging.getLogger("BitBake.PersistData")
 
-@total_ordering
+@functools.total_ordering
 class SQLTable(collections.MutableMapping):
     class _Decorators(object):
         @staticmethod
@@ -178,6 +178,9 @@ class SQLTable(collections.MutableMapping):
             raise TypeError('Only string keys are supported')
         elif not isinstance(value, str):
             raise TypeError('Only string values are supported')
+
+        # Ensure the entire transaction (including SELECT) executes under write lock
+        cursor.execute("BEGIN EXCLUSIVE")
 
         cursor.execute("SELECT * from %s where key=?;" % self.table, [key])
         row = cursor.fetchone()

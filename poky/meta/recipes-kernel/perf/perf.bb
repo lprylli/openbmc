@@ -26,6 +26,8 @@ PACKAGECONFIG[jvmti] = ",NO_JVMTI=1"
 PACKAGECONFIG[audit] = ",NO_LIBAUDIT=1,audit"
 PACKAGECONFIG[manpages] = ",,xmlto-native asciidoc-native"
 PACKAGECONFIG[cap] = ",,libcap"
+# Arm CoreSight
+PACKAGECONFIG[coresight] = "CORESIGHT=1,,opencsd"
 
 # libunwind is not yet ported for some architectures
 PACKAGECONFIG_remove_arc = "libunwind"
@@ -52,7 +54,7 @@ export PYTHON_SITEPACKAGES_DIR
 #kernel 3.1+ supports WERROR to disable warnings as errors
 export WERROR = "0"
 
-do_populate_lic[depends] += "virtual/kernel:do_patch"
+do_populate_lic[depends] += "virtual/kernel:do_shared_workdir"
 
 # needed for building the tools/perf Perl binding
 include ${@bb.utils.contains('PACKAGECONFIG', 'scripting', 'perf-perl.inc', '', d)}
@@ -68,11 +70,14 @@ SPDX_S = "${S}/tools/perf"
 LDFLAGS="-ldl -lutil"
 
 EXTRA_OEMAKE = '\
+    V=1 \
     -C ${S}/tools/perf \
     O=${B} \
     CROSS_COMPILE=${TARGET_PREFIX} \
     ARCH=${ARCH} \
     CC="${CC}" \
+    CCLD="${CC}" \
+    LDSHARED="${CC} -shared" \
     AR="${AR}" \
     LD="${LD}" \
     EXTRA_CFLAGS="-ldw" \
@@ -145,6 +150,7 @@ python copy_perf_source_from_kernel() {
     src_dir = d.getVar("STAGING_KERNEL_DIR")
     dest_dir = d.getVar("S")
     bb.utils.mkdirhier(dest_dir)
+    bb.utils.prunedir(dest_dir)
     for s in sources:
         src = oe.path.join(src_dir, s)
         dest = oe.path.join(dest_dir, s)
@@ -161,7 +167,7 @@ python copy_perf_source_from_kernel() {
 do_configure_prepend () {
     # If building a multlib based perf, the incorrect library path will be
     # detected by perf, since it triggers via: ifeq ($(ARCH),x86_64). In a 32 bit
-    # build, with a 64 bit multilib, the arch won't match and the detection of a 
+    # build, with a 64 bit multilib, the arch won't match and the detection of a
     # 64 bit build (and library) are not exected. To ensure that libraries are
     # installed to the correct location, we can use the weak assignment in the
     # config/Makefile.
@@ -195,6 +201,9 @@ do_configure_prepend () {
         sed -i -e 's,\ .config-detected, $(OUTPUT)/config-detected,g' \
             ${S}/tools/perf/Makefile.perf
         sed -i -e "s,prefix='\$(DESTDIR_SQ)/usr'$,prefix='\$(DESTDIR_SQ)/usr' --install-lib='\$(DESTDIR)\$(PYTHON_SITEPACKAGES_DIR)',g" \
+            ${S}/tools/perf/Makefile.perf
+        # backport https://github.com/torvalds/linux/commit/e4ffd066ff440a57097e9140fa9e16ceef905de8
+        sed -i -e 's,\($(Q)$(SHELL) .$(arch_errno_tbl).\) $(CC) $(arch_errno_hdr_dir),\1 $(firstword $(CC)) $(arch_errno_hdr_dir),g' \
             ${S}/tools/perf/Makefile.perf
     fi
     sed -i -e "s,--root='/\$(DESTDIR_SQ)',--prefix='\$(DESTDIR_SQ)/usr' --install-lib='\$(DESTDIR)\$(PYTHON_SITEPACKAGES_DIR)',g" \
@@ -237,10 +246,8 @@ do_configure_prepend () {
     fi
 
     # use /usr/bin/env instead of version specific python
-    for s in `find ${S}/tools/perf/ -name '*.py'`; do
-        sed -i 's,/usr/bin/python,/usr/bin/env python3,' "${s}"
-        sed -i 's,/usr/bin/python2,/usr/bin/env python3,' "${s}"
-        sed -i 's,/usr/bin/env python2,/usr/bin/env python3,' "${s}"
+    for s in `find ${S}/tools/perf/ -name '*.py'` `find ${S}/scripts/ -name 'bpf_helpers_doc.py'`; do
+        sed -i -e "s,#!.*python.*,#!${USRBINPATH}/env python3," ${s}
     done
 
     # unistd.h can be out of sync between libc-headers and the captured version in the perf source

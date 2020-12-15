@@ -13,20 +13,28 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=a6a4edad4aed50f39a66d098d74b265b"
 SRC_URI = "git://github.com/openbmc/bmcweb.git"
 
 PV = "1.0+git${SRCPV}"
-SRCREV = "250b0ebb0e8d55882fa8e6b156f88828a7ba185d"
+SRCREV = "9e319cf0c5ee714cdd879a1d2a6e5b5ac96c7f1d"
 
 S = "${WORKDIR}/git"
 
-DEPENDS = "openssl zlib boost libpam sdbusplus gtest nlohmann-json libtinyxml2 "
+DEPENDS = "openssl \
+           zlib \
+           boost \
+           boost-url \
+           libpam \
+           sdbusplus \
+           gtest \
+           nlohmann-json \
+           libtinyxml2 "
 
 RDEPENDS_${PN} += "jsnbd"
 
 FILES_${PN} += "${datadir}/** "
 
-inherit cmake
+inherit meson
 
-EXTRA_OECMAKE = "-DBMCWEB_BUILD_UT=OFF -DYOCTO_DEPENDENCIES=ON"
+EXTRA_OEMESON = "--buildtype=minsize -Dtests=disabled -Dyocto-deps=enabled"
 
 SYSTEMD_SERVICE_${PN} += "bmcweb.service bmcweb.socket"
 
-FULL_OPTIMIZATION = "-Os -pipe "
+FULL_OPTIMIZATION = "-Os "

@@ -51,8 +51,9 @@ def write_license_files(d, license_manifest, pkg_dic, rootfs=True):
         for pkg in sorted(pkg_dic):
             if bad_licenses and pkg not in whitelist:
                 try:
-                    if incompatible_pkg_license(d, bad_licenses, pkg_dic[pkg]["LICENSE"]):
-                        bb.fatal("Package %s has an incompatible license %s and cannot be installed into the image." %(pkg, pkg_dic[pkg]["LICENSE"]))
+                    licenses = incompatible_pkg_license(d, bad_licenses, pkg_dic[pkg]["LICENSE"])
+                    if licenses:
+                        bb.fatal("Package %s cannot be installed into the image because it has incompatible license(s): %s" %(pkg, ' '.join(licenses)))
                     (pkg_dic[pkg]["LICENSE"], pkg_dic[pkg]["LICENSES"]) = \
                         oe.license.manifest_licenses(pkg_dic[pkg]["LICENSE"],
                         bad_licenses, canonical_license, d)
@@ -124,7 +125,6 @@ def write_license_files(d, license_manifest, pkg_dic, rootfs=True):
 
                 licenses = os.listdir(pkg_license_dir)
                 for lic in licenses:
-                    rootfs_license = os.path.join(rootfs_license_dir, lic)
                     pkg_license = os.path.join(pkg_license_dir, lic)
                     pkg_rootfs_license = os.path.join(pkg_rootfs_license_dir, lic)
 
@@ -143,6 +143,8 @@ def write_license_files(d, license_manifest, pkg_dic, rootfs=True):
                                 bad_licenses) == False:
                             continue
 
+                        # Make sure we use only canonical name for the license file
+                        rootfs_license = os.path.join(rootfs_license_dir, "generic_%s" % generic_lic)
                         if not os.path.exists(rootfs_license):
                             oe.path.copyhardlink(pkg_license, rootfs_license)
 
@@ -198,6 +200,17 @@ def license_deployed_manifest(d):
     bb.utils.mkdirhier(lic_manifest_dir)
     image_license_manifest = os.path.join(lic_manifest_dir, 'image_license.manifest')
     write_license_files(d, image_license_manifest, man_dic, rootfs=False)
+
+    link_name = d.getVar('IMAGE_LINK_NAME')
+    if link_name:
+        lic_manifest_symlink_dir = os.path.join(d.getVar('LICENSE_DIRECTORY'),
+                                    link_name)
+        # remove old symlink
+        if os.path.islink(lic_manifest_symlink_dir):
+            os.unlink(lic_manifest_symlink_dir)
+
+        # create the image dir symlink
+        os.symlink(lic_manifest_dir, lic_manifest_symlink_dir)
 
 def get_deployed_dependencies(d):
     """

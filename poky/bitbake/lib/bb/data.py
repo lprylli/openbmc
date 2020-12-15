@@ -79,7 +79,7 @@ def expand(s, d, varname = None):
     return d.expand(s, varname)
 
 def expandKeys(alterdata, readdata = None):
-    if readdata == None:
+    if readdata is None:
         readdata = alterdata
 
     todolist = {}
@@ -161,6 +161,12 @@ def emit_var(var, o=sys.__stdout__, d = init(), all=False):
         return True
 
     if func:
+        # Write a comment indicating where the shell function came from (line number and filename) to make it easier
+        # for the user to diagnose task failures. This comment is also used by build.py to determine the metadata
+        # location of shell functions.
+        o.write("# line: {0}, file: {1}\n".format(
+            d.getVarFlag(var, "lineno", False),
+            d.getVarFlag(var, "filename", False)))
         # NOTE: should probably check for unbalanced {} within the var
         val = val.rstrip('\n')
         o.write("%s() {\n%s\n}\n" % (varExpanded, val))
@@ -365,7 +371,7 @@ def build_dependencies(key, keys, shelldeps, varflagsexcl, d):
     #bb.note("Variable %s references %s and calls %s" % (key, str(deps), str(execs)))
     #d.setVarFlag(key, "vardeps", deps)
 
-def generate_dependencies(d):
+def generate_dependencies(d, whitelist):
 
     keys = set(key for key in d if not key.startswith("__"))
     shelldeps = set(key for key in d.getVar("__exportlist", False) if d.getVarFlag(key, "export", False) and not d.getVarFlag(key, "unexport", False))
@@ -380,7 +386,7 @@ def generate_dependencies(d):
         newdeps = deps[task]
         seen = set()
         while newdeps:
-            nextdeps = newdeps
+            nextdeps = newdeps - whitelist
             seen |= nextdeps
             newdeps = set()
             for dep in nextdeps:

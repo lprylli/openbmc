@@ -10,15 +10,18 @@ LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=8a15a0759ef07f2682d2ba4b893c9afe"
 
 DEPENDS = "libffi libxml2 zlib libedit ninja-native llvm-native"
 
+COMPATIBLE_HOST_riscv64 = "null"
+COMPATIBLE_HOST_riscv32 = "null"
+
 RDEPENDS_${PN}_append_class-target = " ncurses-terminfo"
 
 inherit cmake pkgconfig
 
 PROVIDES += "llvm${PV}"
 
-MAJOR_VERSION = "9"
+MAJOR_VERSION = "10"
 MINOR_VERSION = "0"
-PATCH_VERSION = "0"
+PATCH_VERSION = "1"
 
 PV = "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
 
@@ -26,11 +29,13 @@ LLVM_RELEASE = "${PV}"
 LLVM_DIR = "llvm${LLVM_RELEASE}"
 
 BRANCH = "release/${MAJOR_VERSION}.x"
-SRCREV = "0399d5a9682b3cef71c653373e38890c63c4c365"
+SRCREV = "ef32c611aa214dea855364efd7ba451ec5ec3f74"
 SRC_URI = "git://github.com/llvm/llvm-project.git;branch=${BRANCH} \
            file://0006-llvm-TargetLibraryInfo-Undefine-libc-functions-if-th.patch;striplevel=2 \
            file://0007-llvm-allow-env-override-of-exe-path.patch;striplevel=2 \
           "
+
+UPSTREAM_CHECK_GITTAGREGEX = "llvmorg-(?P<pver>\d+(\.\d+)+)"
 
 S = "${WORKDIR}/git/llvm"
 

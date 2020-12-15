@@ -4,14 +4,11 @@
 #
 
 import unittest
-import tempfile
 import os
-import bb
 
 import layerindexlib
 from layerindexlib.tests.common import LayersTest
 
-import logging
 
 def skipIfNoNetwork():
     if os.environ.get("BB_SKIP_NETTESTS") == "yes":
@@ -115,7 +112,7 @@ class LayerIndexWebRestApiTest(LayersTest):
                     break
             else:
                 self.logger.debug(1, "meta-python was not found")
-                self.assetTrue(False)
+                raise self.failureException
 
             # Only check the first element...
             break

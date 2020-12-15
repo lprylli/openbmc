@@ -31,10 +31,7 @@ IETF secsh internet draft:
 #
 
 import re, os
-from   bb.fetch2 import FetchMethod
-from   bb.fetch2 import FetchError
-from   bb.fetch2 import logger
-from   bb.fetch2 import runfetchcmd
+from bb.fetch2 import check_network_access, FetchMethod, ParameterError, runfetchcmd
 
 
 __pattern__ = re.compile(r'''
@@ -60,14 +57,14 @@ class SSH(FetchMethod):
     '''Class to fetch a module or modules via Secure Shell'''
 
     def supports(self, urldata, d):
-        return __pattern__.match(urldata.url) != None
+        return __pattern__.match(urldata.url) is not None
 
     def supports_checksum(self, urldata):
         return False
 
     def urldata_init(self, urldata, d):
         if 'protocol' in urldata.parm and urldata.parm['protocol'] == 'git':
-            raise bb.fetch2.ParameterError(
+            raise ParameterError(
                 "Invalid protocol - if you wish to fetch from a git " +
                 "repository using ssh, you need to use " +
                 "git:// prefix with protocol=ssh", urldata.url)
@@ -107,7 +104,7 @@ class SSH(FetchMethod):
             dldir
         )
 
-        bb.fetch2.check_network_access(d, cmd, urldata.url)
+        check_network_access(d, cmd, urldata.url)
 
         runfetchcmd(cmd, d)
 

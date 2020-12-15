@@ -23,6 +23,7 @@ SRC_URI = "${GNU_MIRROR}/inetutils/inetutils-${PV}.tar.gz \
            file://inetutils-only-check-pam_appl.h-when-pam-enabled.patch \
            file://0001-rcp-fix-to-work-with-large-files.patch \
            file://fix-buffer-fortify-tfpt.patch \
+           file://0001-ftpd-telnetd-Fix-multiple-definitions-of-errcatch-an.patch \
 "
 
 SRC_URI[md5sum] = "04852c26c47cc8c6b825f2b74f191f52"
@@ -143,11 +144,15 @@ ALTERNATIVE_${PN}-traceroute = "traceroute"
 ALTERNATIVE_${PN}-hostname = "hostname"
 ALTERNATIVE_LINK_NAME[hostname]  = "${base_bindir}/hostname"
 
-ALTERNATIVE_${PN}-doc = "hostname.1 dnsdomainname.1 logger.1 syslogd.8"
+ALTERNATIVE_${PN}-doc = "hostname.1 dnsdomainname.1 logger.1 syslogd.8 \
+                         tftpd.8 tftp.1 telnetd.8"
 ALTERNATIVE_LINK_NAME[hostname.1] = "${mandir}/man1/hostname.1"
 ALTERNATIVE_LINK_NAME[dnsdomainname.1] = "${mandir}/man1/dnsdomainname.1"
 ALTERNATIVE_LINK_NAME[logger.1] = "${mandir}/man1/logger.1"
 ALTERNATIVE_LINK_NAME[syslogd.8] = "${mandir}/man8/syslogd.8"
+ALTERNATIVE_LINK_NAME[telnetd.8] = "${mandir}/man8/telnetd.8"
+ALTERNATIVE_LINK_NAME[tftpd.8] = "${mandir}/man8/tftpd.8"
+ALTERNATIVE_LINK_NAME[tftp.1] = "${mandir}/man1/tftp.1"
 
 ALTERNATIVE_${PN}-ifconfig = "ifconfig"
 ALTERNATIVE_LINK_NAME[ifconfig]  = "${base_sbindir}/ifconfig"
