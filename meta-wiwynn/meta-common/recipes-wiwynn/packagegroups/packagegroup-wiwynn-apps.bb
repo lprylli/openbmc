@@ -29,7 +29,6 @@ RPROVIDES_${PN}-host += "virtual-obmc-host-ctl"
 
 SUMMARY_${PN}-chassis = "Wiwynn Chassis"
 RDEPENDS_${PN}-chassis = " \
-        obmc-control-chassis \
         obmc-op-control-power \
         obmc-host-failure-reboots \
         "
@@ -41,8 +40,6 @@ RDEPENDS_${PN}-fans = " \
 
 SUMMARY_${PN}-flash = "Wiwynn Flash"
 RDEPENDS_${PN}-flash = " \
-        obmc-flash-bmc \
-        obmc-mgr-download \
         obmc-control-bmc \
         "
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=SV310G4 BMC Environment Initialization
+Before=phosphor-discover-system-state@0.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/sv310g4-bmcenv-init.sh
+SyslogIdentifier=sv310g4-bmcenv-init
+
+[Install]
+WantedBy=sysinit.target
