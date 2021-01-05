@@ -25,6 +25,8 @@ SRC_URI = "file://CMakeLists.txt \
            file://chassishandler.cpp \
            file://storagecommands.cpp \
            file://storagecommands.hpp \
+           file://oemcommands.cpp \
+           file://oemcommands.hpp \
            file://Utils.cpp \
            file://Utils.hpp \
           "
