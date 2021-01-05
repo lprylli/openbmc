@@ -48,3 +48,13 @@ struct OEMLibGetDevIDResponse
     uint8_t prodId[2];
     uint8_t auxInfo[4];
 } __attribute__((packed));
+
+struct OEMLibGetDevGUIDResponse
+{
+    uint8_t guid[16];
+}__attribute__((packed));
+
+struct OEMLibGetSysGUIDResponse
+{
+    uint8_t guid[16]; 
+}__attribute__((packed));

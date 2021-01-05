@@ -8,5 +8,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              sv310g4-service-oem \
                                              phosphor-sel-logger \
                                              sv310g4-ipmi-oem \
+                                             guid-generator \
                                            "
 

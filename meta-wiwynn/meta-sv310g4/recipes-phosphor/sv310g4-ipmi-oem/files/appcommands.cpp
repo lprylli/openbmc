@@ -332,6 +332,86 @@ ipmi_ret_t ipmiGetDevID(ipmi_netfn_t netfn, ipmi_cmd_t cmd,
     return IPMI_CC_OK;
 }
 
+static constexpr auto i2cbus_eeprom = "7";
+static constexpr auto i2caddr_eeprom = "54";
+static constexpr auto offset_devguid = 0x1920;
+static constexpr auto offset_sysguid = 0x1940;
+static constexpr auto guid_length = 16;
+
+/*
+    Get Device GUID
+    NetFn: App (0x6) / CMD: 0x8
+*/
+ipmi_ret_t ipmiGetDevGUID(ipmi_netfn_t netfn, ipmi_cmd_t cmd,
+                          ipmi_request_t request, ipmi_response_t response,
+                          ipmi_data_len_t dataLen, ipmi_context_t context)
+{
+    OEMLibGetDevGUIDResponse* res = reinterpret_cast<OEMLibGetDevGUIDResponse*>(response);
+    uint8_t buffer[16] = {0};
+    uint8_t status;
+    int32_t reqDataLen = (int32_t)*dataLen;
+    *dataLen = 0;
+
+    /* Data Length - 0 */
+    if (reqDataLen != 0)
+    {
+        sd_journal_print(LOG_ERR, "[%s] invalid cmd data length %d\n",
+                         __FUNCTION__, reqDataLen);
+        return IPMI_CC_REQ_DATA_LEN_INVALID;
+    }
+
+    status = i2cEEPROMGet(i2cbus_eeprom, i2caddr_eeprom,
+                          offset_devguid, guid_length, buffer);
+
+    if (0 != status)
+    {
+        sd_journal_print(LOG_CRIT, "failed to access EEPROM.\n", __FUNCTION__);
+        return IPMI_CC_INVALID_FIELD_REQUEST;
+    }
+
+    memcpy(res->guid, buffer, guid_length);
+    *dataLen = 16;
+
+    return IPMI_CC_OK;
+}
+
+/*
+    Get System GUID
+    NetFn: App (0x6) / CMD: 0x37
+*/
+ipmi_ret_t ipmiGetSysGUID(ipmi_netfn_t netfn, ipmi_cmd_t cmd,
+                          ipmi_request_t request, ipmi_response_t response,
+                          ipmi_data_len_t dataLen, ipmi_context_t context)
+{
+    OEMLibGetSysGUIDResponse* res = reinterpret_cast<OEMLibGetSysGUIDResponse*>(response);
+    uint8_t buffer[16] = {0};
+    uint8_t status;
+    int32_t reqDataLen = (int32_t)*dataLen;
+    *dataLen = 0;
+
+    /* Data Length - 0 */
+    if (reqDataLen != 0)
+    {
+        sd_journal_print(LOG_ERR, "[%s] invalid cmd data length %d\n",
+                         __FUNCTION__, reqDataLen);
+        return IPMI_CC_REQ_DATA_LEN_INVALID;
+    }
+
+    status = i2cEEPROMGet(i2cbus_eeprom, i2caddr_eeprom,
+                          offset_sysguid, guid_length, buffer);
+
+    if (0 != status)
+    {
+        sd_journal_print(LOG_CRIT, "failed to access EEPROM.\n", __FUNCTION__);
+        return IPMI_CC_INVALID_FIELD_REQUEST;
+    }
+
+    memcpy(res->guid, buffer, guid_length);
+    *dataLen = 16;
+
+    return IPMI_CC_OK;
+}
+
 static void register_app_functions(void)
 {
     // < Get Self Test Result >
@@ -340,4 +420,12 @@ static void register_app_functions(void)
     // <Get Device ID>
     ipmi_register_callback(ipmi::netFnApp, ipmi::app::cmdGetDeviceId, NULL,
                            ipmiGetDevID, PRIVILEGE_USER);
+
+    // < Get Device Guid >
+    ipmi_register_callback(ipmi::netFnApp, ipmi::app::cmdGetDeviceGuid, NULL,
+                           ipmiGetDevGUID, PRIVILEGE_USER);
+
+    // < Get System Guid >
+    ipmi_register_callback(ipmi::netFnApp, ipmi::app::cmdGetSystemGuid, NULL,
+                           ipmiGetSysGUID, PRIVILEGE_USER);
 }
