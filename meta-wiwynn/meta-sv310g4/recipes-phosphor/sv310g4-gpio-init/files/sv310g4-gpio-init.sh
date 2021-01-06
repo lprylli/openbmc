@@ -11,7 +11,7 @@ GPIO_A3=3   # I
 GPIO_B0=8   # I
 GPIO_B1=9   # I
 GPIO_B2=10  # O(H)
-GPIO_B3=11  # O(H)
+GPIO_B3=11  # O(L) - Ready
 GPIO_B4=12  # I
 #GPIO_B5=13  # I
 GPIO_B6=14  # I
@@ -73,6 +73,9 @@ GPIO_I1=65  # O(L)
 GPIO_I2=66  # I
 GPIO_I3=67  # I
 
+# GROUP N
+GPIO_N7=111 # I - BIOS SPI
+
 # GROUP Q
 GPIO_Q6=134 # I
 GPIO_Q7=135 # O(H)
@@ -111,7 +114,7 @@ GPIO_V1=169 # I
 GPIO_Y0=192 # I
 GPIO_Y1=193 # I
 #GPIO_Y2=194 # O(L)
-GPIO_Y3=195 # O(H)
+GPIO_Y3=195 # O(L)
 
 # GROUP Z
 GPIO_Z0=200 # I
@@ -123,7 +126,7 @@ GPIO_Z6=206 # I
 GPIO_Z7=207 # I
 
 # GROUP AA
-GPIO_AA0=208 # O(L)
+GPIO_AA0=208 # O(H) - Battery Sense EN
 GPIO_AA2=210 # I
 GPIO_AA3=211 # O(L)
 GPIO_AA4=212 # O(H)
@@ -178,7 +181,6 @@ gpio_out_high="\
     ${GPIO_A1} \
     ${GPIO_A2} \
     ${GPIO_B2} \
-    ${GPIO_B3} \
     ${GPIO_D1} \
     ${GPIO_D3} \
     ${GPIO_D5} \
@@ -193,8 +195,8 @@ gpio_out_high="\
     ${GPIO_S4} \
     ${GPIO_S5} \
     ${GPIO_S6} \
-    ${GPIO_Y3} \
     ${GPIO_Z2} \
+    ${GPIO_AA0} \
     ${GPIO_AA4} \
     ${GPIO_AB2} \
 "
@@ -208,13 +210,14 @@ done
 
 # Init GPIO to output low
 gpio_out_low="\
+    ${GPIO_B3} \
     ${GPIO_D4} \
     ${GPIO_H0} \
     ${GPIO_H4} \
     ${GPIO_H5} \
     ${GPIO_I1} \
     ${GPIO_S1} \
-    ${GPIO_AA0} \
+    ${GPIO_Y3} \
     ${GPIO_AA3} \
     ${GPIO_AA5} \
     ${GPIO_AB0} \

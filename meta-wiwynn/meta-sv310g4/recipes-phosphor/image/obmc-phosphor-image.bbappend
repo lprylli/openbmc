@@ -11,5 +11,9 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              guid-generator \
                                              entity-manager \
                                              dbus-sensors \
+                                             sv310g4-powerctrl \
+                                             phosphor-gpio-monitor \
+                                             sv310g4-gpio-monitor-register \
+                                             wiwynn-interrupt-dbus-register \
                                            "
 

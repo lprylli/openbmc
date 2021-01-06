@@ -1,0 +1,18 @@
+[
+    {
+        "Name": "PowerGood",
+        "GpioNum": 39,
+        "ChipId": "0",
+        "EventMon": "BOTH",
+        "Target":
+        {
+            "FALLING": [
+                "SetPowerGoodPropertyOff.service"
+            ],
+            "RISING": [
+                "SetPowerGoodPropertyOn.service"
+            ]
+        },
+        "Continue": true
+    }
+]

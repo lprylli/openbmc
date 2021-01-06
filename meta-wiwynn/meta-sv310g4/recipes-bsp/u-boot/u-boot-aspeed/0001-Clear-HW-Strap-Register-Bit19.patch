@@ -1,0 +1,61 @@
+From 71b07f56da8d019e80d133e1611f37c567840126 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Wed, 6 Jan 2021 15:46:23 +0800
+Subject: [PATCH] Clear HW Strap Register Bit19
+
+---
+ board/aspeed/ast-g5/ast-g5.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+ mode change 100644 => 100755 board/aspeed/ast-g5/ast-g5.c
+
+diff --git a/board/aspeed/ast-g5/ast-g5.c b/board/aspeed/ast-g5/ast-g5.c
+old mode 100644
+new mode 100755
+index e67a4bf8b2..dcd6d9f704
+--- a/board/aspeed/ast-g5/ast-g5.c
++++ b/board/aspeed/ast-g5/ast-g5.c
+@@ -16,11 +16,41 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define SCU_REG_BASE		0x1e6e2000
++#define HW_STRAP_REG		0x1e6e2070
++#define HW_STRAP_CLR_REG	0x1e6e207c
++#define HW_STRAP_Bit19_CLR	0x80000
++
++void Unlock_SCU()
++{
++	ulong reg_addr = 0;
++	ulong temp = 0;
++
++	reg_addr = SCU_REG_BASE;
++	temp = *((volatile ulong *) reg_addr);
++	temp = 0x1688a8a8;     // UNLOCK KEY
++	*((volatile ulong *) reg_addr) = temp;
++}
++
++void Clear_HW_Strap_Bit19()
++{
++	ulong reg_addr = 0;
++	ulong temp = 0;
++
++	// Disable ACPI
++	reg_addr = HW_STRAP_CLR_REG;
++	temp = HW_STRAP_Bit19_CLR;
++	*((volatile ulong *) reg_addr) = temp;
++}
++
+ int board_init(void)
+ {
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+ 	gd->flags = 0;
+ 
++	Unlock_SCU();
++	Clear_HW_Strap_Bit19();
++
+ 	return 0;
+ }
+ 
+-- 
+2.17.1
+

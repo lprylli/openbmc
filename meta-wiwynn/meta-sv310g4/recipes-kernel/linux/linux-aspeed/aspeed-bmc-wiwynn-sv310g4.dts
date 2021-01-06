@@ -80,8 +80,18 @@
 &uart1 {
 	status = "okay";
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_txd1_default
-		     &pinctrl_rxd1_default>;
+	pinctrl-0 = <&pinctrl_ncts1_default
+                 &pinctrl_ndcd1_default
+                 &pinctrl_ndsr1_default
+                 &pinctrl_nri1_default
+                 &pinctrl_ndtr1_default
+                 &pinctrl_nrts1_default
+                 &pinctrl_txd1_default
+                 &pinctrl_rxd1_default>;
+};
+
+&uart2 {
+	status = "okay";
 };
 
 &uart3 {
@@ -96,19 +106,19 @@
 &kcs1 {
 	// BMC KCS channel 1
 	status = "okay";
-	kcs_addr = <0xca0>;
+	aspeed,lpc-io-reg = <0xca0>;
 };
 
 &kcs2 {
 	// BMC KCS channel 2
 	status = "okay";
-	kcs_addr = <0xca8>;
+	aspeed,lpc-io-reg = <0xca8>;
 };
 
 &kcs3 {
 	// BMC KCS channel 3
 	status = "okay";
-	kcs_addr = <0xca2>;
+	aspeed,lpc-io-reg = <0xca2>;
 };
 
 /*
@@ -166,4 +176,35 @@
 
 &i2c8 {
 	status = "okay";
+};
+
+&i2c9 {
+	status = "okay";
+};
+
+&i2c10 {
+	status = "okay";
+};
+
+&i2c11 {
+	status = "okay";
+};
+
+&i2c12 {
+	status = "okay";
+};
+
+&i2c13 {
+	status = "okay";
+};
+
+&lpc_ctrl {
+	status = "okay";
+	memory-region = <&flash_memory>;
+	flash = <&spi1>;
+};
+
+&lpc_snoop {
+    status = "okay";
+    snoop-ports = <0x80>;
 };
