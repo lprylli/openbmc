@@ -1,17 +1,255 @@
 {
     "Exposes": [
         {
+            "Index": 0,
+            "Name": "P12V",
+            "ScaleFactor": 0.1124,
+            "MaxReading": 14,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 1,
+            "Name": "P3V3",
+            "ScaleFactor": 0.4107,
+            "MaxReading": 5,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 2,
+            "Name": "PVNN_PCH_AUX",
+            "ScaleFactor": 1,
+            "MaxReading": 1.5,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 3,
+            "Name": "P1V05_PCH_AUX",
+            "ScaleFactor": 1,
+            "MaxReading": 1.5,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 4,
+            "Name": "P12V_AUX",
+            "ScaleFactor": 0.1124,
+            "MaxReading": 14,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 5,
+            "Name": "P3V3_AUX",
+            "ScaleFactor": 0.4107,
+            "MaxReading": 4,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 6,
+            "Name": "P1V8_PCH",
+            "ScaleFactor": 0.7505,
+            "MaxReading": 2,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 7,
+            "Name": "P3V_BAT",
+            "ScaleFactor": 0.3333,
+            "MaxReading": 4,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 8,
+            "Name": "P1V2_BMC_AUX",
+            "ScaleFactor": 1,
+            "MaxReading": 1.6,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 9,
+            "Name": "P5V_AUX",
+            "ScaleFactor": 0.267,
+            "MaxReading": 7,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 10,
+            "Name": "PVCCIN_CPU0",
+            "ScaleFactor": 0.7505,
+            "MaxReading": 2.8,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 11,
+            "Name": "PVDDQ_EFGH",
+            "ScaleFactor": 1,
+            "MaxReading": 1.6,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 12,
+            "Name": "PVCCIN_CPU1",
+            "ScaleFactor": 0.7505,
+            "MaxReading": 2.8,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 13,
+            "Name": "PVDDQ_ABCD",
+            "ScaleFactor": 1,
+            "MaxReading": 1.6,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 14,
+            "Name": "PVDDQ_NPRT",
+            "ScaleFactor": 1,
+            "MaxReading": 1.6,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 15,
+            "Name": "PVDDQ_JKLM",
+            "ScaleFactor": 1,
+            "MaxReading": 1.6,
+            "MinReading": 0,
+            "PowerState": "Always",
+            "Type": "ADC"
+        },
+        {
+            "Index": 0,
+            "Name": "SYS FAN0",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
+            "Index": 2,
+            "Name": "SYS FAN1",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
+            "Index": 4,
+            "Name": "SYS FAN2",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
+            "Index": 6,
+            "Name": "SYS FAN3",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
+            "Index": 8,
+            "Name": "SYS FAN4",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
+            "Index": 10,
+            "Name": "SYS FAN5",
+            "MaxReading": 30000,
+            "MinReading": 2300,
+            "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2300
+                }
+            ],
+            "Type": "AspeedFan"
+        },
+        {
             "Address": "0x4e",
             "Bus": 7,
             "Name": "SYS Inlet",
-            "HysteresisVal": 3,
             "Type": "TMP75"
         },
         {
             "Address": "0x4f",
             "Bus": 7,
             "Name": "SYS Outlet",
-            "HysteresisVal": 3,
             "Type": "TMP75"
         }
     ],
