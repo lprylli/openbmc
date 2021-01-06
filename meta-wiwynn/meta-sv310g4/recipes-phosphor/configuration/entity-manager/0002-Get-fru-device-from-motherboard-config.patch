@@ -1,0 +1,460 @@
+From 1d97bcb73c0d2fac53b332c944b6b7c076e8d9b5 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Tue, 5 Jan 2021 17:02:59 +0800
+Subject: [PATCH] Get fru device from motherboard config
+
+---
+ meson.build           |   4 +
+ meson_options.txt     |   3 +
+ src/EntityManager.cpp |   1 -
+ src/FruDevice.cpp     | 242 +++++++++++++++++++++---------------------
+ src/meson.build       |   4 +-
+ 5 files changed, 130 insertions(+), 124 deletions(-)
+ mode change 100644 => 100755 meson.build
+ mode change 100644 => 100755 meson_options.txt
+ mode change 100644 => 100755 src/EntityManager.cpp
+ mode change 100644 => 100755 src/FruDevice.cpp
+ mode change 100644 => 100755 src/meson.build
+
+diff --git a/meson.build b/meson.build
+old mode 100644
+new mode 100755
+index d42be02..021551f
+--- a/meson.build
++++ b/meson.build
+@@ -143,6 +143,10 @@ foreach s : schemas
+     )
+ endforeach
+ 
++conf_data = configuration_data()
++conf_data.set_quoted('MOTHERBOARD_CONFIG_PATH', get_option('motherboard-config-path'))
++configure_file(output: 'config.h', configuration: conf_data)
++
+ subdir('service_files')
+ subdir('src')
+ 
+diff --git a/meson_options.txt b/meson_options.txt
+old mode 100644
+new mode 100755
+index 770451d..520ee45
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -7,3 +7,6 @@ option(
+ option(
+     'fru-device-resizefru', value : false, type: 'boolean', description: 'Allow FruDevice to resize FRU areas.',
+ )
++option(
++    'motherboard-config-path', value : '', type: 'string', description: 'Mother Board json config path',
++)
+diff --git a/src/EntityManager.cpp b/src/EntityManager.cpp
+old mode 100644
+new mode 100755
+index 14c8179..72aa4d2
+--- a/src/EntityManager.cpp
++++ b/src/EntityManager.cpp
+@@ -1243,7 +1243,6 @@ void PerformScan::run()
+         // check for poorly formatted fields, probe must be an array
+         if (findProbe == it->end())
+         {
+-            std::cerr << "configuration file missing probe:\n " << *it << "\n";
+             it = _configurations.erase(it);
+             continue;
+         }
+diff --git a/src/FruDevice.cpp b/src/FruDevice.cpp
+old mode 100644
+new mode 100755
+index 3e7cd1a..ff99026
+--- a/src/FruDevice.cpp
++++ b/src/FruDevice.cpp
+@@ -15,6 +15,8 @@
+ */
+ /// \file FruDevice.cpp
+ 
++#include "config.h"
++
+ #include "Utils.hpp"
+ 
+ #include <errno.h>
+@@ -57,7 +59,6 @@ extern "C"
+ 
+ namespace fs = std::filesystem;
+ static constexpr bool DEBUG = false;
+-static size_t UNKNOWN_BUS_OBJECT_COUNT = 0;
+ constexpr size_t MAX_FRU_SIZE = 512;
+ constexpr size_t MAX_EEPROM_PAGE_INDEX = 255;
+ constexpr size_t busTimeoutSeconds = 5;
+@@ -91,15 +92,24 @@ inline fruAreas operator++(fruAreas& x)
+                                      1);
+ }
+ 
++struct DeviceInfo
++{
++    uint32_t deviceID;
++    size_t size;
++    bool readOnly;
++};
++
+ static const std::vector<std::string> FRU_AREA_NAMES = {
+     "INTERNAL", "CHASSIS", "BOARD", "PRODUCT", "MULTIRECORD"};
+ const static std::regex NON_ASCII_REGEX("[^\x01-\x7f]");
+ using DeviceMap = boost::container::flat_map<int, std::vector<uint8_t>>;
++using DeviceInfoMap = std::unordered_map<std::string, struct DeviceInfo>;
+ using BusMap = boost::container::flat_map<int, std::shared_ptr<DeviceMap>>;
+ 
+ static std::set<size_t> busBlacklist;
+ struct FindDevicesWithCallback;
+ 
++static DeviceInfoMap deviceInfoMap;
+ static BusMap busMap;
+ 
+ static bool powerIsOn = false;
+@@ -753,69 +763,110 @@ void loadBlacklist(const char* path)
+     return;
+ }
+ 
+-static void FindI2CDevices(const std::vector<fs::path>& i2cBuses,
+-                           BusMap& busmap)
++static void getFruDevices(BusMap& busmap)
+ {
+-    for (auto& i2cBus : i2cBuses)
++    // Find fru device from motherboard config json.
++    std::ifstream motherboardConf(MOTHERBOARD_CONFIG_PATH);
++    if (motherboardConf.is_open() == false)
+     {
+-        int bus = busStrToInt(i2cBus);
++        std::cerr << "Failed to open file: " << MOTHERBOARD_CONFIG_PATH << "\n";
++        return;
++    }
++    auto data = nlohmann::json::parse(motherboardConf, nullptr, false);
++    if (data.is_discarded())
++    {
++        std::cerr << "Invalid json format: " << MOTHERBOARD_CONFIG_PATH << "\n";
++        return;
++    }
+ 
+-        if (bus < 0)
+-        {
+-            std::cerr << "Cannot translate " << i2cBus << " to int\n";
+-            continue;
+-        }
+-        if (busBlacklist.find(bus) != busBlacklist.end())
++    auto fruFind = data.find("Fru");
++    if (fruFind != data.end())
++    {
++        for (auto& fru : *fruFind)
+         {
+-            continue; // skip previously failed busses
+-        }
++            uint32_t index;
++            size_t size;
++            bool readOnly = false;
++            int bus;
++            std::string address;
++
++            auto indexFind = fru.find("Index");
++            if (indexFind != fru.end())
++            {
++                indexFind->get_to(index);
++            }
++            else
++            {
++                std::cerr << "Can't find Index in fru json\n";
++                continue;
++            }
+ 
+-        int rootBus = getRootBus(bus);
+-        if (busBlacklist.find(rootBus) != busBlacklist.end())
+-        {
+-            continue;
+-        }
++            auto sizeFind = fru.find("Size");
++            if (sizeFind != fru.end())
++            {
++                sizeFind->get_to(size);
++            }
++            else
++            {
++                std::cerr << "Can't find Size in fru json\n";
++                continue;
++            }
+ 
+-        auto file = open(i2cBus.c_str(), O_RDWR);
+-        if (file < 0)
+-        {
+-            std::cerr << "unable to open i2c device " << i2cBus.string()
+-                      << "\n";
+-            continue;
+-        }
+-        unsigned long funcs = 0;
++            auto busFind = fru.find("Bus");
++            if (busFind != fru.end())
++            {
++                busFind->get_to(bus);
++            }
++            else
++            {
++                std::cerr << "Can't find Bus in fru json\n";
++                continue;
++            }
+ 
+-        if (ioctl(file, I2C_FUNCS, &funcs) < 0)
+-        {
+-            std::cerr
+-                << "Error: Could not get the adapter functionality matrix bus "
+-                << bus << "\n";
+-            continue;
+-        }
+-        if (!(funcs & I2C_FUNC_SMBUS_READ_BYTE) ||
+-            !(I2C_FUNC_SMBUS_READ_I2C_BLOCK))
+-        {
+-            std::cerr << "Error: Can't use SMBus Receive Byte command bus "
+-                      << bus << "\n";
+-            continue;
+-        }
+-        auto& device = busmap[bus];
+-        device = std::make_shared<DeviceMap>();
++            auto addressFind = fru.find("Address");
++            if (addressFind != fru.end())
++            {
++                addressFind->get_to(address);
++            }
++            else
++            {
++                std::cerr << "Can't find Address in fru json\n";
++                continue;
++            }
+ 
+-        //  i2cdetect by default uses the range 0x03 to 0x77, as
+-        //  this is  what we have tested with, use this range. Could be
+-        //  changed in future.
+-        if (DEBUG)
+-        {
+-            std::cerr << "Scanning bus " << bus << "\n";
+-        }
++            auto readOnlyFind = fru.find("ReadOnly");
++            if (readOnlyFind != fru.end())
++            {
++                readOnlyFind->get_to(readOnly);
++            }
+ 
+-        // fd is closed in this function in case the bus locks up
+-        getBusFRUs(file, 0x03, 0x77, bus, device);
++            const int hexBase = 16;
++            int addressInt = std::stoi(address, nullptr, hexBase);
+ 
+-        if (DEBUG)
+-        {
+-            std::cerr << "Done scanning bus " << bus << "\n";
++            std::vector<uint8_t> device;
++            if (hasEepromFile(bus, addressInt) == true)
++            {
++                device = processEeprom(bus, addressInt);
++            }
++            else
++            {
++                continue;
++            }
++
++            // Appending 0xFF makes size is equal to fru size.
++            device.insert(device.end(), size - device.size(), 0xFF);
++
++            struct DeviceInfo deviceInfo = {index, size, readOnly};
++            if (busmap.find(bus) == busmap.end())
++            {
++                busmap[bus] = std::make_shared<DeviceMap>();
++            }
++            busmap[bus]->emplace(addressInt, device);
++
++            std::stringstream deviceBusAddr;
++            deviceBusAddr << bus << "-" << std::right << std::setfill('0')
++                          << std::setw(4) << std::hex << addressInt;
++            deviceInfoMap.emplace(deviceBusAddr.str(), deviceInfo);
+         }
+     }
+ }
+@@ -824,10 +875,8 @@ static void FindI2CDevices(const std::vector<fs::path>& i2cBuses,
+ struct FindDevicesWithCallback :
+     std::enable_shared_from_this<FindDevicesWithCallback>
+ {
+-    FindDevicesWithCallback(const std::vector<fs::path>& i2cBuses,
+-                            BusMap& busmap,
++    FindDevicesWithCallback(BusMap& busmap,
+                             std::function<void(void)>&& callback) :
+-        _i2cBuses(i2cBuses),
+         _busMap(busmap), _callback(std::move(callback))
+     {}
+     ~FindDevicesWithCallback()
+@@ -836,10 +885,9 @@ struct FindDevicesWithCallback :
+     }
+     void run()
+     {
+-        FindI2CDevices(_i2cBuses, _busMap);
++        getFruDevices(_busMap);
+     }
+ 
+-    const std::vector<fs::path>& _i2cBuses;
+     BusMap& _busMap;
+     std::function<void(void)> _callback;
+ };
+@@ -1176,15 +1224,16 @@ resCodes formatFRU(const std::vector<uint8_t>& fruBytes,
+ 
+ std::vector<uint8_t>& getFRUInfo(const uint8_t& bus, const uint8_t& address)
+ {
++    std::cerr<<"DDD: [getFRUInfo] bus: "<<bus<<" ,address: "<<address<<"\n";
+     auto deviceMap = busMap.find(bus);
+     if (deviceMap == busMap.end())
+     {
+-        throw std::invalid_argument("Invalid Bus.");
++        throw std::invalid_argument("DDD: Invalid Bus.");
+     }
+     auto device = deviceMap->second->find(address);
+     if (device == deviceMap->second->end())
+     {
+-        throw std::invalid_argument("Invalid Address.");
++        throw std::invalid_argument("DDD: Invalid Address.");
+     }
+     std::vector<uint8_t>& ret = device->second;
+ 
+@@ -1204,7 +1253,6 @@ void AddFRUObjectToDbus(
+     {
+         std::cerr << "failed to parse FRU for device at bus " << bus
+                   << " address " << address << "\n";
+-        return;
+     }
+     else if (res == resCodes::resWarn)
+     {
+@@ -1230,8 +1278,7 @@ void AddFRUObjectToDbus(
+     }
+     else
+     {
+-        productName = "UNKNOWN" + std::to_string(UNKNOWN_BUS_OBJECT_COUNT);
+-        UNKNOWN_BUS_OBJECT_COUNT++;
++        productName = std::to_string(bus) + "_" + std::to_string(address);
+     }
+ 
+     productName = "/xyz/openbmc_project/FruDevice/" + productName;
+@@ -1340,6 +1387,14 @@ void AddFRUObjectToDbus(
+     iface->register_property("BUS", bus);
+     iface->register_property("ADDRESS", address);
+ 
++    std::stringstream deviceBusAddr;
++    deviceBusAddr << bus << "-" << std::right << std::setfill('0')
++                  << std::setw(4) << std::hex << address;
++    auto deviceInfo = deviceInfoMap[deviceBusAddr.str()];
++    iface->register_property("INDEX", deviceInfo.deviceID);
++    iface->register_property("SIZE", deviceInfo.size);
++    iface->register_property("READONLY", deviceInfo.readOnly);
++
+     iface->initialize();
+ }
+ 
+@@ -1485,32 +1540,8 @@ void rescanOneBus(
+         std::shared_ptr<sdbusplus::asio::dbus_interface>>& dbusInterfaceMap,
+     bool dbusCall)
+ {
+-    for (auto& [pair, interface] : foundDevices)
+-    {
+-        if (pair.first == static_cast<size_t>(busNum))
+-        {
+-            objServer.remove_interface(interface);
+-            foundDevices.erase(pair);
+-        }
+-    }
+-
+-    fs::path busPath = fs::path("/dev/i2c-" + std::to_string(busNum));
+-    if (!fs::exists(busPath))
+-    {
+-        if (dbusCall)
+-        {
+-            std::cerr << "Unable to access i2c bus " << static_cast<int>(busNum)
+-                      << "\n";
+-            throw std::invalid_argument("Invalid Bus.");
+-        }
+-        return;
+-    }
+-
+-    std::vector<fs::path> i2cBuses;
+-    i2cBuses.emplace_back(busPath);
+-
+     auto scan = std::make_shared<FindDevicesWithCallback>(
+-        i2cBuses, busmap, [busNum, &busmap, &dbusInterfaceMap]() {
++        busmap, [busNum, &busmap, &dbusInterfaceMap]() {
+             for (auto& busIface : dbusInterfaceMap)
+             {
+                 if (busIface.first.first == static_cast<size_t>(busNum))
+@@ -1543,47 +1574,16 @@ void rescanBusses(
+ 
+     // setup an async wait in case we get flooded with requests
+     timer.async_wait([&](const boost::system::error_code&) {
+-        auto devDir = fs::path("/dev/");
+-        std::vector<fs::path> i2cBuses;
+-
+-        boost::container::flat_map<size_t, fs::path> busPaths;
+-        if (!getI2cDevicePaths(devDir, busPaths))
+-        {
+-            std::cerr << "unable to find i2c devices\n";
+-            return;
+-        }
+-
+-        for (auto busPath : busPaths)
+-        {
+-            i2cBuses.emplace_back(busPath.second);
+-        }
+-
+         busmap.clear();
+-        for (auto& [pair, interface] : foundDevices)
+-        {
+-            objServer.remove_interface(interface);
+-        }
+-        foundDevices.clear();
+-
+         auto scan =
+-            std::make_shared<FindDevicesWithCallback>(i2cBuses, busmap, [&]() {
++            std::make_shared<FindDevicesWithCallback>(busmap, [&]() {
+                 for (auto& busIface : dbusInterfaceMap)
+                 {
+                     objServer.remove_interface(busIface.second);
+                 }
+ 
+                 dbusInterfaceMap.clear();
+-                UNKNOWN_BUS_OBJECT_COUNT = 0;
+ 
+-                // todo, get this from a more sensable place
+-                std::vector<uint8_t> baseboardFRU;
+-                if (readBaseboardFRU(baseboardFRU))
+-                {
+-                    boost::container::flat_map<int, std::vector<uint8_t>>
+-                        baseboardDev;
+-                    baseboardDev.emplace(0, baseboardFRU);
+-                    busmap[0] = std::make_shared<DeviceMap>(baseboardDev);
+-                }
+                 for (auto& devicemap : busmap)
+                 {
+                     for (auto& device : *devicemap.second)
+diff --git a/src/meson.build b/src/meson.build
+old mode 100644
+new mode 100755
+index 4966ed2..17c17c4
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -13,7 +13,7 @@ executable(
+         valijson,
+     ],
+     implicit_include_directories: false,
+-    include_directories: '../include',
++    include_directories: ['..', '../include'],
+     install: true,
+ )
+ 
+@@ -36,7 +36,7 @@ if get_option('fru-device')
+             valijson,
+         ],
+         implicit_include_directories: false,
+-        include_directories: '../include',
++        include_directories: ['..', '../include'],
+         install: true,
+     )
+ endif
+-- 
+2.17.1
+

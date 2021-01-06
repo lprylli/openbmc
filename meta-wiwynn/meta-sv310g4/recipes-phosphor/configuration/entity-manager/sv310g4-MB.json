@@ -1,0 +1,41 @@
+{
+    "Exposes": [
+        {
+            "Address": "0x4e",
+            "Bus": 7,
+            "Name": "SYS Inlet",
+            "HysteresisVal": 3,
+            "Type": "TMP75"
+        },
+        {
+            "Address": "0x4f",
+            "Bus": 7,
+            "Name": "SYS Outlet",
+            "HysteresisVal": 3,
+            "Type": "TMP75"
+        }
+    ],
+    "Fru":[
+        {
+            "Name": "Main BD FRU",
+            "Size": 512,
+            "Index": 0,
+            "Bus": 7,
+            "Address": "0x54",
+            "ReadOnly": false
+        }
+    ],
+    "Name": "SV310G4 Main Board",
+    "Probe": [
+        "xyz.openbmc_project.FruDevice({'PRODUCT_PRODUCT_NAME' : '.*WW*'})",
+        "OR",
+        "xyz.openbmc_project.FruDevice({'PRODUCT_MANUFACTURER' : 'Wiwynn.*'})"
+    ],
+    "Type": "Board",
+    "xyz.openbmc_project.Inventory.Decorator.Asset": {
+        "Manufacturer": "$PRODUCT_MANUFACTURER",
+        "Model": "$PRODUCT_PRODUCT_NAME",
+        "PartNumber": "$PRODUCT_PART_NUMBER",
+        "SerialNumber": "$PRODUCT_SERIAL_NUMBER"
+    }    
+}
