@@ -907,6 +907,7 @@ ipmi::RspType<uint16_t> ipmiStorageAddSELEntry(
     uint8_t eventType, uint8_t eventData1, uint8_t eventData2,
     uint8_t eventData3)
 {
+/*
     // Filter Memory Correctable Ecc Event
     if ((generatorID == genIdBios) && (sensorType == sensorTypeMemory) &&
         (eventType == eventTypeSpecific) &&
@@ -932,7 +933,7 @@ ipmi::RspType<uint16_t> ipmiStorageAddSELEntry(
         uint16_t resID = 0xFFFF;
         return ipmi::responseSuccess(resID);
     }
-
+*/
     // Per the IPMI spec, need to cancel the reservation when a SEL entry is
     // added
     cancelSELReservation();
@@ -1033,17 +1034,21 @@ ipmi::RspType<uint8_t> ipmiStorageClearSEL(uint16_t reservationID,
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     // Add SEL clear SEL entry
-    uint16_t genId = 0x20;
-    std::vector<uint8_t> eventData(3, 0xFF);
-    bool assert = true;
-    std::string dbusPath = "/xyz/openbmc_project/sensors/sel_log/EventLogging";
-
-    // 0x2 - Log Area Reset/Cleared
-    eventData[0] = 0x2;
+    std::vector<uint8_t> eventData(9, 0xFF);
+    const uint8_t recordType = 0x02;
+    eventData.at(0) = 0x20;
+    eventData.at(1) = 0x00;
+    eventData.at(2) = 0x04;
+    eventData.at(3) = 0x10;  // sensorType;
+    eventData.at(4) = 0x00;  // sensorNum
+    eventData.at(5) = 0x6f;  // eventType;
+    eventData.at(6) = 0x02;  // Log Area Reset/Cleared
+    eventData.at(7) = 0xFF;
+    eventData.at(8) = 0xFF;
 
     sdbusplus::message::message addSEL = dbus->new_method_call(
-        ipmiSelService, ipmiSelPath, ipmiSelInterface, "IpmiSelAdd");
-    addSEL.append(ipmiSelAddMessage, dbusPath, eventData, assert, genId);
+        ipmiSelService, ipmiSelPath, ipmiSelInterface, "IpmiSelAddOem");
+    addSEL.append(ipmiSelAddMessage, eventData, recordType);
 
     try
     {
