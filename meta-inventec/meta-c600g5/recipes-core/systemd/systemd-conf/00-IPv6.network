@@ -1,0 +1,12 @@
+[Match]
+Name=eth*
+Name=en*
+
+[Network]
+DHCP=ipv4
+LinkLocalAddressing=no
+IPv6AcceptRA=no
+
+[DHCP]
+RouteMetric=10
+ClientIdentifier=mac

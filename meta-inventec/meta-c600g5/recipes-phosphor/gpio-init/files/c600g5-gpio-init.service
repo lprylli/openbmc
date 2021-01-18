@@ -1,0 +1,10 @@
+[Unit]
+Description=C600G5 GPIO Initialization
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/c600g5-gpio-init.sh
+SyslogIdentifier=c600g5-gpio-init
+
+[Install]
+WantedBy=sysinit.target

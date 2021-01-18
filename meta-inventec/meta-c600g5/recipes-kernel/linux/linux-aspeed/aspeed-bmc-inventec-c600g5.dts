@@ -1,0 +1,491 @@
+// SPDX-License-Identifier: GPL-2.0+
+// Copyright (c) 2017 Intel Corporation
+/dts-v1/;
+
+#include "aspeed-g5.dtsi"
+#include <dt-bindings/gpio/aspeed-gpio.h>
+
+/ {
+	model = "C600G5 BMC";
+	compatible = "inventec,c600g5-bmc", "aspeed,ast2500";
+	aliases {
+		serial0 = &uart1;
+		serial4 = &uart5;
+	};
+	chosen {
+		stdout-path = &uart5;
+		bootargs = "console=ttyS4,115200 earlyprintk";
+	};
+
+	memory@80000000 {
+		reg = <0x80000000 0x20000000>;   //DRAM = 512 M 
+	};
+	
+	reserved-memory{ 
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		flash_memory: region@98000000 {
+            		no-map;
+            		reg = <0x98000000 0x04000000>; /* 64M */
+        	};
+		gfx_memory: framebuffer {
+			size = <0x01000000>;   //VGA RAM = 16M 
+			alignment = <0x01000000>;
+			compatible = "shared-dma-pool";
+			reusable;
+		};
+	};
+
+	iio-hwmon {
+		compatible = "iio-hwmon";
+		io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>,
+			<&adc 4>, <&adc 5>, <&adc 6>, <&adc 7>,
+			<&adc 8>, <&adc 9>, <&adc 10>, <&adc 11>,
+			<&adc 12>, <&adc 13>, <&adc 14>, <&adc 15>;
+	};
+};
+
+&video {
+       status = "okay";
+       memory-region = <&gfx_memory>;
+};
+
+&vhub {
+	status = "okay";
+};
+
+
+&fmc {
+	status = "okay";
+	flash@0 {
+		status = "okay";
+		m25p,fast-read;
+		label = "bmc";
+
+        partitions {
+            compatible = "fixed-partitions";
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            u-boot@0 {
+                    reg = <0x0 0x60000>; // 384KB
+                    label = "u-boot";
+            };
+
+            u-boot-env@60000 {
+                    reg = <0x60000 0x20000>; // 128KB
+                    label = "u-boot-env";
+            };
+
+            kernel@80000 {
+                    reg = <0x80000 0x440000>; // 4.25MB
+                    label = "kernel";
+            };
+            rofs@4c0000 {
+                    reg = <0x4c0000 0x2b40000>; // 43.25MB
+                    label = "rofs";
+            };
+
+            rwfs@3000000 {
+                    reg = <0x3000000 0x1000000>; // 16MB
+                    label = "rwfs";
+            };
+        };
+	};
+};
+
+&spi1 {
+	status = "okay";
+	flash@0 {
+		status = "okay";
+		m25p,fast-read;
+		label = "pnor";
+	};
+};
+
+&vuart {
+	status = "okay";
+};
+
+&uart1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_txd1_default
+		     &pinctrl_rxd1_default>;
+};
+
+&uart3 {
+	status = "okay";
+};
+
+&uart5 {
+	// BMC Console
+	status = "okay";
+};
+
+&mac0 {
+	status = "okay";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii1_default &pinctrl_mdio1_default>;
+};
+
+&mac1 {
+	status = "disabled";
+
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rgmii2_default &pinctrl_mdio2_default>;
+};
+
+&adc {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+    
+	therm_sense1: emc1412@7c {
+		compatible = "microchip,emc1412";
+		reg = <0x7c>;
+	};
+
+	bmc_fru: 24c512_fru@53 {
+		compatible = "microchip,24c512", "atmel,24c512";
+		reg = <0x53>;
+		pagesize = <128>;
+	};
+
+	therm_sense2: emc1412@4c {
+		compatible = "microchip,emc1412";
+		reg = <0x4c>;
+	};
+
+	therm_sense3: emc1412@4d {
+		compatible = "microchip,emc1412";
+		reg = <0x4d>;
+	};
+};
+
+&i2c3 {
+	status = "okay";
+
+	p12v_fan_monit: ina220@42 {
+		compatible = "ti,ina220";
+		reg = <0x42>;
+	};
+
+	p12v_hdd_monit: ina220@44 {
+		compatible = "ti,ina220";
+		reg = <0x44>;
+	};
+};
+
+&i2c4 {
+	status = "okay";
+
+	// PSU
+	psu0:psu0@58 {
+		compatible = "pmbus";
+		reg = <0x58>;
+	};
+
+	psu1:psu1@59 {
+		compatible = "pmbus";
+		reg = <0x59>;
+	};
+};
+
+&i2c5 {
+	status = "okay";
+
+	/* 0: PE U2 Slot 1,
+	 *    PE U2 Slot 2,
+	 *    PE U2 Slot 3,
+	 *    PE U2 Slot 4,
+	 *    PE E1S Slot 1,
+	 *    PE E1S Slot 2,
+	 *    PE E1S Slot 3,
+	 *    PE E1S Slot 4
+	 */
+	i2c-switch@70 {
+		compatible = "nxp,pca9548";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x70>;
+		i2c-mux-idle-disconnect;
+
+		i2c_pe_u2_slot_1: i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+		};
+
+		i2c_pe_u2_slot_2: i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+		};
+
+		i2c_pe_u2_slot_3: i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+		};
+
+		i2c_pe_u2_slot_4: i2c@3 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <3>;
+		};
+
+		i2c_pe_e1s_slot_1: i2c@4 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <4>;
+		};
+
+		i2c_pe_e1s_slot_2: i2c@5 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <5>;
+		};
+
+		i2c_pe_e1s_slot_3: i2c@6 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <6>;
+		};
+
+		i2c_pe_e1s_slot_4: i2c@7 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <7>;
+		};
+	};
+};
+
+&i2c6 {
+	status = "okay";
+};
+
+&i2c7 {
+	status = "okay";
+};
+
+&i2c8 {
+	status = "okay";
+
+	/* 0: MLB CPLD,
+	 * 1: PE CPU 1A 1B,
+	 * 2: PE CPU 1C 1D,
+	 * 6: M2 0,
+	 * 7: M2 1
+	 */
+	i2c-switch@70 {
+		compatible = "nxp,pca9548";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x70>;
+		i2c-mux-idle-disconnect;
+
+		i2c_mlb_cpld: i2c@0 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <0>;
+		};
+
+		i2c_pe_cpu_1a_1b: i2c@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <1>;
+		};
+
+		i2c_pe_cpu_1c_1d: i2c@2 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <2>;
+		};
+
+		i2c_m2_0: i2c@6 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <6>;
+		};
+
+		i2c_m2_1: i2c@7 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			reg = <7>;
+		};
+	};
+};
+
+&i2c9 {
+	status = "okay";
+};
+
+&i2c10 {
+	status = "okay";
+};
+
+&i2c11 {
+	status = "okay";
+};
+
+&i2c12 {
+	status = "okay";
+};
+
+&i2c13 {
+	status = "okay";
+};
+
+	
+&pwm_tacho {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pwm0_default
+	             &pinctrl_pwm1_default
+		     &pinctrl_pwm2_default
+		     &pinctrl_pwm3_default
+		     &pinctrl_pwm4_default
+		     &pinctrl_pwm5_default>;
+	fan@0 {
+		reg = <0x00>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x00>;
+	};
+
+	fan@1 {
+		reg = <0x00>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x01>;
+	};
+
+	fan@2 {
+		reg = <0x01>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x02>;
+	};
+
+	fan@3 {
+		reg = <0x01>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x03>;
+	};
+
+	fan@4 {
+		reg = <0x02>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x04>;
+	};
+
+	fan@5 {
+		reg = <0x02>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x05>;
+	};
+
+	fan@6 {
+		reg = <0x03>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x06>;
+	};
+
+	fan@7 {
+		reg = <0x03>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x07>;
+	};
+
+	fan@8 {
+		reg = <0x04>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x08>;
+	};
+
+	fan@9 {
+		reg = <0x04>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x09>;
+	};
+
+	fan@10 {
+		reg = <0x05>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x0a>;
+	};
+
+	fan@11 {
+		reg = <0x05>;
+		aspeed,fan-tach-ch = /bits/ 8 <0x0b>;
+	};
+};
+
+&lpc_ctrl {
+    status = "okay";
+    memory-region = <&flash_memory>;
+    flash = <&spi1>;
+};
+
+&kcs1 {
+	// BMC KCS channel 1
+	status = "okay";
+	aspeed,lpc-io-reg = <0xca0>;
+};
+
+&kcs2 {
+	// BMC KCS channel 2
+	status = "okay";
+	aspeed,lpc-io-reg = <0xca8>;
+};
+
+&kcs3 {
+	// BMC KCS channel 3
+	status = "okay";
+	aspeed,lpc-io-reg = <0xca2>;
+};
+
+&lpc_snoop {
+    status = "okay";
+    snoop-ports = <0x80>;
+};
+
+&peci0 {
+    status = "okay";
+	msg-timing = <5>;
+	addr-timing = <5>;
+};
+
+&gpio {
+   status = "okay";
+   gpio-line-names =
+   /*A0-A7*/   "","","","","","","","",
+   /*B0-B7*/   "","","","","","","","",
+   /*C0-C7*/   "","","","","","","","",
+   /*D0-D7*/   "","","","","","","","",
+   /*E0-E7*/   "","","","","","","","",
+   /*F0-F7*/   "","","","","","","","",
+   /*G0-G7*/   "","","","","","","","",
+   /*H0-H7*/   "","","","","","","","",
+   /*I0-I7*/   "","","","","","","","",
+   /*J0-J7*/   "","","","","","","","",
+   /*K0-K7*/   "","","","","","","","",
+   /*L0-L7*/   "","","","","","","","",
+   /*M0-M7*/   "","","","","","","","",
+   /*N0-N7*/   "","","","","","","","",
+   /*O0-O7*/   "","","","","","","","",
+   /*P0-P7*/   "","","","","","","","",
+   /*Q0-Q7*/   "","","","","","","","",
+   /*R0-R7*/   "","","","","","","","",
+   /*S0-S7*/   "","PS_PWROK","","","","","","",
+   /*T0-T7*/   "","","","","","","","",
+   /*U0-U7*/   "","","","","","","","",
+   /*V0-V7*/   "","","","","","","","",
+   /*W0-W7*/   "","","","","","","","",
+   /*X0-X7*/   "","","","","","","","",
+   /*Y0-Y7*/   "","","","","","","","",
+   /*Z0-Z7*/   "","","","","","","","",
+   /*AA0-AA7*/ "","","","","","","","",
+   /*AB0-AB7*/ "","","","","","","","",
+   /*AC0-AC7*/ "","","","","","","","";
+};
