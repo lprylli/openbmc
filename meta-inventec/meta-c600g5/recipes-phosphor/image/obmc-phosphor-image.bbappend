@@ -18,5 +18,7 @@ OBMC_IMAGE_EXTRA_INSTALL_append_c600g5 +=   " c600g5-gpio-init \
                                               phosphor-host-postd \
                                               srvcfg-manager \
                                               ipmitool \
+                                              xinetd \
+                                              netkit-telnet \
                                             "
 
