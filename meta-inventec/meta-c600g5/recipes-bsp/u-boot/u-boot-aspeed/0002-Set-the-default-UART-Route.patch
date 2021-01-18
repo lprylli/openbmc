@@ -1,0 +1,38 @@
+From a00f2219835457d4326761ca35a1331429ff9a99 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Chang=2EJamesWC=20=E5=BC=B5=E6=96=87=E9=87=91=20TAO?=
+ <chang.jameswc@inventec.com>
+Date: Thu, 7 Jan 2021 08:54:42 +0800
+Subject: [PATCH] Set the default UART Route
+
+---
+ board/aspeed/ast-g5/ast-g5.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/board/aspeed/ast-g5/ast-g5.c b/board/aspeed/ast-g5/ast-g5.c
+index d8cb994c91..1c3fab0669 100644
+--- a/board/aspeed/ast-g5/ast-g5.c
++++ b/board/aspeed/ast-g5/ast-g5.c
+@@ -148,11 +148,23 @@ void Set_Default_Fan_PWM(u8 pwm_value)
+     }
+ }
+ 
++/*--------------------------------------------------------------------
++ * @fn Set_Default_UART_Route
++ * @brief Set the default UART Route
++ * 
++ *--------------------------------------------------------------------*/
++void Set_Default_UART_Route(void)
++{
++    puts("Set the default UART Route(Route UART1 to UART3 for SOL)...\n");
++    *(volatile ulong *)(0x1E78909C) = 0x1400000 ;    //bits [24:22] 101b : Route UART1 to UART3 
++}
++
+ int board_init(void)
+ {
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+ 	gd->flags = 0;
+     Set_Default_Fan_PWM(DEFAULT_PWM);
++    Set_Default_UART_Route();
+ 
+ 	return 0;
+ }
