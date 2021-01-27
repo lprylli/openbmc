@@ -145,7 +145,7 @@
             "Type": "ADC"
         },
         {
-            "Index": 0,
+            "Index": 1,
             "Name": "SYS FAN0",
             "MaxReading": 30000,
             "MinReading": 2300,
@@ -161,7 +161,7 @@
             "Type": "AspeedFan"
         },
         {
-            "Index": 2,
+            "Index": 3,
             "Name": "SYS FAN1",
             "MaxReading": 30000,
             "MinReading": 2300,
@@ -177,7 +177,7 @@
             "Type": "AspeedFan"
         },
         {
-            "Index": 4,
+            "Index": 5,
             "Name": "SYS FAN2",
             "MaxReading": 30000,
             "MinReading": 2300,
@@ -193,7 +193,7 @@
             "Type": "AspeedFan"
         },
         {
-            "Index": 6,
+            "Index": 7,
             "Name": "SYS FAN3",
             "MaxReading": 30000,
             "MinReading": 2300,
@@ -209,7 +209,7 @@
             "Type": "AspeedFan"
         },
         {
-            "Index": 8,
+            "Index": 9,
             "Name": "SYS FAN4",
             "MaxReading": 30000,
             "MinReading": 2300,
@@ -225,7 +225,7 @@
             "Type": "AspeedFan"
         },
         {
-            "Index": 10,
+            "Index": 11,
             "Name": "SYS FAN5",
             "MaxReading": 30000,
             "MinReading": 2300,

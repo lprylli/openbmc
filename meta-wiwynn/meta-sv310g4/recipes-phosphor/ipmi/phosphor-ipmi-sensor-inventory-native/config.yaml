@@ -58,7 +58,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN0
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -85,7 +85,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN1
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -112,7 +112,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN2
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -139,7 +139,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN3
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -166,7 +166,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN4
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -193,7 +193,7 @@
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN5
-    multiplierM: 0x75
+    multiplierM: 0x76
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
