@@ -1,0 +1,124 @@
+From 199091b309f9d4c8c54a026507963e5e26bf4d8c Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Thu, 28 Jan 2021 07:59:51 +0800
+Subject: [PATCH] Revise the judgements of host power on and BIOS code complete
+
+---
+ include/Utils.hpp | 18 ++++++++----------
+ src/Utils.cpp     | 23 ++++++++++++-----------
+ 2 files changed, 20 insertions(+), 21 deletions(-)
+
+diff --git a/include/Utils.hpp b/include/Utils.hpp
+index c164187..32b0d84 100644
+--- a/include/Utils.hpp
++++ b/include/Utils.hpp
+@@ -92,19 +92,17 @@ constexpr const char* set = "Set";
+ 
+ namespace power
+ {
+-const static constexpr char* busname = "xyz.openbmc_project.State.Host";
+-const static constexpr char* interface = "xyz.openbmc_project.State.Host";
+-const static constexpr char* path = "/xyz/openbmc_project/state/host0";
+-const static constexpr char* property = "CurrentHostState";
++const static constexpr char* busname = "org.openbmc.control.Power";
++const static constexpr char* interface = "org.openbmc.control.Power";
++const static constexpr char* path = "/org/openbmc/control/power0";
++const static constexpr char* property = "pgood";
+ } // namespace power
+ namespace post
+ {
+-const static constexpr char* busname =
+-    "xyz.openbmc_project.State.OperatingSystem";
+-const static constexpr char* interface =
+-    "xyz.openbmc_project.State.OperatingSystem.Status";
+-const static constexpr char* path = "/xyz/openbmc_project/state/os";
+-const static constexpr char* property = "OperatingSystemState";
++const static constexpr char* busname = "org.openbmc.control.Power";
++const static constexpr char* interface = "org.openbmc.control.PostComplete";
++const static constexpr char* path = "/org/openbmc/control/power0";
++const static constexpr char* property = "postcomplete";
+ } // namespace post
+ 
+ namespace association
+diff --git a/src/Utils.cpp b/src/Utils.cpp
+index 899ec98..83b8e48 100644
+--- a/src/Utils.cpp
++++ b/src/Utils.cpp
+@@ -230,7 +230,7 @@ static void
+ {
+     conn->async_method_call(
+         [conn, retries](boost::system::error_code ec,
+-                        const std::variant<std::string>& state) {
++                        const std::variant<int>& state) {
+             if (ec)
+             {
+                 if (retries)
+@@ -251,8 +251,8 @@ static void
+                           << "\n";
+                 return;
+             }
+-            powerStatusOn =
+-                boost::ends_with(std::get<std::string>(state), "Running");
++            int pGoodStatus = std::get<int>(state);
++            powerStatusOn = (pGoodStatus == 1) ? true : false;
+         },
+         power::busname, power::path, properties::interface, properties::get,
+         power::interface, power::property);
+@@ -264,7 +264,7 @@ static void
+ {
+     conn->async_method_call(
+         [conn, retries](boost::system::error_code ec,
+-                        const std::variant<std::string>& state) {
++                        const std::variant<int>& state) {
+             if (ec)
+             {
+                 if (retries)
+@@ -284,7 +284,8 @@ static void
+                           << "\n";
+                 return;
+             }
+-            biosHasPost = std::get<std::string>(state) != "Inactive";
++            int postcompleteStatus = std::get<int>(state);
++            biosHasPost = (postcompleteStatus == 1) ? false : true;
+         },
+         post::busname, post::path, properties::interface, properties::get,
+         post::interface, post::property);
+@@ -307,14 +308,14 @@ void setupPowerMatch(const std::shared_ptr<sdbusplus::asio::connection>& conn)
+             std::string(power::interface) + "'",
+         [](sdbusplus::message::message& message) {
+             std::string objectName;
+-            boost::container::flat_map<std::string, std::variant<std::string>>
++            boost::container::flat_map<std::string, std::variant<int>>
+                 values;
+             message.read(objectName, values);
+             auto findState = values.find(power::property);
+             if (findState != values.end())
+             {
+-                bool on = boost::ends_with(
+-                    std::get<std::string>(findState->second), "Running");
++                int pGoodStatus = std::get<int>(findState->second);
++                bool on = (pGoodStatus == 1) ? true : false;
+                 if (!on)
+                 {
+                     timer.cancel();
+@@ -345,14 +346,14 @@ void setupPowerMatch(const std::shared_ptr<sdbusplus::asio::connection>& conn)
+             std::string(post::interface) + "'",
+         [](sdbusplus::message::message& message) {
+             std::string objectName;
+-            boost::container::flat_map<std::string, std::variant<std::string>>
++            boost::container::flat_map<std::string, std::variant<int>>
+                 values;
+             message.read(objectName, values);
+             auto findState = values.find(post::property);
+             if (findState != values.end())
+             {
+-                biosHasPost =
+-                    std::get<std::string>(findState->second) != "Inactive";
++                int postcompleteStatus = std::get<int>(findState->second);
++                biosHasPost = (postcompleteStatus == 1) ? false : true;
+             }
+         });
+ 
+-- 
+2.17.1
+

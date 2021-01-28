@@ -6,7 +6,7 @@
             "ScaleFactor": 0.1124,
             "MaxReading": 14,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -15,7 +15,7 @@
             "ScaleFactor": 0.4107,
             "MaxReading": 5,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -96,7 +96,7 @@
             "ScaleFactor": 0.7505,
             "MaxReading": 2.8,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -105,7 +105,7 @@
             "ScaleFactor": 1,
             "MaxReading": 1.6,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -114,7 +114,7 @@
             "ScaleFactor": 0.7505,
             "MaxReading": 2.8,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -123,7 +123,7 @@
             "ScaleFactor": 1,
             "MaxReading": 1.6,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -132,7 +132,7 @@
             "ScaleFactor": 1,
             "MaxReading": 1.6,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -141,7 +141,7 @@
             "ScaleFactor": 1,
             "MaxReading": 1.6,
             "MinReading": 0,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Type": "ADC"
         },
         {
@@ -149,7 +149,7 @@
             "Name": "SYS FAN0",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
@@ -165,7 +165,7 @@
             "Name": "SYS FAN1",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
@@ -181,7 +181,7 @@
             "Name": "SYS FAN2",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
@@ -197,7 +197,7 @@
             "Name": "SYS FAN3",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
@@ -213,7 +213,7 @@
             "Name": "SYS FAN4",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
@@ -229,7 +229,7 @@
             "Name": "SYS FAN5",
             "MaxReading": 30000,
             "MinReading": 2300,
-            "PowerState": "Always",
+            "PowerState": "On",
             "Thresholds": [
                 {
                     "Direction": "less than",
