@@ -214,6 +214,87 @@
             # Sensor type specific offset
             0xFF:
               type: double
+0x5d: # Fan Voltage
+    entityID: 0x07
+    entityInstance: 0x1D
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/Fan_Voltage
+    multiplierM: 0x48
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -3
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: Fan Voltage
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x5e: # Fan Power
+    entityID: 0x07
+    entityInstance: 0x1E
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/Fan_Power
+    multiplierM: 0x3a
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: Fan Power
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x5f: # Fan Current
+    entityID: 0x07
+    entityInstance: 0x1F
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/Fan_Current
+    multiplierM: 0x33
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -3
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: Fan Current
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x6c: # P12V
     entityID: 0x07
     entityInstance: 0x6c

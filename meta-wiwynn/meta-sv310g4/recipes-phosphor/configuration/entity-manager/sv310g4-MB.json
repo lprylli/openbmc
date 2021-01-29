@@ -251,6 +251,36 @@
             "Bus": 7,
             "Name": "SYS Outlet",
             "Type": "TMP75"
+        },
+        {
+            "Address": "0x40",
+            "Bus": 7,
+            "Name": "Fan Power",
+            "Labels": ["in1", "power1", "curr1"],
+            "in1_Name": "Fan Voltage",
+            "in1_Max": 18,
+            "in1_Min": 0,
+            "power1_Name": "Fan Power",
+            "power1_Max": 150,
+            "power1_Min": 0,
+            "curr1_Name": "Fan Current",
+            "curr1_Max": 13,
+            "curr1_Min": 0,
+            "PowerStates": [
+                {
+                    "Label": "in1",
+                    "PowerState": "On"
+                },
+                {
+                    "Label": "power1",
+                    "PowerState": "On"
+                },
+                {
+                    "Label": "curr1",
+                    "PowerState": "On"
+                }
+            ],
+            "Type": "INA219"
         }
     ],
     "Fru":[

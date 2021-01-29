@@ -182,6 +182,12 @@
 		reg = <0x54>;
 		pagesize = <32>;
 	};
+	/* Fan Power */
+	ina219@40 {
+		compatible = "ti,ina219";
+		reg = <0x40>;
+		shunt-resistor = <2000>;
+	};
 };
 
 &i2c8 {
