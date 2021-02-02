@@ -165,6 +165,12 @@
 
 &i2c4 {
 	status = "okay";
+	multi-master =<1>;
+	ipmb@10 {
+		compatible = "ipmb-dev";
+		reg = <0x10>;
+		i2c-protocol;
+	};
 };
 
 &i2c5 {

@@ -253,6 +253,21 @@
             "Type": "TMP75"
         },
         {
+            "Address": "0x8",
+            "Class": "METemp",
+            "Name": "PCH Temp",
+            "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 84
+                }
+            ],
+            "Type": "IpmbSensor"
+        },
+        {
             "Address": "0x40",
             "Bus": 7,
             "Name": "Fan Power",

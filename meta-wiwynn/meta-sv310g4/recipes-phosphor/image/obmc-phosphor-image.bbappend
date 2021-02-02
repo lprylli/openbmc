@@ -16,5 +16,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              sv310g4-gpio-monitor-register \
                                              wiwynn-interrupt-dbus-register \
                                              button-handler \
+                                             phosphor-ipmi-ipmb \
                                            "
 
