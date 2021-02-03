@@ -253,6 +253,12 @@
             "Type": "TMP75"
         },
         {
+            "Address": "0x49",
+            "Bus": 8,
+            "Name": "FPB Temp",
+            "Type": "TMP75"
+        },
+        {
             "Address": "0x8",
             "Class": "METemp",
             "Name": "PCH Temp",

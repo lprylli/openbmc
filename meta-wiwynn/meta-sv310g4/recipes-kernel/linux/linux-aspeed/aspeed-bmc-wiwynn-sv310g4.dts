@@ -188,16 +188,34 @@
 		reg = <0x54>;
 		pagesize = <32>;
 	};
+
 	/* Fan Power */
 	ina219@40 {
 		compatible = "ti,ina219";
 		reg = <0x40>;
 		shunt-resistor = <2000>;
 	};
+
+	/* SYS Inlet */
+	lm75@4e {
+		compatible = "ti,lm75";
+		reg = <0x4e>;
+	};
+
+	/* SYS Outlet */
+	lm75@4f {
+		compatible = "ti,lm75";
+		reg = <0x4f>;
+	};
 };
 
 &i2c8 {
 	status = "okay";
+	/* FP Temp */
+	lm75@49 {
+		compatible = "ti,lm75";
+		reg = <0x49>;
+	};
 };
 
 &i2c9 {
