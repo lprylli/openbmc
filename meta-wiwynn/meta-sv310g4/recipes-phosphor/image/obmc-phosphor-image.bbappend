@@ -17,5 +17,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              wiwynn-interrupt-dbus-register \
                                              button-handler \
                                              phosphor-ipmi-ipmb \
+                                             srvcfg-manager \
                                            "
 

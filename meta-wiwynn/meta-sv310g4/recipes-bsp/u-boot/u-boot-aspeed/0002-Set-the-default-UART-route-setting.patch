@@ -1,0 +1,43 @@
+From f61a6980544043d02b4024b5555ebff0d9bbfdf5 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Wed, 3 Feb 2021 17:09:49 +0800
+Subject: [PATCH] Set the default UART route setting - UART1 <-> UART3 - UART2
+ <-> IO1
+
+---
+ board/aspeed/ast-g5/ast-g5.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/board/aspeed/ast-g5/ast-g5.c b/board/aspeed/ast-g5/ast-g5.c
+index dcd6d9f704..664566c67f 100755
+--- a/board/aspeed/ast-g5/ast-g5.c
++++ b/board/aspeed/ast-g5/ast-g5.c
+@@ -43,6 +43,17 @@ void Clear_HW_Strap_Bit19()
+ 	*((volatile ulong *) reg_addr) = temp;
+ }
+ 
++/*--------------------------------------------------------------------
++ * @fn Set_Default_UART_Route
++ * @brief Set the default UART Route
++ *
++ *--------------------------------------------------------------------*/
++void Set_Default_UART_Route(void)
++{
++    puts("Set the default UART Route(UART1 <-> UART3)...\n");
++    *(volatile ulong *)(0x1E78909C) = 0x15D0001;
++}
++
+ int board_init(void)
+ {
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+@@ -50,6 +61,7 @@ int board_init(void)
+ 
+ 	Unlock_SCU();
+ 	Clear_HW_Strap_Bit19();
++	Set_Default_UART_Route();
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+
