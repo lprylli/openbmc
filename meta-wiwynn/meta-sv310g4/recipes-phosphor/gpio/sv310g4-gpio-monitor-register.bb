@@ -11,8 +11,12 @@ RDEPENDS_${PN} += "virtual/obmc-gpio-monitor bash"
 
 SRC_URI += "file://SetPowerGoodPropertyOff.service \
             file://SetPowerGoodPropertyOn.service \
+            file://SetPostCompleteAssert.service \
+            file://SetPostCompleteDeassert.service \
            "
 
 
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOff.service"
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOn.service"
+SYSTEMD_SERVICE_${PN} += "SetPostCompleteAssert.service"
+SYSTEMD_SERVICE_${PN} += "SetPostCompleteDeassert.service"

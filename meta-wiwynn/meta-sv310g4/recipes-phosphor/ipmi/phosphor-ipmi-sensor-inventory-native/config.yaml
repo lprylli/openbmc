@@ -799,3 +799,21 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
+0xfa: # End of POST
+  entityID: 0x22
+  entityInstance: 0x00
+  sensorType: 0x12
+  sensorReadingType: 0x6f
+  path: /xyz/openbmc_project/sensors/discrete/End_of_Post
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingAssertion
+  sensorName: End of Post
+  sdrType: SdrType::sdr_event_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: uint32_t

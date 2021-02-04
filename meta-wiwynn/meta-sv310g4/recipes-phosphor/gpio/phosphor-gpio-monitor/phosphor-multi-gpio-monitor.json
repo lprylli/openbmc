@@ -14,5 +14,21 @@
             ]
         },
         "Continue": true
+    },
+    {
+        "Name": "PostComplete",
+        "GpioNum": 215,
+        "ChipId": "gpiochip0",
+        "EventMon": "BOTH",
+        "Target":
+        {
+            "FALLING": [
+                "SetPostCompleteAssert.service"
+            ],
+            "RISING": [
+                "SetPostCompleteDeassert.service"
+            ]
+        },
+        "Continue": true
     }
 ]

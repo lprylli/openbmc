@@ -8,4 +8,4 @@ ExecStart=/usr/bin/busctl set-property "org.openbmc.control.Power" "/org/openbmc
 ExecStart=/usr/bin/busctl set-property "xyz.openbmc_project.State.Chassis" "/xyz/openbmc_project/state/chassis0" "xyz.openbmc_project.State.Chassis" "CurrentPowerState" s "xyz.openbmc_project.State.Chassis.PowerState.On"
 ExecStart=/usr/bin/busctl set-property "xyz.openbmc_project.State.Host" "/xyz/openbmc_project/state/host0" "xyz.openbmc_project.State.Host" "RequestedHostTransition" s "xyz.openbmc_project.State.Host.Transition.On"
 ExecStart=/usr/bin/busctl call "xyz.openbmc_project.Logging.IPMI" "/xyz/openbmc_project/Logging/IPMI" "xyz.openbmc_project.Logging.IPMI" "IpmiSelAddOem" sayy "ACPI_Power_State" 9 0x20 0x00 0x04 0x22 0xd4 0x6f 0x00 0xff 0xff 0x02
-ExecStopPost=/usr/bin/busctl set-property xyz.openbmc_project.GpioMonitor /xyz/openbmc_project/gpio/status xyz.openbmc_project.GpioStatus 39 s "Idle"
+# ExecStopPost=/usr/bin/busctl set-property xyz.openbmc_project.GpioMonitor /xyz/openbmc_project/gpio/status xyz.openbmc_project.GpioStatus 39 s "Idle"
