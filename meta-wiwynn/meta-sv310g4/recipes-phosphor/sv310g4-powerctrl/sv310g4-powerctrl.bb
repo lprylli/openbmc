@@ -10,8 +10,12 @@ S = "${WORKDIR}"
 SRC_URI = "file://init_once.sh \
            file://poweroff.sh \
            file://poweron.sh \
+           file://powerreset.sh \
+           file://powersoft.sh \
            file://host-poweroff.service \
            file://host-poweron.service \
+           file://host-powerreset.service \
+           file://host-powersoft.service \
           "
 
 DEPENDS = "systemd"
@@ -21,6 +25,8 @@ SYSTEMD_PACKAGES = "${PN}"
 SYSTEMD_SERVICE_${PN} = "host-gpio.service \
                          host-poweron.service \
                          host-poweroff.service \
+                         host-powerreset.service \
+                         host-powersoft.service \
                         "
 
 do_install() {
@@ -28,4 +34,6 @@ do_install() {
     install -m 0755 ${S}/init_once.sh ${D}/${sbindir}/
     install -m 0755 ${S}/poweroff.sh ${D}/${sbindir}/
     install -m 0755 ${S}/poweron.sh ${D}/${sbindir}/
+    install -m 0755 ${S}/powerreset.sh ${D}/${sbindir}/
+    install -m 0755 ${S}/powersoft.sh ${D}/${sbindir}/
 }
