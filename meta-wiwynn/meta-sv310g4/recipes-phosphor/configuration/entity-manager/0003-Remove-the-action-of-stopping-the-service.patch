@@ -1,0 +1,23 @@
+From d7025c48378505b89d82ca2ac6d32d8cfd928898 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Sun, 7 Feb 2021 02:16:24 +0800
+Subject: [PATCH] Remove the action of stopping the service
+
+---
+ service_files/xyz.openbmc_project.FruDevice.service | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/service_files/xyz.openbmc_project.FruDevice.service b/service_files/xyz.openbmc_project.FruDevice.service
+index 43bae9b..26a095a 100644
+--- a/service_files/xyz.openbmc_project.FruDevice.service
++++ b/service_files/xyz.openbmc_project.FruDevice.service
+@@ -1,6 +1,5 @@
+ [Unit]
+ Description=Fru Device
+-StopWhenUnneeded=true
+ After=xyz.openbmc_project.CloseMuxes.service dbus.service
+ 
+ [Service]
+-- 
+2.17.1
+

@@ -149,6 +149,28 @@
 
 &i2c0 {
 	status = "okay";
+
+	power-supply@58{
+		compatible = "pmbus";
+		reg = <0x58>;
+	};
+
+	power-supply@59{
+		compatible = "pmbus";
+		reg = <0x59>;
+	};
+
+	/* PSU0 FRU */
+	eeprom@50 {
+		compatible = "atmel,24c02";
+		reg = <0x50>;
+	};
+
+	/* PSU1 FRU */
+	eeprom@51 {
+		compatible = "atmel,24c02";
+		reg = <0x51>;
+	};
 };
 
 &i2c1 {

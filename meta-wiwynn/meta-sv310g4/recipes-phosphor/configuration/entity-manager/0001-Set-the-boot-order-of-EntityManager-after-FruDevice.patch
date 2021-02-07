@@ -1,17 +1,14 @@
-From 8855b172577f2861619e8b5fc1496e43246003c1 Mon Sep 17 00:00:00 2001
-From: Eilin <eilin_li@wiwynn.com>
-Date: Wed, 30 Dec 2020 16:15:28 +0800
-Subject: [PATCH] Set the boot order of ntityManager after FruDevice
+From e27b78e3fc2cee0f46b5663da731c36dcaed0e7b Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Sun, 7 Feb 2021 02:11:24 +0800
+Subject: [PATCH] Set the boot order of EntityManager after FruDevice
 
 ---
  service_files/xyz.openbmc_project.EntityManager.service | 1 +
  1 file changed, 1 insertion(+)
- mode change 100644 => 100755 service_files/xyz.openbmc_project.EntityManager.service
 
 diff --git a/service_files/xyz.openbmc_project.EntityManager.service b/service_files/xyz.openbmc_project.EntityManager.service
-old mode 100644
-new mode 100755
-index 99452e2..04d7e2b
+index 99452e2..04d7e2b 100644
 --- a/service_files/xyz.openbmc_project.EntityManager.service
 +++ b/service_files/xyz.openbmc_project.EntityManager.service
 @@ -1,5 +1,6 @@
