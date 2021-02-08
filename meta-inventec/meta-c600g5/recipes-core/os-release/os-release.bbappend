@@ -3,7 +3,7 @@
 
 # Machine name and BMC version for release
 MACHINE_NAME = "C600G5"
-BMC_VERSION = "0.50"
+BMC_VERSION = "0.51"
 
 # Replace PRETTY_NAME to add MACHINE_NAME and BMC_VERSION
 PRETTY_NAME = "${MACHINE_NAME} ${BMC_VERSION}! (Base: ${DISTRO_NAME} ${VERSION})"
