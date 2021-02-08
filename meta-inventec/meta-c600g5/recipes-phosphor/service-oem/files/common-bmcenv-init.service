@@ -1,0 +1,11 @@
+[Unit]
+Description=Common BMC Environment Initialization
+Before=phosphor-discover-system-state@0.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/common-bmcenv-init.sh
+SyslogIdentifier=common-bmcenv-init
+
+[Install]
+WantedBy=sysinit.target
