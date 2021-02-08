@@ -12,8 +12,16 @@ RDEPENDS_${PN} += "virtual/obmc-gpio-monitor"
 S = "${WORKDIR}"
 SRC_URI += "file://SetPowerGoodPropertyOff.service \
             file://SetPowerGoodPropertyOn.service \
+            file://toggle_identify_led.sh \
+            file://id-button-pressed.service \
            "
 
+do_install() {
+        install -d ${D}${bindir}
+        install -m 0755 ${WORKDIR}/toggle_identify_led.sh ${D}${bindir}/toggle_identify_led.sh
+}
 
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOff.service"
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOn.service"
+SYSTEMD_SERVICE_${PN} += "id-button-pressed.service"
+

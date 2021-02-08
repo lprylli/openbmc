@@ -38,6 +38,24 @@
 		};
 	};
 
+        leds {
+		compatible = "gpio-leds";
+
+		identify {
+			gpios = <&gpio ASPEED_GPIO(AA, 1) GPIO_ACTIVE_LOW>;
+		};
+
+        status_green {
+			gpios = <&gpio ASPEED_GPIO(H, 0) GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+
+		status_amber {
+			gpios = <&gpio ASPEED_GPIO(M, 5) GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+	};
+
 	iio-hwmon {
 		compatible = "iio-hwmon";
 		io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>,

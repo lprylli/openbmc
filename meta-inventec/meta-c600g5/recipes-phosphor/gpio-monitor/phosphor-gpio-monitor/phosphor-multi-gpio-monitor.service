@@ -1,6 +1,7 @@
 [Unit]
 Description=Phosphor Multi GPIO monitor
 After=org.openbmc.control.Power@0.service
+After=xyz.openbmc_project.EntityManager.service
 Before=xyz.openbmc_project.adcsensor.service
 Before=xyz.openbmc_project.cpusensor.service
 Before=xyz.openbmc_project.hwmontempsensor.service

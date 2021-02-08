@@ -14,5 +14,18 @@
                 "SetPowerGoodPropertyOn.service"
             ]
         }
+    },
+    {
+        "Name": "UIDButton",
+        "ChipId": "0",
+        "GpioNum": 214,
+        "EventMon": "FALLING",
+	"Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "id-button-pressed.service"
+            ]
         }
+    }
 ]
