@@ -2,6 +2,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://0001-Revise-transporthandler-for-some-feature.patch \
             file://0002-Implement-IPMI-Chassis-Control-Diag-Command.patch \
+            file://0003-Support-IPMI-SystemBootOption-command.patch \
+            file://0004-Fix-ipmi-reset-command-of-chassis-control-failure.patch \
            "
 
 do_install_append(){

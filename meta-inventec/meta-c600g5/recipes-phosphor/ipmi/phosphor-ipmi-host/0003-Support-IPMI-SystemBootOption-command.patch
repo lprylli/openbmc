@@ -1,0 +1,80 @@
+From 3a06440c8e06980775dfe9da0d0dc56b223cb47a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Chang=2EJamesWC=20=E5=BC=B5=E6=96=87=E9=87=91=20TAO?=
+ <chang.jameswc@inventec.com>
+Date: Fri, 22 Jan 2021 15:57:55 +0800
+Subject: [PATCH] [c600g5]Support IPMI SystemBootOption command
+
+---
+ chassishandler.cpp | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/chassishandler.cpp b/chassishandler.cpp
+index 3250b2c..989f0c7 100644
+--- a/chassishandler.cpp
++++ b/chassishandler.cpp
+@@ -34,6 +34,9 @@
+ #include <xyz/openbmc_project/State/Host/server.hpp>
+ #include <xyz/openbmc_project/State/PowerOnHours/server.hpp>
+ 
++
++#define SET_PARM_BOOT_FLAGS_BOOT_TYPE_UEFI 0x20
++
+ std::unique_ptr<phosphor::Timer> identifyTimer
+     __attribute__((init_priority(101)));
+ 
+@@ -66,6 +69,7 @@ static constexpr size_t encIdentifyObjectsSize = 1;
+ static constexpr size_t chassisIdentifyReqLength = 2;
+ static constexpr size_t identifyIntervalPos = 0;
+ static constexpr size_t forceIdentifyPos = 1;
++static bool biosUefiBoot = true; // default UEFI boot
+ 
+ namespace ipmi
+ {
+@@ -1771,6 +1775,12 @@ ipmi::RspType<ipmi::message::Payload>
+             uint8_t bootOptionParam = oneTimeEnabled
+                                           ? setParmBootFlagsValidOneTime
+                                           : setParmBootFlagsValidPermanent;
++
++            if (biosUefiBoot)
++            {
++                bootOptionParam |= SET_PARM_BOOT_FLAGS_BOOT_TYPE_UEFI;
++            }
++
+             response.pack(bootOptionParameter, reserved1, bootOptionParam,
+                           uint2_t{}, uint4_t{bootOption}, uint2_t{}, uint8_t{},
+                           uint8_t{}, uint8_t{});
+@@ -1783,6 +1793,20 @@ ipmi::RspType<ipmi::message::Payload>
+             return ipmi::responseUnspecifiedError();
+         }
+     }
++    else if (static_cast<uint8_t>(bootOptionParameter) == 0 || static_cast<uint8_t>(bootOptionParameter) == 4)
++     {
++        uint8_t selector;
++        if(static_cast<uint8_t>(bootOptionParameter) == 0) {       //0-Set In Progress
++            selector = 0;
++            response.pack(selector, uint8_t{0});
++            return ipmi::responseSuccess(std::move(response));    // [7:2] - reserved 1:0] - 00b = set complete.
++        }
++        else{                                                                                                          //4-Boot info acknowledge
++            selector = 4;
++            response.pack(selector, uint8_t{0}, uint8_t{0});
++            return ipmi::responseSuccess(std::move(response));   
++        }
++    }
+     else
+     {
+         if ((bootOptionParameter >= oemParmStart) &&
+@@ -1870,6 +1894,13 @@ ipmi::RspType<> ipmiChassisSetSysBootOptions(ipmi::Context::ptr ctx,
+ 
+         try
+         {
++            if(biosBootType){              // for legacy boot
++                biosUefiBoot = true;
++            }
++			else{
++				biosUefiBoot = false;
++			}
++
+             settings::Objects& objects = getObjects();
+ 
+             auto bootSetting = settings::boot::setting(objects, bootSourceIntf);
