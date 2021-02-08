@@ -1,0 +1,135 @@
+{
+    "sensors": [
+    {
+        "name": "FPB_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/FPB_Temp",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN0",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN0",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm1",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN1",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN1",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm2",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN2",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN2",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm3",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN3",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN3",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm4",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN4",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN4",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm5",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_FAN5",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_FAN5",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm6",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    }
+    ],
+    "zones" : [
+        {
+            "id": 1,
+            "failsafePercent": 90.0,
+            "minThermalOutput": 0.0,
+            "cycleTimeBase": 1000,
+            "checkFanFailuresTime": 0,
+            "updateThermalsTime": 1000,
+            "pids": [
+                {
+                    "name": "fan0 fan1 fan2 fan3 fan4 fan5",
+                    "type": "fan",
+                    "inputs": [
+                        "SYS_FAN0",
+                        "SYS_FAN1",
+                        "SYS_FAN2",
+                        "SYS_FAN3",
+                        "SYS_FAN4",
+                        "SYS_FAN5"
+                    ],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 0.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0,
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 0
+                    }
+                },
+                {
+                    "name": "Stepwise_FPB_Temp",
+                    "type": "stepwise",
+                    "inputs": ["FPB_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 20.0,
+                            "2": 24.0,
+                            "3": 28.0,
+                            "4": 32.0,
+                            "5": 36.0,
+                            "6": 40.0
+                        },
+                        "output": {
+                            "0": 80.0,
+                            "1": 80.0,
+                            "2": 80.0,
+                            "3": 80.0,
+                            "4": 80.0,
+                            "5": 90.0,
+                            "6": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 1
+                    }
+                }
+            ]
+        }
+    ]
+}
