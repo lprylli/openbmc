@@ -14,6 +14,7 @@ SRC_URI += "file://SetPowerGoodPropertyOff.service \
             file://SetPowerGoodPropertyOn.service \
             file://toggle_identify_led.sh \
             file://id-button-pressed.service \
+	    file://SetBiosPostCompletePropertyOff.service \
            "
 
 do_install() {
@@ -24,4 +25,4 @@ do_install() {
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOff.service"
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOn.service"
 SYSTEMD_SERVICE_${PN} += "id-button-pressed.service"
-
+SYSTEMD_SERVICE_${PN} += "SetBiosPostCompletePropertyOff.service"

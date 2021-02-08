@@ -27,5 +27,19 @@
                 "id-button-pressed.service"
             ]
         }
+    },
+    {
+        "Name": "POSTComplete",
+        "ChipId": "0",
+        "GpioNum": 60,
+        "EventMon": "BOTH",
+	"Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "SetBiosPostCompletePropertyOff.service"
+            ]
+        }
+        
     }
 ]
