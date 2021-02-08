@@ -8,3 +8,6 @@ RemainAfterExit=no
 Type=oneshot
 ExecStart=/usr/bin/env powerreset.sh
 SyslogIdentifier=powerreset.sh
+
+[Install]
+WantedBy=obmc-host-force-warm-reboot@0.target
