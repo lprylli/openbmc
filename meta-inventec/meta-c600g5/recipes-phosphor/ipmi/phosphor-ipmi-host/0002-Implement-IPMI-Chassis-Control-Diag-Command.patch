@@ -1,0 +1,54 @@
+From 78e1438feeb7393add3db6a852d9a22ce970272d Mon Sep 17 00:00:00 2001
+From: "Wang.Ken@inventec.com" <Wang.Ken@inventec.com>
+Date: Wed, 20 Jan 2021 05:27:20 +0000
+Subject: [PATCH] [c600g5] Implement IPMI Chassis Control Diag Command
+
+---
+ chassishandler.cpp | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/chassishandler.cpp b/chassishandler.cpp
+index 3250b2c..1e3270e 100644
+--- a/chassishandler.cpp
++++ b/chassishandler.cpp
+@@ -874,6 +874,7 @@ int initiate_state_transition(State::Host::Transition transition)
+ //------------------------------------------
+ int setNmiProperty(const bool value)
+ {
++#if 0
+     constexpr const char* nmiSourceObjPath =
+         "/xyz/openbmc_project/Chassis/Control/NMISource";
+     constexpr const char* nmiSourceIntf =
+@@ -898,6 +899,32 @@ int setNmiProperty(const bool value)
+     }
+ 
+     return 0;
++#endif
++    char command[100];
++    int rc = 0;
++
++    sprintf(command, "echo 829 > /sys/class/gpio/export");
++    rc = system(command);
++    if (rc != 0)
++    {
++        return rc;
++    }
++
++    sprintf(command, "echo out > /sys/class/gpio/gpio829/direction; sleep 1; echo in > /sys/class/gpio/gpio829/direction;");
++    rc = system(command);
++    if (rc != 0)
++    {
++        return rc;
++    }
++
++    sprintf(command, "echo 829 > /sys/class/gpio/unexport");
++    rc = system(command);
++    if (rc != 0)
++    {
++        return rc;
++    }
++
++    return rc;
+ }
+ 
+ namespace power_policy
