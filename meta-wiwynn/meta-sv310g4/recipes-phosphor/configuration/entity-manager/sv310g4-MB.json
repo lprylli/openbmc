@@ -1,6 +1,25 @@
 {
     "Exposes": [
         {
+            "Name": "OCP_NIC_Temp",
+            "Bus": 9,
+            "Address": "0x1F",
+            "Command": "0x01",
+            "SensorType": "temp",
+            "Mode": "Byte",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Type": "NIC",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 102
+                }
+            ]
+        },
+        {
             "Index": 0,
             "Name": "P12V",
             "ScaleFactor": 0.1124,
