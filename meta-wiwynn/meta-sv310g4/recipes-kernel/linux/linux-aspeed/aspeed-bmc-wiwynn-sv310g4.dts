@@ -266,6 +266,10 @@
 	flash = <&spi1>;
 };
 
+&peci0 {
+    status = "okay";
+};
+
 &lpc_snoop {
     status = "okay";
     snoop-ports = <0x80>;

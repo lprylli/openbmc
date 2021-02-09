@@ -1,6 +1,306 @@
 {
     "Exposes": [
         {
+            "Address": "0x30",
+            "Bus": 0,
+            "CpuID": 1,
+            "Name": "CPU 0",
+            "Labels": [
+                {
+                    "Die": "CPU0_Temp",
+                    "DIMM_A1": "CPU0_DIMM_A0",
+                    "DIMM_A2": "CPU0_DIMM_A1",
+                    "DIMM_B1": "CPU0_DIMM_B0",
+                    "DIMM_B2": "CPU0_DIMM_B1",
+                    "DIMM_C1": "CPU0_DIMM_C0",
+                    "DIMM_C2": "CPU0_DIMM_C1",
+                    "DIMM_D1": "CPU0_DIMM_D0",
+                    "DIMM_D2": "CPU0_DIMM_D1",
+                    "DIMM_E1": "CPU0_DIMM_E0",
+                    "DIMM_E2": "CPU0_DIMM_E1",
+                    "DIMM_F1": "CPU0_DIMM_F0",
+                    "DIMM_F2": "CPU0_DIMM_F1",
+                    "DIMM_G1": "CPU0_DIMM_G0",
+                    "DIMM_G2": "CPU0_DIMM_G1",
+                    "DIMM_H1": "CPU0_DIMM_H0",
+                    "DIMM_H2": "CPU0_DIMM_H1",
+                    "Tjmax": "CPU0_DTSmax"
+                }
+            ],
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Label": "Die",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 91
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_A1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_A2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_B1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_B2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_C1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_C2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_D1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_D2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_E1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_E2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_F1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_F2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_G1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_G2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_H1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_H2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                }
+            ],
+            "Type": "XeonCPU"
+       },
+       {
+            "Address": "0x31",
+            "Bus": 0,
+            "CpuID": 2,
+            "Name": "CPU 1",
+            "Labels": [
+                {
+                    "Die": "CPU1_Temp",
+                    "DIMM_A1": "CPU1_DIMM_A0",
+                    "DIMM_A2": "CPU1_DIMM_A1",
+                    "DIMM_B1": "CPU1_DIMM_B0",
+                    "DIMM_B2": "CPU1_DIMM_B1",
+                    "DIMM_C1": "CPU1_DIMM_C0",
+                    "DIMM_C2": "CPU1_DIMM_C1",
+                    "DIMM_D1": "CPU1_DIMM_D0",
+                    "DIMM_D2": "CPU1_DIMM_D1",
+                    "DIMM_E1": "CPU1_DIMM_E0",
+                    "DIMM_E2": "CPU1_DIMM_E1",
+                    "DIMM_F1": "CPU1_DIMM_F0",
+                    "DIMM_F2": "CPU1_DIMM_F1",
+                    "DIMM_G1": "CPU1_DIMM_G0",
+                    "DIMM_G2": "CPU1_DIMM_G1",
+                    "DIMM_H1": "CPU1_DIMM_H0",
+                    "DIMM_H2": "CPU1_DIMM_H1",
+                    "Tjmax": "CPU1_DTSmax"
+                }
+            ],
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Label": "Die",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 91
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_A1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_A2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_B1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_B2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_C1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_C2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_D1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_D2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_E1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_E2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_F1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_F2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_G1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_G2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_H1",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Label": "DIMM_H2",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 83
+                }
+            ],
+            "Type": "XeonCPU"
+        },
+        {
             "Name": "OCP_NIC_Temp",
             "Bus": 9,
             "Address": "0x1F",
@@ -26,6 +326,20 @@
             "MaxReading": 14,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 13.2
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 10.8
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -35,6 +349,20 @@
             "MaxReading": 5,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 3.63
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2.97
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -44,6 +372,20 @@
             "MaxReading": 1.5,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.1
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 0.764
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -53,6 +395,20 @@
             "MaxReading": 1.5,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.155
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 0.945
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -62,6 +418,20 @@
             "MaxReading": 14,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 13.2
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 10.8
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -71,6 +441,20 @@
             "MaxReading": 4,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 3.63
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2.97
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -80,6 +464,20 @@
             "MaxReading": 2,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.98
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.62
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -89,6 +487,20 @@
             "MaxReading": 4,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 3.63
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 2.3
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -98,6 +510,20 @@
             "MaxReading": 1.6,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -107,6 +533,20 @@
             "MaxReading": 7,
             "MinReading": 0,
             "PowerState": "Always",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 5.5
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 4.5
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -116,6 +556,20 @@
             "MaxReading": 2.8,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 2.2
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.4
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -125,6 +579,20 @@
             "MaxReading": 1.6,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -134,6 +602,20 @@
             "MaxReading": 2.8,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 2.2
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.4
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -143,6 +625,20 @@
             "MaxReading": 1.6,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -152,6 +648,20 @@
             "MaxReading": 1.6,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                }
+            ],
             "Type": "ADC"
         },
         {
@@ -161,6 +671,20 @@
             "MaxReading": 1.6,
             "MinReading": 0,
             "PowerState": "On",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                }
+            ],
             "Type": "ADC"
         },
         {
