@@ -18,7 +18,7 @@
         Offsets:
           0xFF:
             type: double
-0x53:
+0x3D:
   entityID: 0x15
   entityInstance: 19
   sensorType: 0x02
@@ -43,10 +43,11 @@
         Offsets:
           0xFF:
             type: double
+	    
 
-0x96:
+0x51:
   entityID: 0x1D
-  entityInstance: 0
+  entityInstance: 1
   sensorType: 0x04
   path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan0_Speed_F
   sensorReadingType: 0x01
@@ -66,3 +67,189 @@
           0xFF:
             type: double
 
+0x52:
+  entityID: 0x1D
+  entityInstance: 2
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan0_Speed_R
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x53:
+  entityID: 0x1D
+  entityInstance: 3
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed_F
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x54:
+  entityID: 0x1D
+  entityInstance: 4
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed_R
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x55:
+  entityID: 0x1D
+  entityInstance: 5
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed_F
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x56:
+  entityID: 0x1D
+  entityInstance: 6
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed_R
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x57:
+  entityID: 0x1D
+  entityInstance: 7
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan3_Speed_F
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x58:
+  entityID: 0x1D
+  entityInstance: 8
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan3_Speed_R
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+	    
+
+0xd4: # ACPI_Power_State
+    entityID: 0x06
+    entityInstance: 0x03
+    sensorType: 0x22
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/ACPI_Power_State
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: ACPI Power State
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+
+0xd5: # Bios_Post_Complete
+    entityID: 0x07
+    entityInstance: 0x01
+    sensorType: 0x12
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Bios_Post_Complete
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Post_Complete
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+             0xFF:
+              type: uint32_t
