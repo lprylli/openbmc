@@ -43,8 +43,46 @@
         Offsets:
           0xFF:
             type: double
-	    
-
+0x4A:
+  entityID: 0x0a
+  entityInstance: 1
+  sensorType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/PSU0_Temp
+  sensorReadingType: 0x01
+  bExp: 0
+  rExp: 0
+  scale: 0
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x50:
+  entityID: 0x0a
+  entityInstance: 2
+  sensorType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/PSU1_Temp
+  sensorReadingType: 0x01
+  bExp: 0
+  rExp: 0
+  scale: 0
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
 0x51:
   entityID: 0x1D
   entityInstance: 1
