@@ -13,10 +13,17 @@ SRC_URI += "file://SetPowerGoodPropertyOff.service \
             file://SetPowerGoodPropertyOn.service \
             file://SetPostCompleteAssert.service \
             file://SetPostCompleteDeassert.service \
+            file://SetIdentifyBtnAssert.service \
+            file://toggle-identify-led.sh \
            "
 
+do_install() {
+        install -d ${D}${sbindir}
+        install -m 0755 ${WORKDIR}/toggle-identify-led.sh ${D}${sbindir}/toggle-identify-led.sh
+}
 
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOff.service"
 SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOn.service"
 SYSTEMD_SERVICE_${PN} += "SetPostCompleteAssert.service"
 SYSTEMD_SERVICE_${PN} += "SetPostCompleteDeassert.service"
+SYSTEMD_SERVICE_${PN} += "SetIdentifyBtnAssert.service"

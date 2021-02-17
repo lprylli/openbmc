@@ -192,9 +192,6 @@ gpio_out_high="\
     ${GPIO_H1} \
     ${GPIO_H3} \
     ${GPIO_Q7} \
-    ${GPIO_S4} \
-    ${GPIO_S5} \
-    ${GPIO_S6} \
     ${GPIO_Z2} \
     ${GPIO_AA0} \
     ${GPIO_AA4} \

@@ -30,5 +30,18 @@
             ]
         },
         "Continue": true
+    },
+    {
+        "Name": "IdentifyBtnEvent",
+        "GpioNum": 218,
+        "ChipId": "gpiochip0",
+        "EventMon": "FALLING",
+        "Target":
+        {
+            "FALLING": [
+                "SetIdentifyBtnAssert.service"
+            ]
+        },
+        "Continue": true
     }
 ]
