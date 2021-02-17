@@ -1,6 +1,7 @@
 FILESEXTRAPATHS_prepend_sv310g4 := "${THISDIR}/${PN}:"
 
 SRC_URI += "file://0001-Revise-the-interface-name-that-registered-on-dbus.patch \
+            file://0002-SMS-Attention-control-for-IPMI-Message-commands.patch \
            "
 
 # kcs channel 3 for BIOS

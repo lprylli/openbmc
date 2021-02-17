@@ -71,7 +71,7 @@ find_package (OpenSSL REQUIRED)
 include_directories (${OPENSSL_INCLUDE_DIR})
 
 add_library (
-    zsv310g4oemcmds SHARED appcommands.cpp chassishandler.cpp storagecommands.cpp oemcommands.cpp Utils.cpp
+    zsv310g4oemcmds SHARED appcommands.cpp chassishandler.cpp storagecommands.cpp oemcommands.cpp bridgingcommands.cpp Utils.cpp
 )
 set_target_properties (zsv310g4oemcmds PROPERTIES VERSION "0.1.0")
 set_target_properties (zsv310g4oemcmds PROPERTIES SOVERSION "0")
