@@ -332,3 +332,22 @@
             # Sensor type specific offset : OEM System Boot Event
              0xFF:
               type: uint32_t
+
+0xf6: # SEL_Status
+  entityID: 0x07
+  entityInstance: 0x01
+  sensorType: 0x10
+  sensorReadingType: 0x6f
+  path: /xyz/openbmc_project/sensors/discrete/SEL_Status
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingAssertion
+  sensorName: SEL_Status
+  sdrType: SdrType::sdr_event_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset : OEM System Boot Event
+          0xFF:
+            type: uint32_t

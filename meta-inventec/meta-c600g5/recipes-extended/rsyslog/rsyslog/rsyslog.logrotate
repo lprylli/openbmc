@@ -8,6 +8,7 @@
     size 64k
     missingok
     postrotate
+        busctl call "xyz.openbmc_project.Logging.IPMI" "/xyz/openbmc_project/Logging/IPMI" "xyz.openbmc_project.Logging.IPMI" "IpmiSelAddOem" sayy "SEL Status" 9 0x20 0x00 0x04 0x10 0xf6 0x6f 0x04 0xff 0xff 0x02
         systemctl reload rsyslog 2> /dev/null || true
     endscript
 }
