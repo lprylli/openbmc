@@ -786,13 +786,13 @@
         {
             "Address": "0x4e",
             "Bus": 7,
-            "Name": "SYS Inlet",
+            "Name": "SYS Outlet",
             "Type": "TMP75"
         },
         {
             "Address": "0x4f",
             "Bus": 7,
-            "Name": "SYS Outlet",
+            "Name": "SYS Inlet",
             "Type": "TMP75"
         },
         {
@@ -845,6 +845,432 @@
                 }
             ],
             "Type": "INA219"
+        },
+        {
+            "Name": "CPU0_VccIN_VOUT",
+            "Bus": 2,
+            "Address": "0x60",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.4
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 2.2
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU0_VccIN_IOUT",
+            "Bus": 2,
+            "Address": "0x60",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU0_VccIN_PIN",
+            "Bus": 2,
+            "Address": "0x60",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU0_VccIN_POUT",
+            "Bus": 2,
+            "Address": "0x60",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU0_VccIN_Temp",
+            "Bus": 2,
+            "Address": "0x60",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_ABCD_VOUT",
+            "Bus": 2,
+            "Address": "0x64",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_ABCD_IOUT",
+            "Bus": 2,
+            "Address": "0x64",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_ABCD_PIN",
+            "Bus": 2,
+            "Address": "0x64",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_ABCD_POUT",
+            "Bus": 2,
+            "Address": "0x64",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_ABCD_Temp",
+            "Bus": 2,
+            "Address": "0x64",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_EFGH_VOUT",
+            "Bus": 2,
+            "Address": "0x66",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_EFGH_IOUT",
+            "Bus": 2,
+            "Address": "0x66",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_EFGH_PIN",
+            "Bus": 2,
+            "Address": "0x66",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_EFGH_POUT",
+            "Bus": 2,
+            "Address": "0x66",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_EFGH_Temp",
+            "Bus": 2,
+            "Address": "0x66",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU1_VccIN_VOUT",
+            "Bus": 3,
+            "Address": "0x61",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.4
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 2.2
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU1_VccIN_IOUT",
+            "Bus": 3,
+            "Address": "0x61",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU1_VccIN_PIN",
+            "Bus": 3,
+            "Address": "0x61",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU1_VccIN_POUT",
+            "Bus": 3,
+            "Address": "0x61",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "CPU1_VccIN_Temp",
+            "Bus": 3,
+            "Address": "0x61",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_JKLM_VOUT",
+            "Bus": 3,
+            "Address": "0x65",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_JKLM_IOUT",
+            "Bus": 3,
+            "Address": "0x65",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_JKLM_PIN",
+            "Bus": 3,
+            "Address": "0x65",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_JKLM_POUT",
+            "Bus": 3,
+            "Address": "0x65",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_JKLM_Temp",
+            "Bus": 3,
+            "Address": "0x65",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_NPRT_VOUT",
+            "Bus": 3,
+            "Address": "0x67",
+            "Command": "0x8B",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "volt",
+            "Mode": "UnsignedInt",
+            "ScaleValue": 0.001,
+            "Thresholds": [
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 1.08
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 1.32
+                }
+            ],
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_NPRT_IOUT",
+            "Bus": 3,
+            "Address": "0x67",
+            "Command": "0x8C",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "curr",
+            "Mode": "TwosComplementInt",
+            "ScaleValue": 0.1,
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_NPRT_PIN",
+            "Bus": 3,
+            "Address": "0x67",
+            "Command": "0x97",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_NPRT_POUT",
+            "Bus": 3,
+            "Address": "0x67",
+            "Command": "0x96",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "power",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
+        },
+        {
+            "Name": "VDDQ_NPRT_Temp",
+            "Bus": 3,
+            "Address": "0x67",
+            "Command": "0x8D",
+            "Page": 0,
+            "PowerState": "On",
+            "SensorType": "temp",
+            "Mode": "TwosComplementInt",
+            "Type": "ISL6series"
         }
     ],
     "Fru":[

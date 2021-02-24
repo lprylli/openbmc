@@ -29,7 +29,9 @@ extern "C" {
 // uint8_t Set_Dbus_Property(double value, char *object_str, char *path_str, char *interface_str,char *value_str);
 
 //lib math
+uint8_t Get_Twos_Complement_Int_Data_Format(uint32_t raw_value, double *real_value);
 uint8_t Get_Linear_Data_Format(double* real_value, uint32_t raw_value);
+uint8_t Get_Linear16_Data_Format(double* real_value, uint32_t raw_value);
 int Get_VID_Data_Format(double* real_value, uint32_t raw_value, uint8_t code_type);
 uint8_t zeroChecksum(void *data, int size);
 

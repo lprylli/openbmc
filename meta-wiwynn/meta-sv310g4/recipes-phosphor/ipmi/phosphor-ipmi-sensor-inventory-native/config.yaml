@@ -214,33 +214,6 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0xb: # OCP NIC Temp
-    entityID: 0x0b
-    entityInstance: 0x00
-    sensorType: 0x01
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/temperature/OCP_NIC_Temp
-    multiplierM: 0x1
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: OCP NIC Temp
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
 0x0c: # CPU0 DIMM A0
     entityID: 0x20
     entityInstance: 0x00
@@ -1483,168 +1456,6 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x7d: # SYS FAN0
-    entityID: 0x1D
-    entityInstance: 0x7d
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN0
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN0
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
-0x7e: # SYS FAN1
-    entityID: 0x1D
-    entityInstance: 0x7e
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN1
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN1
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
-0x7f: # SYS FAN2
-    entityID: 0x1D
-    entityInstance: 0x7f
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN2
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN2
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
-0x80: # SYS FAN3
-    entityID: 0x1D
-    entityInstance: 0x80
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN3
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN3
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
-0x81: # SYS FAN4
-    entityID: 0x1D
-    entityInstance: 0x81
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN4
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN4
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
-0x82: # SYS FAN5
-    entityID: 0x1D
-    entityInstance: 0x82
-    sensorType: 0x04
-    sensorReadingType: 0x01
-    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN5
-    multiplierM: 0x76
-    offsetB: 0
-    bExp: 0
-    # Result exponent field in Type 1 SDR(2's complement, signed)
-    rExp: 0
-    # Applies for analog sensors, the actual reading value for the sensor is
-    # Value * 10^N
-    scale: 0
-    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
-    mutability: Mutability::Write|Mutability::Read
-    serviceInterface: org.freedesktop.DBus.Properties
-    readingType: readingData
-    sensorName: SYS FAN5
-    sdrType: SdrType::sdr_full_record
-    interfaces:
-      xyz.openbmc_project.Sensor.Value:
-        Value:
-          Offsets:
-            # Sensor type specific offset
-            0xFF:
-              type: double
 0x5d: # Fan Voltage
     entityID: 0x07
     entityInstance: 0x1D
@@ -1726,9 +1537,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x6c: # P12V
+0x2d: # P12V
     entityID: 0x07
-    entityInstance: 0x6c
+    entityInstance: 0x4d
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P12V
@@ -1753,9 +1564,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x6d: # P3V3
+0x2e: # P3V3
     entityID: 0x07
-    entityInstance: 0x6d
+    entityInstance: 0x4e
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P3V3
@@ -1780,9 +1591,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x6e: # PVNN_PCH_AUX
+0x2f: # PVNN_PCH_AUX
     entityID: 0x07
-    entityInstance: 0x6e
+    entityInstance: 0x4f
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVNN_PCH_AUX
@@ -1807,9 +1618,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x6f: # P1V05_PCH_AUX
+0x30: # P1V05_PCH_AUX
     entityID: 0x07
-    entityInstance: 0x6f
+    entityInstance: 0x50
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P1V05_PCH_AUX
@@ -1834,9 +1645,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x70: # P12V_AUX
+0x31: # P12V_AUX
     entityID: 0x07
-    entityInstance: 0x70
+    entityInstance: 0x51
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P12V_AUX
@@ -1861,9 +1672,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x71: # P3V3_AUX
+0x32: # P3V3_AUX
     entityID: 0x07
-    entityInstance: 0x71
+    entityInstance: 0x52
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P3V3_AUX
@@ -1888,9 +1699,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x72: # P1V8_PCH
+0x33: # P1V8_PCH
     entityID: 0x07
-    entityInstance: 0x72
+    entityInstance: 0x53
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P1V8_PCH
@@ -1915,9 +1726,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x73: # P3V_BAT
+0x34: # P3V_BAT
     entityID: 0x07
-    entityInstance: 0x73
+    entityInstance: 0x54
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P3V_BAT
@@ -1942,9 +1753,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x74: # P1V2_BMC_AUX
+0x35: # P1V2_BMC_AUX
     entityID: 0x07
-    entityInstance: 0x74
+    entityInstance: 0x55
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P1V2_BMC_AUX
@@ -1969,9 +1780,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x75: # P5V_AUX
+0x36: # P5V_AUX
     entityID: 0x07
-    entityInstance: 0x75
+    entityInstance: 0x56
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/P5V_AUX
@@ -1996,9 +1807,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x76: # PVCCIN_CPU0
+0x37: # PVCCIN_CPU0
     entityID: 0x07
-    entityInstance: 0x76
+    entityInstance: 0x57
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVCCIN_CPU0
@@ -2023,9 +1834,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x77: # PVCCIN_CPU1
+0x38: # PVCCIN_CPU1
     entityID: 0x07
-    entityInstance: 0x77
+    entityInstance: 0x58
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVCCIN_CPU1
@@ -2050,9 +1861,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x78: # PVDDQ_ABCD
+0x39: # PVDDQ_ABCD
     entityID: 0x07
-    entityInstance: 0x78
+    entityInstance: 0x59
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVDDQ_ABCD
@@ -2077,9 +1888,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x79: # PVDDQ_EFGH
+0x3a: # PVDDQ_EFGH
     entityID: 0x07
-    entityInstance: 0x79
+    entityInstance: 0x5a
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVDDQ_EFGH
@@ -2104,9 +1915,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x7a: # PVDDQ_JKLM
+0x3b: # PVDDQ_JKLM
     entityID: 0x07
-    entityInstance: 0x7a
+    entityInstance: 0x5b
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVDDQ_JKLM
@@ -2131,9 +1942,9 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0x7b: # PVDDQ_NPRT
+0x3c: # PVDDQ_NPRT
     entityID: 0x07
-    entityInstance: 0x7b
+    entityInstance: 0x5c
     sensorType: 0x02
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/voltage/PVDDQ_NPRT
@@ -2150,6 +1961,1005 @@
     serviceInterface: org.freedesktop.DBus.Properties
     readingType: readingData
     sensorName: PVDDQ_NPRT
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x3d: # SYS FAN0
+    entityID: 0x1D
+    entityInstance: 0x7d
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN0
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN0
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x3e: # SYS FAN1
+    entityID: 0x1D
+    entityInstance: 0x7e
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN1
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN1
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x3f: # SYS FAN2
+    entityID: 0x1D
+    entityInstance: 0x7f
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN2
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN2
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x40: # SYS FAN3
+    entityID: 0x1D
+    entityInstance: 0x80
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN3
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN3
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x41: # SYS FAN4
+    entityID: 0x1D
+    entityInstance: 0x81
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN4
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN4
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x42: # SYS FAN5
+    entityID: 0x1D
+    entityInstance: 0x82
+    sensorType: 0x04
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN5
+    multiplierM: 0x76
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: SYS FAN5
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x49: # OCP NIC Temp
+    entityID: 0x0b
+    entityInstance: 0x00
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/OCP_NIC_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: OCP NIC Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x73: #CPU0_VccIN_VOUT
+    entityID: 0x07
+    entityInstance: 0x0d
+    sensorType: 0x02
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/CPU0_VccIN_VOUT
+    multiplierM: 0x6C
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x74: #CPU0_VccIN_IOUT
+    entityID: 0x07
+    entityInstance: 0x0e
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/CPU0_VccIN_IOUT
+    multiplierM: 0xBC
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x75: #CPU0_VccIN_PIN
+    entityID: 0x07
+    entityInstance: 0x0f
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/CPU0_VccIN_PIN
+    multiplierM: 0x29
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x76: #CPU0_VccIN_POUT
+    entityID: 0x07
+    entityInstance: 0x10
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/CPU0_VccIN_POUT
+    multiplierM: 0x29
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x77: #CPU0_VccIN_Temp
+    entityID: 0x07
+    entityInstance: 0x11
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/CPU0_VccIN_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x85: #VDDQ_ABCD_VOUT
+    entityID: 0x07
+    entityInstance: 0x22
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/VDDQ_ABCD_VOUT
+    multiplierM: 0x3F
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x86: #VDDQ_ABCD_IOUT
+    entityID: 0x07
+    entityInstance: 0x23
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/VDDQ_ABCD_IOUT
+    multiplierM: 0x23
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x87: #VDDQ_ABCD_PIN
+    entityID: 0x07
+    entityInstance: 0x24
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_ABCD_PIN
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x88: #VDDQ_ABCD_POUT
+    entityID: 0x07
+    entityInstance: 0x25
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_ABCD_POUT
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x89: #VDDQ_ABCD_Temp
+    entityID: 0x07
+    entityInstance: 0x26
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/VDDQ_ABCD_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8a: #VDDQ_EFGH_VOUT
+    entityID: 0x07
+    entityInstance: 0x27
+    sensorType: 0x02
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/VDDQ_EFGH_VOUT
+    multiplierM: 0x3F
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8b: #VDDQ_EFGH_IOUT
+    entityID: 0x07
+    entityInstance: 0x28
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/VDDQ_EFGH_IOUT
+    multiplierM: 0x23
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8c: #VDDQ_EFGH_PIN
+    entityID: 0x07
+    entityInstance: 0x29
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_EFGH_PIN
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8d: #VDDQ_EFGH_POUT
+    entityID: 0x07
+    entityInstance: 0x2a
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_EFGH_POUT
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8e: #VDDQ_EFGH_Temp
+    entityID: 0x07
+    entityInstance: 0x2b
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/VDDQ_EFGH_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x94: #CPU1_VccIN_VOUT
+    entityID: 0x07
+    entityInstance: 0x31
+    sensorType: 0x02
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/CPU1_VccIN_VOUT
+    multiplierM: 0x6C
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x95: #CPU1_VccIN_IOUT
+    entityID: 0x07
+    entityInstance: 0x32
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/CPU1_VccIN_IOUT
+    multiplierM: 0xBC
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x96: #CPU1_VccIN_PIN
+    entityID: 0x07
+    entityInstance: 0x33
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/CPU1_VccIN_PIN
+    multiplierM: 0x29
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x97: #CPU1_VccIN_POUT
+    entityID: 0x07
+    entityInstance: 0x34
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/CPU1_VccIN_POUT
+    multiplierM: 0x29
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x98: #CPU1_VccIN_Temp
+    entityID: 0x07
+    entityInstance: 0x35
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/CPU1_VccIN_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xa6: #VDDQ_JKLM_VOUT
+    entityID: 0x07
+    entityInstance: 0x43
+    sensorType: 0x02
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/VDDQ_JKLM_VOUT
+    multiplierM: 0x3F
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xa7: #VDDQ_JKLM_IOUT
+    entityID: 0x07
+    entityInstance: 0x44
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/VDDQ_JKLM_IOUT
+    multiplierM: 0x23
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xa8: #VDDQ_JKLM_PIN
+    entityID: 0x07
+    entityInstance: 0x45
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_JKLM_PIN
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xa9: #VDDQ_JKLM_POUT
+    entityID: 0x07
+    entityInstance: 0x46
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_JKLM_POUT
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xaa: #VDDQ_JKLM_Temp
+    entityID: 0x07
+    entityInstance: 0x47
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/VDDQ_JKLM_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xab: #VDDQ_NPRT_VOUT
+    entityID: 0x07
+    entityInstance: 0x48
+    sensorType: 0x02
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/voltage/VDDQ_NPRT_VOUT
+    multiplierM: 0x3F
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -4
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Volts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xac: #VDDQ_NPRT_IOUT
+    entityID: 0x07
+    entityInstance: 0x49
+    sensorType: 0x03
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/current/VDDQ_NPRT_IOUT
+    multiplierM: 0x23
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Amperes
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xad: #VDDQ_NPRT_PIN
+    entityID: 0x07
+    entityInstance: 0x4a
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_NPRT_PIN
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xae: #VDDQ_NPRT_POUT
+    entityID: 0x07
+    entityInstance: 0x4b
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/VDDQ_NPRT_POUT
+    multiplierM: 0x2B
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -2
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0xaf: #VDDQ_NPRT_Temp
+    entityID: 0x07
+    entityInstance: 0x4c
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/VDDQ_NPRT_Temp
+    multiplierM: 0x1
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
     sdrType: SdrType::sdr_full_record
     interfaces:
       xyz.openbmc_project.Sensor.Value:
