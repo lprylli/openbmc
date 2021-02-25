@@ -1,0 +1,53 @@
+From f72b16781f414a6a1e7b82749c2799dfdb10a071 Mon Sep 17 00:00:00 2001
+From: Alwin Joseph <alwinj@twitter.com>
+Date: Thu, 25 Feb 2021 18:37:04 +0000
+Subject: [PATCH] Add HTTP download method for host console logs
+
+---
+ include/openbmc_dbus_rest.hpp | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/include/openbmc_dbus_rest.hpp b/include/openbmc_dbus_rest.hpp
+index e970de5..cf6fb6b 100644
+--- a/include/openbmc_dbus_rest.hpp
++++ b/include/openbmc_dbus_rest.hpp
+@@ -2209,6 +2209,39 @@ inline void requestRoutes(App& app)
+             return;
+         });
+ 
++
++    BMCWEB_ROUTE(app, "/hostconsole.log")
++        .privileges({"ConfigureManager"})
++        .methods(boost::beast::http::verb::get)([](const crow::Request&, crow::Response& res) {
++
++            std::filesystem::path loc(
++                "/var/log/obmc-console.log");
++
++            if (!std::filesystem::exists(loc) ||
++                std::filesystem::is_empty(loc) || !std::filesystem::is_regular_file(loc))
++            {
++                BMCWEB_LOG_ERROR << loc << "SOL data Not found";
++                res.result(boost::beast::http::status::not_found);
++                res.end();
++                return;
++            }
++
++            std::ifstream readFile(loc);
++
++            if (readFile.good())
++            {
++                res.addHeader("Content-Type", "application/octet-stream");
++                res.body() = {std::istreambuf_iterator<char>(readFile),
++                              std::istreambuf_iterator<char>()};
++                res.end();
++                return;
++            }else{
++                res.result(boost::beast::http::status::not_found);
++                res.end();
++                return;
++            }
++        });
++
+     BMCWEB_ROUTE(app, "/bus/system/<str>/")
+         .privileges({"Login"})
+ 
