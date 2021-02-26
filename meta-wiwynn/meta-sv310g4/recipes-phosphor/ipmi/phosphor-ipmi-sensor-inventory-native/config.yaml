@@ -2158,6 +2158,141 @@
             # Sensor type specific offset
             0xFF:
               type: double
+0x4a: # M.2_Temp
+  entityID: 0x0b
+  entityInstance: 0x01
+  sensorType: 0x01
+  sensorReadingType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/M2_Temp
+  multiplierM: 0x01
+  offsetB: 0
+  bExp: 0
+  # Result exponent field in Type 1 SDR(2's complement, signed)
+  rExp: 0
+  # Applies for analog sensors, the actual reading value for the sensor is
+  # Value * 10^N
+  scale: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorName: M2 Temp
+  sdrType: SdrType::sdr_full_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: double
+0x60: # NVMe_0_Temp
+  entityID: 0x04
+  entityInstance: 0x00
+  sensorType: 0x01
+  sensorReadingType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/NVMe_0_Temp
+  multiplierM: 0x01
+  offsetB: 0
+  bExp: 0
+  # Result exponent field in Type 1 SDR(2's complement, signed)
+  rExp: 0
+  # Applies for analog sensors, the actual reading value for the sensor is
+  # Value * 10^N
+  scale: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorName: NVMe 0 Temp
+  sdrType: SdrType::sdr_full_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: double
+0x61: # NVMe_1_Temp
+  entityID: 0x04
+  entityInstance: 0x01
+  sensorType: 0x01
+  sensorReadingType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/NVMe_1_Temp
+  multiplierM: 0x01
+  offsetB: 0
+  bExp: 0
+  # Result exponent field in Type 1 SDR(2's complement, signed)
+  rExp: 0
+  # Applies for analog sensors, the actual reading value for the sensor is
+  # Value * 10^N
+  scale: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorName: NVMe 1 Temp
+  sdrType: SdrType::sdr_full_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: double
+0x62: # NVMe_2_Temp
+  entityID: 0x04
+  entityInstance: 0x02
+  sensorType: 0x01
+  sensorReadingType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/NVMe_2_Temp
+  multiplierM: 0x01
+  offsetB: 0
+  bExp: 0
+  # Result exponent field in Type 1 SDR(2's complement, signed)
+  rExp: 0
+  # Applies for analog sensors, the actual reading value for the sensor is
+  # Value * 10^N
+  scale: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorName: NVMe 2 Temp
+  sdrType: SdrType::sdr_full_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: double
+0x63: # NVMe_3_Temp
+  entityID: 0x04
+  entityInstance: 0x03
+  sensorType: 0x01
+  sensorReadingType: 0x01
+  path: /xyz/openbmc_project/sensors/temperature/NVMe_3_Temp
+  multiplierM: 0x01
+  offsetB: 0
+  bExp: 0
+  # Result exponent field in Type 1 SDR(2's complement, signed)
+  rExp: 0
+  # Applies for analog sensors, the actual reading value for the sensor is
+  # Value * 10^N
+  scale: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+  mutability: Mutability::Write|Mutability::Read
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorName: NVMe 3 Temp
+  sdrType: SdrType::sdr_full_record
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          # Sensor type specific offset
+          0xFF:
+            type: double
 0x73: #CPU0_VccIN_VOUT
     entityID: 0x07
     entityInstance: 0x0d

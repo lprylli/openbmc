@@ -269,10 +269,26 @@
 
 &i2c11 {
 	status = "okay";
+	i2cswitch@70 {
+		compatible = "nxp,pca9548";
+		idle-state = <0>;
+		i2c-mux-idle-disconnect;
+		reg = <0x70>;
+	};
+	i2cswitch@72 {
+		compatible = "nxp,pca9548";
+		idle-state = <0>;
+		i2c-mux-idle-disconnect;
+		reg = <0x72>;
+	};
 };
 
 &i2c12 {
 	status = "okay";
+	i2cswitch@71 {
+		compatible = "nxp,pca9543";
+		reg = <0x71>;
+	};
 };
 
 &i2c13 {

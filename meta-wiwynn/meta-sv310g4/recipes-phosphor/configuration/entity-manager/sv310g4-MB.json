@@ -847,6 +847,86 @@
             "Type": "INA219"
         },
         {
+            "Name": "M2_Temp",
+            "Bus": 30,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 80
+                }
+            ],
+            "Type": "NVME"
+        },
+        {
+            "Name": "NVMe_0_Temp",
+            "Bus": 28,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+        },
+        {
+            "Name": "NVMe_1_Temp",
+            "Bus": 29,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+        },
+        {
+            "Name": "NVMe_2_Temp",
+            "Bus": 20,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+        },
+        {
+            "Name": "NVMe_3_Temp",
+            "Bus": 21,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+        },
+        {
             "Name": "CPU0_VccIN_VOUT",
             "Bus": 2,
             "Address": "0x60",
