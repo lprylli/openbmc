@@ -52,6 +52,9 @@
         {
             "FALLING": [
                 "power-button-pressed.service"
+            ],
+            "RISING": [
+                "power-button-released.service"
             ]
         }
     }

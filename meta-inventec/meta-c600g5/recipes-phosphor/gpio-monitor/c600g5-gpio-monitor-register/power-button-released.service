@@ -1,0 +1,6 @@
+[Unit]
+Description=c600g5 Power Button Released Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env power_button_event.sh released

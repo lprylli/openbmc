@@ -16,6 +16,7 @@ SRC_URI += "file://SetPowerGoodPropertyOff.service \
             file://id-button-pressed.service \
 	    file://SetBiosPostCompletePropertyOff.service \
             file://power-button-pressed.service \
+            file://power-button-released.service \
             file://power_button_event.sh \
            "
 
@@ -30,3 +31,4 @@ SYSTEMD_SERVICE_${PN} += "SetPowerGoodPropertyOn.service"
 SYSTEMD_SERVICE_${PN} += "id-button-pressed.service"
 SYSTEMD_SERVICE_${PN} += "SetBiosPostCompletePropertyOff.service"
 SYSTEMD_SERVICE_${PN} += "power-button-pressed.service"
+SYSTEMD_SERVICE_${PN} += "power-button-released.service"
