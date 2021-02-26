@@ -41,5 +41,18 @@
             ]
         }
         
+    },
+    {
+        "Name": "PowerButton",
+        "GpioNum": 34,
+        "ChipId": "0",
+        "EventMon": "BOTH",
+        "Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "power-button-pressed.service"
+            ]
+        }
     }
 ]

@@ -333,6 +333,25 @@
              0xFF:
               type: uint32_t
 
+0xd6: # Power_Button
+    entityID: 0x0c
+    entityInstance: 0x01
+    sensorType: 0x14
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Power_Button
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Power_Button
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset :
+             0xFF:
+              type: uint32_t
+
 0xf6: # SEL_Status
   entityID: 0x07
   entityInstance: 0x01
