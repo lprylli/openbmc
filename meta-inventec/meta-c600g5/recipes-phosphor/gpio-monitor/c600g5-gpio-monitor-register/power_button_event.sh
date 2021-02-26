@@ -6,7 +6,7 @@ INTERFACE="xyz.openbmc_project.Logging.IPMI"
 METHOD="IpmiSelAddOem"
 TIMESTAMP="/var/power_btn_timestamp.log"
 POWER_FORCE_TIME=4
-
+PWRBTNACTFLAG="/var/power_btn_flag"
 case "$1" in
     pressed)
         touch $TIMESTAMP
@@ -15,6 +15,8 @@ case "$1" in
 
         #Add SEL log (Sensor Type Code 14h, Sensor Specific Offset 00)
         busctl call ${SERVICE} ${OBJECT} ${INTERFACE} ${METHOD} sayy "Power_Button" 9 0x20 0x00 0x04 0x14 0xd6 0x6f 0x00 0xff 0xff 0x02
+        #Create a power button action flag
+        touch $PWRBTNACTFLAG
         ;;
 
     released)
