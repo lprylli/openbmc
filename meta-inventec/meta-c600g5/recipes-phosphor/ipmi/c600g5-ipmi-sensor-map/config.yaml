@@ -943,6 +943,48 @@
           0xFF:
             type: double
 
+0x59:
+  entityID: 0xa
+  entityInstance: 3
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/PSU0_fan_speed
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
+0x5a:
+  entityID: 0xa
+  entityInstance: 4
+  sensorType: 0x04
+  path: /xyz/openbmc_project/sensors/fan_tach/PSU1_fan_speed
+  sensorReadingType: 0x01
+  multiplierM: 100
+  offsetB: 0
+  bExp: 0
+  rExp: 0
+  unit: xyz.openbmc_project.Sensor.Value.Unit.RPMS
+  scale: 0
+  serviceInterface: org.freedesktop.DBus.Properties
+  readingType: readingData
+  sensorNamePattern: nameLeaf
+  interfaces:
+    xyz.openbmc_project.Sensor.Value:
+      Value:
+        Offsets:
+          0xFF:
+            type: double
 0x66:
   entityID: 0x13
   entityInstance: 1
