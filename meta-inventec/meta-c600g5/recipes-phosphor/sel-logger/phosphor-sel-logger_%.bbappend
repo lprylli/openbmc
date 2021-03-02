@@ -5,6 +5,7 @@ DEPENDS_append_c600g5 = " phosphor-dbus-interfaces"
 SRCREV := "761bf202ba9db9fe644f8f400a5e768abe1a70cf"
 
 SRC_URI_append_c600g5 = " file://0001-add-event-log-support.patch \
+                          file://0002-Reset-the-SEL-ID-to-1-after-clearing-the-SEL.patch \
                           file://xyz.openbmc_project.Logging.IPMI.service \
 "
 
