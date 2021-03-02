@@ -1,0 +1,23 @@
+From e27b78e3fc2cee0f46b5663da731c36dcaed0e7b Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Sun, 7 Feb 2021 02:11:24 +0800
+Subject: [PATCH] Set the boot order of EntityManager after FruDevice
+
+---
+ service_files/xyz.openbmc_project.EntityManager.service | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/service_files/xyz.openbmc_project.EntityManager.service b/service_files/xyz.openbmc_project.EntityManager.service
+index 99452e2..04d7e2b 100644
+--- a/service_files/xyz.openbmc_project.EntityManager.service
++++ b/service_files/xyz.openbmc_project.EntityManager.service
+@@ -1,5 +1,6 @@
+ [Unit]
+ Description=Entity Manager
++After=dbus.service xyz.openbmc_project.FruDevice.service
+ 
+ [Service]
+ ExecStartPre=/bin/mkdir -p /var/configuration
+-- 
+2.17.1
+
