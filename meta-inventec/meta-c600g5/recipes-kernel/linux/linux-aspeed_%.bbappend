@@ -7,6 +7,7 @@ SRC_URI += "file://c600g5.cfg \
             file://0003-Support-IceLake-version-for-peci-driver.patch \
             file://0004-Support-CPU-margin-reading.patch \
             file://0005-Export-all-DIMMs-during-initialization.patch \
+	    file://0006-Read-BMC-MAC-address-from-EEPROM.patch \
            "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
