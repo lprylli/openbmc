@@ -1,0 +1,56 @@
+From e49818f0e7de2ced6ace469a511dd8cf5136bd1f Mon Sep 17 00:00:00 2001
+From: Ken Chen <chen.kenyy@inventec.com>
+Date: Tue, 23 Feb 2021 09:19:26 +0800
+Subject: [PATCH] [PATCH] Power status check workaround
+
+---
+ include/sensor.hpp | 3 ++-
+ src/Utils.cpp      | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/include/sensor.hpp b/include/sensor.hpp
+index 0ef87d5..7d7e721 100644
+--- a/include/sensor.hpp
++++ b/include/sensor.hpp
+@@ -316,6 +316,7 @@ struct Sensor
+ 
+     bool readingStateGood()
+     {
++#if 0
+         if (readState == PowerState::on && !isPowerOn())
+         {
+             return false;
+@@ -325,7 +326,7 @@ struct Sensor
+         {
+             return false;
+         }
+-
++#endif
+         return true;
+     }
+ 
+diff --git a/src/Utils.cpp b/src/Utils.cpp
+index 899ec98..c9973ff 100644
+--- a/src/Utils.cpp
++++ b/src/Utils.cpp
+@@ -210,7 +210,7 @@ bool isPowerOn(void)
+ {
+     if (!powerMatch)
+     {
+-        throw std::runtime_error("Power Match Not Created");
++        //throw std::runtime_error("Power Match Not Created");
+     }
+     return powerStatusOn;
+ }
+@@ -331,7 +331,7 @@ void setupPowerMatch(const std::shared_ptr<sdbusplus::asio::connection>& conn)
+                     else if (ec)
+                     {
+                         std::cerr << "Timer error " << ec.message() << "\n";
+-                        return;
++                        //return;
+                     }
+                     powerStatusOn = true;
+                 });
+-- 
+2.25.1
+

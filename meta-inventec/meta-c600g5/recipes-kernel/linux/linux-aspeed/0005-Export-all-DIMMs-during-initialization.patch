@@ -1,0 +1,50 @@
+From cddf1bb033f25ea505091342d8b08b5a649c99e2 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Mon, 8 Feb 2021 15:42:40 +0800
+Subject: [PATCH] Export all DIMMs during initialization
+
+---
+ drivers/hwmon/peci-dimmtemp.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+ mode change 100644 => 100755 drivers/hwmon/peci-dimmtemp.c
+
+diff --git a/drivers/hwmon/peci-dimmtemp.c b/drivers/hwmon/peci-dimmtemp.c
+old mode 100644
+new mode 100755
+index 3e373cf83101..f27fbda9f3c9
+--- a/drivers/hwmon/peci-dimmtemp.c
++++ b/drivers/hwmon/peci-dimmtemp.c
+@@ -32,7 +32,7 @@ struct peci_dimmtemp {
+ 	char				**dimmtemp_label;
+ };
+ 
+-static const u8 support_model[4] = {
++static const u8 support_model[] = {
+ 	INTEL_FAM6_HASWELL_X,
+ 	INTEL_FAM6_BROADWELL_X,
+ 	INTEL_FAM6_SKYLAKE_X,
+@@ -231,16 +231,20 @@ static int check_populated_dimms(struct peci_dimmtemp *priv)
+ 		int ret;
+ 
+ 		ret = read_ddr_dimm_temp_config(priv, chan_rank, cfg_data);
++/*
+ 		if (ret) {
+ 			priv->dimm_mask = 0;
+ 			return ret;
+ 		}
+ 
++*/
+ 		for (dimm_idx = 0; dimm_idx < dimm_idx_max; dimm_idx++)
+-			if (cfg_data[dimm_idx])
++		{
++			//if (cfg_data[dimm_idx])
+ 				priv->dimm_mask |= BIT(chan_rank *
+ 						       dimm_idx_max +
+ 						       dimm_idx);
++		}
+ 	}
+ 
+ 	if (!priv->dimm_mask)
+-- 
+2.17.1
+
