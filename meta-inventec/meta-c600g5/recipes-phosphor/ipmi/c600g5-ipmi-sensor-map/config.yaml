@@ -819,7 +819,7 @@
   entityID: 0x1D
   entityInstance: 1
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan0_Speed_F
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0
@@ -841,7 +841,7 @@
   entityID: 0x1D
   entityInstance: 2
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan0_Speed_R
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0
@@ -862,7 +862,7 @@
   entityID: 0x1D
   entityInstance: 3
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed_F
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan3_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0
@@ -883,7 +883,7 @@
   entityID: 0x1D
   entityInstance: 4
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed_R
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan4_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0
@@ -904,7 +904,7 @@
   entityID: 0x1D
   entityInstance: 5
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed_F
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan5_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0
@@ -925,7 +925,7 @@
   entityID: 0x1D
   entityInstance: 6
   sensorType: 0x04
-  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed_R
+  path: /xyz/openbmc_project/sensors/fan_tach/SYS_Fan6_Speed
   sensorReadingType: 0x01
   multiplierM: 100
   offsetB: 0

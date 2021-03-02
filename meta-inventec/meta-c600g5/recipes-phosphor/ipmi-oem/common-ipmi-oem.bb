@@ -24,6 +24,10 @@ SRC_URI = "file://CMakeLists.txt \
            file://storagecommands.hpp \
            file://bridgingcommands.cpp \
            file://bridgingcommands.hpp \
+           file://oemcommands.cpp \
+           file://oemcommands.hpp \
+           file://Utils.cpp \
+           file://Utils.hpp \
           "
 
 LIBRARY_NAMES = "libzc600g5oemcmds.so"

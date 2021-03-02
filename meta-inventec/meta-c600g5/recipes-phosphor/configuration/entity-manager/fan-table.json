@@ -1,0 +1,265 @@
+{
+    "sensors": [
+    {
+        "name": "Inlet_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/Inlet_Temp",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+        {
+        "name": "CPU0_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_Temp",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_Temp",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_A0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_A0",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_B0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_B0",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_A0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_A0",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_B0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_B0",
+        "timeout": 0,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan1_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan1_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm1",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan2_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan2_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm2",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan3_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan3_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm3",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan4_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan4_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm4",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan5_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan5_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm5",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "SYS_Fan6_Speed",
+        "type": "fan",
+        "readPath": "/xyz/openbmc_project/sensors/fan_tach/SYS_Fan6_Speed",
+        "writePath": "/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/pwm6",
+        "min": 0,
+        "max": 255,
+        "ignoreDbusMinMax": true
+    }
+    ],
+    "zones" : [
+        {
+            "id": 1,
+            "failsafePercent": 90.0,
+            "minThermalOutput": 0.0,
+            "cycleTimeBase": 100,
+            "checkFanFailuresTime": 10000,
+            "updateThermalsTime": 1000,
+            "pids": [
+                {
+                    "name": "fan0 fan1 fan2 fan3 fan4 fan5",
+                    "type": "fan",
+                    "inputs": [
+                        "SYS_Fan1_Speed",
+                        "SYS_Fan2_Speed",
+                        "SYS_Fan3_Speed",
+                        "SYS_Fan4_Speed",
+                        "SYS_Fan5_Speed",
+                        "SYS_Fan6_Speed"
+                    ],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": 0.0,
+                        "integralCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 1.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 0.0,
+                        "outLim_min": 0.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU0_Temp",
+                    "type": "temp",
+                    "inputs": ["CPU0_Temp"],
+                    "setpoint": 88,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -7.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU1_Temp",
+                    "type": "temp",
+                    "inputs": ["CPU1_Temp"],
+                    "setpoint": 88,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -7.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU0_DIMM_A0",
+                    "type": "temp",
+                    "inputs": ["CPU0_DIMM_A0"],
+                    "setpoint": 82,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -6.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU0_DIMM_B0",
+                    "type": "temp",
+                    "inputs": ["CPU0_DIMM_B0"],
+                    "setpoint": 82,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -6.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU1_DIMM_A0",
+                    "type": "temp",
+                    "inputs": ["CPU1_DIMM_A0"],
+                    "setpoint": 82,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -6.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                },
+                {
+                    "name": "Pid_CPU1_DIMM_B0",
+                    "type": "temp",
+                    "inputs": ["CPU1_DIMM_B0"],
+                    "setpoint": 82,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "proportionalCoeff": -6.0,
+                        "integralCoeff": -0.3,
+                        "derivativeCoeff": 0.0,
+                        "feedFwdOffsetCoeff": 0.0,
+                        "feedFwdGainCoeff": 0.0,
+                        "integralLimit_min": 0.0,
+                        "integralLimit_max": 100.0,
+                        "outLim_min": 30.0,
+                        "outLim_max": 100.0,
+                        "slewNeg": 0.0,
+                        "slewPos": 0.0
+                    }
+                }
+            ]
+        }
+    ]
+}
