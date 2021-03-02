@@ -33,7 +33,8 @@ VAL=$(devmem ${SCU3C} 32)
 if [ $((${VAL} & 0x01)) -eq 1 ]; then
     mkdir -p /run/openbmc
     touch /run/openbmc/AC-lost@0
-
+    /usr/bin/busctl call "xyz.openbmc_project.Logging.IPMI" "/xyz/openbmc_project/Logging/IPMI" "xyz.openbmc_project.Logging.IPMI" "IpmiSelAddOem" sayy "PSU_AC_Loss" 9 0x20 0x00 0x04 0x09 0xd6 0x6f 0x04 0xff 0xff 0x02
+	
     SCU00=0x1e6e2000
     UNLOCK=0x1688A8A8
     devmem ${SCU00} 32 ${UNLOCK}
