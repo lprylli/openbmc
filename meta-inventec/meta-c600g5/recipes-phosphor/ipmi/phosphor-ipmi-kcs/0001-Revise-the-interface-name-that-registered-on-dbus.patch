@@ -1,0 +1,54 @@
+From 982902911fa0594be40a0448dd467daff2513775 Mon Sep 17 00:00:00 2001
+From: "Shao-Yu, Wang" <shaw_wang@wiwynn.com>
+Date: Thu, 31 Dec 2020 17:35:26 +0800
+Subject: [PATCH] Revise the interface name that registered on dbus
+
+---
+ kcsbridged.cpp | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+ mode change 100644 => 100755 kcsbridged.cpp
+
+diff --git a/kcsbridged.cpp b/kcsbridged.cpp
+old mode 100644
+new mode 100755
+index 00914b5..243daef
+--- a/kcsbridged.cpp
++++ b/kcsbridged.cpp
+@@ -24,6 +24,9 @@
+ #include <sdbusplus/asio/connection.hpp>
+ #include <sdbusplus/asio/object_server.hpp>
+ 
++#include <string>
++#include <regex>
++
+ using namespace phosphor::logging;
+ 
+ namespace
+@@ -111,11 +114,23 @@ class SmsChannel
+         // register interfaces...
+         server = std::make_shared<sdbusplus::asio::object_server>(bus);
+ 
++        std::smatch results;
++        std::regex kcsChannelPattern("(.*)\\-(.*)");
++        constexpr size_t matchSize = 3;
++        std::string ifaceChannel = channel;
++        if (std::regex_match(channel, results, kcsChannelPattern))
++        {
++            if (results.size() == matchSize)
++            {
++                ifaceChannel = results[2];
++            }
++        }
++
+         static constexpr const char pathBase[] =
+             "/xyz/openbmc_project/Ipmi/Channel/";
+         std::shared_ptr<sdbusplus::asio::dbus_interface> iface =
+             server->add_interface(
+-                pathBase + boost::replace_all_copy(channel, "-", "_"),
++                pathBase + ifaceChannel + boost::replace_all_copy(channel, "-", "_"),
+                 "xyz.openbmc_project.Ipmi.Channel.SMS");
+         iface->register_method("setAttention",
+                                [this]() { return setAttention(); });
+-- 
+2.17.1
+

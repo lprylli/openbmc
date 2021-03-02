@@ -1,0 +1,1 @@
+FILESEXTRAPATHS_prepend_c600g5 := "${THISDIR}/${PN}:"

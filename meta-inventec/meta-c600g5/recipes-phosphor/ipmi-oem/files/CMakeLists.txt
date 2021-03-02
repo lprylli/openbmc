@@ -71,7 +71,7 @@ find_package (OpenSSL REQUIRED)
 include_directories (${OPENSSL_INCLUDE_DIR})
 
 add_library (
-    zc600g5oemcmds SHARED storagecommands.cpp 
+    zc600g5oemcmds SHARED storagecommands.cpp bridgingcommands.cpp
 )
 set_target_properties (zc600g5oemcmds PROPERTIES VERSION "0.1.0")
 set_target_properties (zc600g5oemcmds PROPERTIES SOVERSION "0")
