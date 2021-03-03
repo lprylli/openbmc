@@ -863,6 +863,27 @@
             "Type": "NVME"
         },
         {
+            "Name": "GPGPU_T4_Temp",
+            "Bus": 10,
+            "Address": "0x4F",
+            "Command": "0x0",
+            "MuxAddress": "0x72",
+            "MuxCommand": "0x1",
+            "SensorType": "temp",
+            "Mode": "Byte",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Type": "MISC",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 85
+                }
+            ]
+        },
+        {
             "Name": "NVMe_0_Temp",
             "Bus": 28,
             "SensorType": "temp",

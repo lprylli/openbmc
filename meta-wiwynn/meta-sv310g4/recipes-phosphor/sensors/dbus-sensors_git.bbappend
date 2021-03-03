@@ -8,6 +8,7 @@ SRC_URI += " \
             file://0005-Add-to-support-VR-sensor.patch \
             file://0006-Add-to-support-NVMe-sensor.patch \
             file://0007-Support-NIC-card-temperature-over-MCTP.patch \
+            file://0008-Add-to-support-miscellaneous-temperature-sensor.patch \
             "
 
 DEPENDS += "obmc-libi2c \
@@ -20,6 +21,7 @@ RDEPENDS_${PN} += "obmc-libi2c \
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.nicsensor.service"
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.vrsensor.service"
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.nvmesensor.service"
+SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.miscsensor.service"
 
 # Disable the CPU sensor Tcontrol threshold setting
 EXTRA_OECMAKE_append += " -DBMC_CPU_SENSOR_TCONTROL=OFF"
