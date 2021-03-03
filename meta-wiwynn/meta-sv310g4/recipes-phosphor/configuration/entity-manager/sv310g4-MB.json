@@ -1377,6 +1377,14 @@
             "Bus": 0,
             "Address": "0x51",
             "ReadOnly": true
+        },
+        {
+            "Name": "NIC FRU",
+            "Size": 512,
+            "Index": 3,
+            "Bus": 9,
+            "Address": "0x50",
+            "ReadOnly": true
         }
     ],
     "Name": "SV310G4 Main Board",

@@ -1,6 +1,17 @@
 #!/bin/bash
 # SV310G4 BMC environment initialization
 
+# Bind the NIC FRU EEPROM
+if [ ! -f /sys/devices/platform/ahb/ahb:apb/ahb:apb:bus@1e78a000/1e78a380.i2c-bus/i2c-9/9-0050/eeprom ]
+then
+    /usr/sbin/i2cset -y -a 9 0x73 4
+    /usr/sbin/i2cget -y -a 9 0x73
+    echo 9-0050 > /sys/bus/i2c/drivers/at24/bind
+    echo "Bind the NIC FRU EEPROM device"
+else
+    echo "NIC FRU EEPROM device exists!"
+fi
+
 # Create a directory to store non-volatile SEL records
 if [ ! -d /usr/share/sel ]; then
     mkdir -p /usr/share/sel

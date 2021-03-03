@@ -206,7 +206,7 @@
 
 &i2c4 {
 	status = "okay";
-	multi-master =<1>;
+	multi-master;
 	ipmb@10 {
 		compatible = "ipmb-dev";
 		reg = <0x10>;
@@ -261,6 +261,19 @@
 
 &i2c9 {
 	status = "okay";
+	multi-master;
+
+	bmc@10 {
+		compatible = ",slave-mqueue";
+		reg = <0x10>;
+	};
+
+	/* NIC card FRU */
+	eeprom@50 {
+		compatible = "atmel,24c32";
+		reg = <0x50>;
+		pagesize = <32>;
+	};
 };
 
 &i2c10 {

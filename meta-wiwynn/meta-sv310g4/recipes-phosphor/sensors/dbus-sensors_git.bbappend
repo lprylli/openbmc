@@ -7,6 +7,7 @@ SRC_URI += " \
             file://0004-Add-to-support-CPU-and-DIMM-sensors.patch \
             file://0005-Add-to-support-VR-sensor.patch \
             file://0006-Add-to-support-NVMe-sensor.patch \
+            file://0007-Support-NIC-card-temperature-over-MCTP.patch \
             "
 
 DEPENDS += "obmc-libi2c \

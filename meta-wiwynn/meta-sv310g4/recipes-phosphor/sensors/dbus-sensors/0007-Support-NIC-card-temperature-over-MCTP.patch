@@ -1,0 +1,421 @@
+From 7e8b2a7024bfb53c2d30e3b9abcf88e686e940cb Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Wed, 3 Mar 2021 13:46:52 +0800
+Subject: [PATCH] Support NIC card temperature over MCTP
+
+---
+ include/NICSensor.hpp |  99 ++++++++---------
+ src/NICSensor.cpp     | 244 ++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 288 insertions(+), 55 deletions(-)
+
+diff --git a/include/NICSensor.hpp b/include/NICSensor.hpp
+index 0a0a5f8..b272fd6 100644
+--- a/include/NICSensor.hpp
++++ b/include/NICSensor.hpp
+@@ -1,48 +1,51 @@
+-#pragma once
+-
+-#include <Thresholds.hpp>
+-#include <sdbusplus/asio/object_server.hpp>
+-#include <sensor.hpp>
+-#include <boost/asio/steady_timer.hpp>
+-
+-enum class ReadMode
+-{
+-    READ_BYTE = 0
+-};
+-
+-class NICSensor : public Sensor
+-{
+-public:
+-    NICSensor(const std::string& path, const std::string& objectType,
+-               sdbusplus::asio::object_server& objectServer,
+-               std::shared_ptr<sdbusplus::asio::connection>& conn,
+-               boost::asio::io_service& io, const std::string& sensorName,
+-               std::vector<thresholds::Threshold>&& thresholds,
+-               const std::string& sensorConfiguration, 
+-               std::string& sensorTypeName, const double MaxValue,
+-               const double MinValue, const uint8_t busId,
+-               const uint8_t slaveAddr, const uint8_t cmdCode,
+-               const uint8_t readMode, const double scaleVal,
+-               const double offsetVal, const int tctlMax);
+-    ~NICSensor();
+-private:
+-    sdbusplus::asio::object_server& objServer;
+-    boost::asio::steady_timer waitTimer;
+-    std::string path;
+-    std::string& sensorType;
+-    int errCount;
+-    uint8_t busId;
+-    uint8_t slaveAddr;
+-    uint8_t cmdCode;
+-    uint8_t readMode;
+-    float senValue;
+-    double scaleVal;
+-    double offsetVal;
+-    int tctlMax;
+-    thresholds::ThresholdTimer thresholdTimer;
+-    int powerondelaytime;
+-    void setupRead(void);
+-    bool visitNICReg(void);
+-    void handleResponse(void);
+-    void checkThresholds(void) override;
+-};
++#pragma once
++
++#include <Thresholds.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <sensor.hpp>
++#include <boost/asio/steady_timer.hpp>
++
++enum class ReadMode
++{
++    READ_BYTE = 0
++};
++
++class NICSensor : public Sensor
++{
++public:
++    NICSensor(const std::string& path, const std::string& objectType,
++               sdbusplus::asio::object_server& objectServer,
++               std::shared_ptr<sdbusplus::asio::connection>& conn,
++               boost::asio::io_service& io, const std::string& sensorName,
++               std::vector<thresholds::Threshold>&& thresholds,
++               const std::string& sensorConfiguration,
++               std::string& sensorTypeName, const double MaxValue,
++               const double MinValue, const uint8_t busId,
++               const uint8_t slaveAddr, const uint8_t cmdCode,
++               const uint8_t readMode, const double scaleVal,
++               const double offsetVal, const int tctlMax);
++    ~NICSensor();
++private:
++    sdbusplus::asio::object_server& objServer;
++    boost::asio::steady_timer waitTimer;
++    std::string path;
++    std::string& sensorType;
++    int errCount;
++    uint8_t busId;
++    uint8_t slaveAddr;
++    uint8_t cmdCode;
++    uint8_t readMode;
++    float senValue;
++    double scaleVal;
++    double offsetVal;
++    int tctlMax;
++    thresholds::ThresholdTimer thresholdTimer;
++    int powerondelaytime;
++    uint8_t mctpIID;
++    bool mctpCmd12Set;
++    void setupRead(void);
++    bool visitNICReg(void);
++    bool mctpGetTemp(void);
++    void handleResponse(void);
++    void checkThresholds(void) override;
++};
+diff --git a/src/NICSensor.cpp b/src/NICSensor.cpp
+index 0313168..3bc10cb 100644
+--- a/src/NICSensor.cpp
++++ b/src/NICSensor.cpp
+@@ -11,6 +11,7 @@
+ #include <sdbusplus/asio/connection.hpp>
+ #include <sdbusplus/asio/object_server.hpp>
+ #include <string>
++#include <systemd/sd-journal.h>
+ 
+ static constexpr bool DEBUG = false;
+ static constexpr const char* sensorPathPrefix = "/xyz/openbmc_project/sensors/";
+@@ -19,6 +20,36 @@ static constexpr unsigned int sensorPollMs = 1000;
+ static constexpr unsigned int sensorScaleFactor = 1000;
+ static constexpr size_t warnAfterErrorCount = 10;
+ 
++static constexpr int bmcSlaveAddr = 0x10; // 7-bit bmc slave address
++static std::vector<uint8_t> mctpGetTempCmd1 = {0x0F, 0x0A, 0x21,
++										       0x01, 0x00, 0x60, 0xCF,
++										       0x00, 0x85, 0x01, 0x00,
++										       0x01, 0x20};
++static constexpr const int mctpGetTempCmd1ResLen = 16;
++
++static std::vector<uint8_t> mctpGetTempCmd2 = {0x0F, 0x1A, 0x21,
++										       0x01, 0x01, 0x60, 0xCA,
++										       0x02, 0x00, 0x01, 0x00,
++										       0x09, 0x00, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x00,
++										       0x00, 0x93};
++static constexpr const int mctpGetTempCmd2ResLen = 34;
++
++static std::vector<uint8_t> mctpGetTempCmd3 = {0x0F, 0x22, 0x21,
++										       0x01, 0x01, 0x60, 0xC9,
++										       0x02, 0x00, 0x01, 0x00,
++										       0x35, 0x50, 0x00, 0x00,
++										       0x05, 0x00, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x01,
++										       0x57, 0x4B, 0x00, 0x00,
++										       0x00, 0x00, 0x00, 0x00,
++										       0x00, 0x92};
++static constexpr const int mctpGetTempCmd3ReqLen = 37;
++static constexpr const int mctpGetTempCmd3ResLen = 42;
++
+ NICSensor::NICSensor(const std::string& path, const std::string& objectType,
+                        sdbusplus::asio::object_server& objectServer,
+                        std::shared_ptr<sdbusplus::asio::connection>& conn,
+@@ -35,8 +66,8 @@ NICSensor::NICSensor(const std::string& path, const std::string& objectType,
+            MinValue, conn, PowerState::on),
+     path(path), objServer(objectServer), waitTimer(io), errCount(0),
+     senValue(0), busId(busId), slaveAddr(slaveAddr), cmdCode(cmdCode),
+-    readMode(readMode), sensorType(sensorTypeName), scaleVal(scaleVal),
+-    offsetVal(offsetVal), tctlMax(tctlMax), thresholdTimer(io, this)
++    readMode(readMode), sensorType(sensorTypeName), scaleVal(scaleVal), mctpIID(0x1),
++    offsetVal(offsetVal), tctlMax(tctlMax), thresholdTimer(io, this), mctpCmd12Set(false)
+ {
+     std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
+ 
+@@ -77,12 +108,29 @@ NICSensor::~NICSensor()
+ 
+ void NICSensor::setupRead(void)
+ {
+-    bool res = visitNICReg();
+-    if (res != true)
++    bool res = false;
++
++    if (!readingStateGood())
+     {
+-        incrementError();
++        mctpCmd12Set = false;
++        markAvailable(false);
++        res = true;
+     }
+     else
++    {
++        res = visitNICReg();
++
++        if (res != true)
++        {
++            res = mctpGetTemp();
++            if (res != true)
++            {
++                incrementError();
++            }
++        }
++    }
++
++    if (res == true)
+     {
+         handleResponse();
+     }
+@@ -96,19 +144,20 @@ void NICSensor::setupRead(void)
+         setupRead();
+     });
+ }
++
+ bool NICSensor::visitNICReg(void)
+ {
+     int fd = -1;
+     int res = -1;
+     std::vector<char> filename;
+     filename.assign(20, 0);
+-
++/*
+     if (!readingStateGood())
+     {
+         markAvailable(false);
+         return true;
+     }
+-
++*/
+     fd = open_i2c_dev(busId, filename.data(), filename.size(), 0);
+     if (fd < 0)
+     {
+@@ -167,6 +216,187 @@ bool NICSensor::visitNICReg(void)
+     return true;
+ }
+ 
++bool NICSensor::mctpGetTemp(void)
++{
++    std::vector<char> filename(32, 0);
++    int outFd = -1;
++    outFd =  open_i2c_dev(busId, filename.data(), filename.size(), 0);
++    if (outFd < 0)
++    {
++        std::cerr << "[MCTP] Error in open MCTP I2C device.\n";
++        return false;
++    }
++
++    int inFd = -1;
++    inFd = open_i2c_slave_dev(busId, bmcSlaveAddr);
++    if (inFd < 0)
++    {
++        std::cerr << "[MCTP] Error in open slave mqueue device.\n";
++        close_i2c_dev(outFd);
++        return false;
++    }
++
++    // Step1
++    int res = -1;
++    uint8_t mctpAddr = 0x32;
++    uint8_t mctpAddrPec = 0x3b;
++    std::vector<uint8_t> mctpResp(255,0);
++
++    if (mctpCmd12Set == false)
++    {
++        i2c_slave_clear_buffer(inFd);
++        res = i2c_master_write(outFd, mctpAddr, mctpGetTempCmd1.size(), mctpGetTempCmd1.data());
++        if (res < 0)
++        {
++            std::cerr << "[MCTP] Error in master wirte in Cmd1.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++        std::this_thread::sleep_for(std::chrono::milliseconds(50));
++
++        res = i2c_slave_read(inFd, mctpResp.data());
++        if (res <= 0)
++        {
++            std::cerr << "[MCTP] Error in reading data from mqueue for Cmd1.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++
++        if (res != mctpGetTempCmd1ResLen)
++        {
++            std::cerr << "[MCTP] Error in resLen of Cmd1.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++
++        if (DEBUG)
++        {
++            for (int j=0; j<res; j++)
++            {
++                sd_journal_print(LOG_INFO, "[CMD1][%x]",
++                                            mctpResp.at(j));
++            }
++        }
++
++        uint8_t cmd1_pec = i2c_smbus_pec(0, mctpResp.data(), (res-1));
++        if (cmd1_pec != mctpResp.at(res-1))
++        {
++            std::cerr << "[MCTP] Error in PEC of Cmd1.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++
++        i2c_slave_clear_buffer(inFd);
++        res = i2c_master_write(outFd, mctpAddr, mctpGetTempCmd2.size(), mctpGetTempCmd2.data());
++        if (res < 0)
++        {
++            std::cerr << "[MCTP] Error in master wirte in Cmd2.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++        std::this_thread::sleep_for(std::chrono::milliseconds(50));
++
++        res = i2c_slave_read(inFd, mctpResp.data());
++        if (res <= 0)
++        {
++            std::cerr << "[MCTP] Error in reading data from mqueue for Cmd2.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++
++        if (res != mctpGetTempCmd2ResLen)
++        {
++            std::cerr << "[MCTP] Error in resLen of Cmd2.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++
++        uint8_t cmd2_pec = i2c_smbus_pec(0, mctpResp.data(), (res-1));
++        if (cmd2_pec != mctpResp.at(res-1))
++        {
++            std::cerr << "[MCTP] Error in PEC of Cmd2.\n";
++            close_i2c_dev(inFd);
++            close_i2c_dev(outFd);
++            return false;
++        }
++    }
++    mctpCmd12Set = true;
++
++    // Get Temperature
++    // Specify the IID
++
++    mctpGetTempCmd3.at(11) = mctpIID;
++    uint8_t cmd3req_pec = i2c_smbus_pec(mctpAddrPec, mctpGetTempCmd3.data(),
++                                       (mctpGetTempCmd3ReqLen-1));
++    mctpGetTempCmd3.at(mctpGetTempCmd3ReqLen-1) = cmd3req_pec;
++
++    i2c_slave_clear_buffer(inFd);
++    res = i2c_master_write(outFd, mctpAddr, mctpGetTempCmd3.size(), mctpGetTempCmd3.data());
++    if (res < 0)
++    {
++        std::cerr << "[MCTP] Error in master wirte in Cmd3.\n";
++        close_i2c_dev(inFd);
++        close_i2c_dev(outFd);
++        return false;
++    }
++    std::this_thread::sleep_for(std::chrono::milliseconds(50));
++
++    res = i2c_slave_read(inFd, mctpResp.data());
++    if (res <= 0)
++    {
++        std::cerr << "[MCTP] Error in reading data from mqueue for Cmd3.\n";
++        close_i2c_dev(inFd);
++        close_i2c_dev(outFd);
++        return false;
++    }
++
++    if (res != mctpGetTempCmd3ResLen)
++    {
++        std::cerr << "[MCTP] Error in resLen of Cmd3.\n";
++        close_i2c_dev(inFd);
++        close_i2c_dev(outFd);
++        return false;
++    }
++
++    uint8_t cmd3_pec = i2c_smbus_pec(0, mctpResp.data(), (res-1));
++    if (cmd3_pec != mctpResp.at(res-1))
++    {
++        std::cerr << "[MCTP] Error in PEC of Cmd3.\n";
++        close_i2c_dev(inFd);
++        close_i2c_dev(outFd);
++        return false;
++    }
++
++    senValue = mctpResp.at(36);
++    if (DEBUG)
++    {
++        sd_journal_print(LOG_CRIT, "[MCTP Temp][Max %d][Curr %d]\n",
++                         mctpResp.at(35), mctpResp.at(36));
++    }
++
++    close_i2c_dev(inFd);
++    close_i2c_dev(outFd);
++
++    // Increase the IID
++    if (0xFF == mctpIID)
++    {
++        mctpIID = 0x1;
++    }
++    else
++    {
++        mctpIID++;
++    }
++
++    return true;
++}
++
+ void NICSensor::handleResponse()
+ {
+     if (readingStateGood())
+-- 
+2.17.1
+
