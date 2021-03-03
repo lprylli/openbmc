@@ -4,7 +4,319 @@
         "name": "FPB_Temp",
         "type": "temp",
         "readPath": "/xyz/openbmc_project/sensors/temperature/FPB_Temp",
-        "timeout": 0,
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_Margin",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_Margin",
+        "tjMaxPath": "/sys/bus/peci/devices/0-30/peci-cputemp.0/hwmon/**/temp5_input",
+        "tjMaxScale": 0.001,
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_Margin",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_Margin",
+        "tjMaxPath": "/sys/bus/peci/devices/0-31/peci-cputemp.1/hwmon/**/temp5_input",
+        "tjMaxScale": 0.001,
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "OCP_NIC_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/OCP_NIC_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "NVMe_0_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/NVMe_0_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "NVMe_1_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/NVMe_1_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "NVMe_2_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/NVMe_2_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "NVMe_3_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/NVMe_3_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_A0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_A0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_A1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_A1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_B0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_B0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_B1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_B1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_C0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_C0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_C1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_C1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_D0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_D0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_D1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_D1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_E0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_E0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_E1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_E1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_F0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_F0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_F1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_F1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_G0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_G0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_G1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_G1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_H0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_H0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU0_DIMM_H1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_DIMM_H1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_A0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_A0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_A1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_A1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_B0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_B0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_B1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_B1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_C0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_C0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_C1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_C1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_D0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_D0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_D1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_D1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_E0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_E0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_E1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_E1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_F0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_F0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_F1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_F1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_G0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_G0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_G1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_G1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_H0",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_H0",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "CPU1_DIMM_H1",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_DIMM_H1",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "PSU0_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/PSU0_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "PSU1_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/PSU1_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "PCH_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/PCH_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "M2_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/M2_Temp",
+        "timeout": 10,
+        "ignoreDbusMinMax": true
+    },
+    {
+        "name": "GPGPU_T4_Temp",
+        "type": "temp",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/GPGPU_T4_Temp",
+        "timeout": 10,
         "ignoreDbusMinMax": true
     },
     {
@@ -65,7 +377,18 @@
     "zones" : [
         {
             "id": 1,
-            "failsafePercent": 90.0,
+            "sensorFailsafeProfiles": [
+                {
+                    "sensorNames": [
+                        "FPB_Temp",
+                        "OCP_NIC_Temp",
+                        "CPU0_Margin",
+                        "CPU1_Margin"
+                    ],
+                    "outputType": "value",
+                    "failsafePercent": 90.0
+                }
+            ],
             "minThermalOutput": 0.0,
             "cycleTimeBase": 1000,
             "checkFanFailuresTime": 0,
@@ -100,8 +423,8 @@
                     }
                 },
                 {
-                    "name": "Stepwise_FPB_Temp",
-                    "type": "stepwise",
+                    "name": "Linear_FPB_Temp",
+                    "type": "linear",
                     "inputs": ["FPB_Temp"],
                     "setpoint": 0.0,
                     "pid": {
@@ -117,16 +440,417 @@
                             "6": 40.0
                         },
                         "output": {
-                            "0": 80.0,
-                            "1": 80.0,
-                            "2": 80.0,
-                            "3": 80.0,
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 60.0,
+                            "3": 70.0,
                             "4": 80.0,
                             "5": 90.0,
                             "6": 100.0
                         },
                         "positiveHysteresis": 0,
                         "negativeHysteresis": 1
+                    }
+                },
+                {
+                    "name": "Linear_CPU0_Margin",
+                    "type": "linear",
+                    "inputs": ["CPU0_Margin"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": -93.0,
+                            "1": -20.0,
+                            "2": -18.0,
+                            "3": -16.0,
+                            "4": -14.0,
+                            "5": -12.0,
+                            "6": -10.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 50.0,
+                            "3": 70.0,
+                            "4": 80.0,
+                            "5": 90.0,
+                            "6": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_CPU1_Margin",
+                    "type": "linear",
+                    "inputs": ["CPU1_Margin"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": -93.0,
+                            "1": -20.0,
+                            "2": -18.0,
+                            "3": -16.0,
+                            "4": -14.0,
+                            "5": -12.0,
+                            "6": -10.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 50.0,
+                            "3": 70.0,
+                            "4": 80.0,
+                            "5": 90.0,
+                            "6": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_OCP_NIC_Temp",
+                    "type": "linear",
+                    "inputs": ["OCP_NIC_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 95.0,
+                            "2": 97.0,
+                            "3": 99.0,
+                            "4": 101.0,
+                            "5": 103.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_NVMe_0_Temp",
+                    "type": "linear",
+                    "inputs": ["NVMe_0_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 61.0,
+                            "2": 63.0,
+                            "3": 65.0,
+                            "4": 67.0,
+                            "5": 68.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_NVMe_1_Temp",
+                    "type": "linear",
+                    "inputs": ["NVMe_1_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 61.0,
+                            "2": 63.0,
+                            "3": 65.0,
+                            "4": 67.0,
+                            "5": 68.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_NVMe_2_Temp",
+                    "type": "linear",
+                    "inputs": ["NVMe_2_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 61.0,
+                            "2": 63.0,
+                            "3": 65.0,
+                            "4": 67.0,
+                            "5": 68.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_NVMe_3_Temp",
+                    "type": "linear",
+                    "inputs": ["NVMe_3_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 61.0,
+                            "2": 63.0,
+                            "3": 65.0,
+                            "4": 67.0,
+                            "5": 68.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_PSU0_Temp",
+                    "type": "linear",
+                    "inputs": ["PSU0_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 55.0,
+                            "2": 57.0,
+                            "3": 59.0,
+                            "4": 61.0,
+                            "5": 63.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 2,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_PSU1_Temp",
+                    "type": "linear",
+                    "inputs": ["PSU1_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 55.0,
+                            "2": 57.0,
+                            "3": 59.0,
+                            "4": 61.0,
+                            "5": 63.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 2,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_PCH_Temp",
+                    "type": "linear",
+                    "inputs": ["PCH_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 76.0,
+                            "2": 78.0,
+                            "3": 80.0,
+                            "4": 82.0,
+                            "5": 84.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 2,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_M2_Temp",
+                    "type": "linear",
+                    "inputs": ["M2_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 70.0,
+                            "2": 72.0,
+                            "3": 74.0,
+                            "4": 76.0,
+                            "5": 78.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_GPGPU_T4_Temp",
+                    "type": "linear",
+                    "inputs": ["GPGPU_T4_Temp"],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 75.0,
+                            "2": 77.0,
+                            "3": 79.0,
+                            "4": 81.0,
+                            "5": 83.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 2,
+                        "negativeHysteresis": 2
+                    }
+                },
+                {
+                    "name": "Linear_DIMM_Temp_Max",
+                    "type": "linear",
+                    "inputs": [
+                        "CPU0_DIMM_A0",
+                        "CPU0_DIMM_A1",
+                        "CPU0_DIMM_B0",
+                        "CPU0_DIMM_B1",
+                        "CPU0_DIMM_C0",
+                        "CPU0_DIMM_C1",
+                        "CPU0_DIMM_D0",
+                        "CPU0_DIMM_D1",
+                        "CPU0_DIMM_E0",
+                        "CPU0_DIMM_E1",
+                        "CPU0_DIMM_F0",
+                        "CPU0_DIMM_F1",
+                        "CPU0_DIMM_G0",
+                        "CPU0_DIMM_G1",
+                        "CPU0_DIMM_H0",
+                        "CPU0_DIMM_H1",
+                        "CPU1_DIMM_A0",
+                        "CPU1_DIMM_A1",
+                        "CPU1_DIMM_B0",
+                        "CPU1_DIMM_B1",
+                        "CPU1_DIMM_C0",
+                        "CPU1_DIMM_C1",
+                        "CPU1_DIMM_D0",
+                        "CPU1_DIMM_D1",
+                        "CPU1_DIMM_E0",
+                        "CPU1_DIMM_E1",
+                        "CPU1_DIMM_F0",
+                        "CPU1_DIMM_F1",
+                        "CPU1_DIMM_G0",
+                        "CPU1_DIMM_G1",
+                        "CPU1_DIMM_H0",
+                        "CPU1_DIMM_H1"
+                    ],
+                    "setpoint": 0.0,
+                    "pid": {
+                        "samplePeriod": 1,
+                        "isCeiling": false,
+                        "reading": {
+                            "0": 1.0,
+                            "1": 70.0,
+                            "2": 72.0,
+                            "3": 74.0,
+                            "4": 76.0,
+                            "5": 78.0
+                        },
+                        "output": {
+                            "0": 50.0,
+                            "1": 50.0,
+                            "2": 70.0,
+                            "3": 80.0,
+                            "4": 90.0,
+                            "5": 100.0
+                        },
+                        "positiveHysteresis": 0,
+                        "negativeHysteresis": 5
                     }
                 }
             ]

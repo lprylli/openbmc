@@ -1,0 +1,67 @@
+From 1ac3303ed451678c747a342835d1e1680873db75 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Fri, 19 Feb 2021 13:25:27 +0800
+Subject: [PATCH] Let CPU margin can show negative values
+
+---
+ sensordatahandler.hpp | 20 +++++++++++++++++++-
+ sensorhandler.cpp     | 11 ++++++++---
+ 2 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/sensordatahandler.hpp b/sensordatahandler.hpp
+index 40a4f4b..e287b2b 100644
+--- a/sensordatahandler.hpp
++++ b/sensordatahandler.hpp
+@@ -285,8 +285,26 @@ GetSensorResponse readingData(const Info& sensorInfo)
+     double value =
+         reading * std::pow(10, sensorInfo.scale - sensorInfo.exponentR);
+ 
+-    auto rawData = static_cast<uint8_t>((value - sensorInfo.scaledOffset) /
++    uint8_t rawData;
++    if(sensorInfo.sensorName == "CPU0 Margin" || sensorInfo.sensorName == "CPU1 Margin")
++    {
++        if(value < 0)
++        {
++            auto rawData_s = static_cast<int8_t>(value - sensorInfo.scaledOffset) /
++                                        sensorInfo.coefficientM;
++            rawData = static_cast<uint8_t>(rawData_s);
++        }
++        else
++        {
++            rawData = static_cast<uint8_t>((value - sensorInfo.scaledOffset) /
+                                         sensorInfo.coefficientM);
++        }
++    }
++    else
++    {
++        rawData = static_cast<uint8_t>((value - sensorInfo.scaledOffset) /
++                                        sensorInfo.coefficientM);
++    }
+     setReading(rawData, &response, readingState);
+ 
+     // Check threshold status.
+diff --git a/sensorhandler.cpp b/sensorhandler.cpp
+index 7de74c5..97d5ad8 100644
+--- a/sensorhandler.cpp
++++ b/sensorhandler.cpp
+@@ -756,9 +756,14 @@ ipmi_ret_t populate_record_from_dbus(get_sdr::SensorDataFullRecordBody* body,
+     /* Functional sensor case */
+     if (isAnalogSensor(info->propertyInterfaces.begin()->first))
+     {
+-
+-        body->sensor_units_1 = 0; // unsigned, no rate, no modifier, not a %
+-
++        if(info->sensorName == "CPU0 Margin" || info->sensorName == "CPU1 Margin")
++        {
++            body->sensor_units_1 = 0x80; // signed, no rate, no modifier, not a %
++        }
++        else
++        {
++            body->sensor_units_1 = 0; // unsigned, no rate, no modifier, not a %
++        }
+         /* Unit info */
+         setUnitFieldsForObject(info, body);
+ 
+-- 
+2.17.1
+

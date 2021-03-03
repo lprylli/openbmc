@@ -4,6 +4,7 @@ SRC_URI += "file://0001-Create-sensor-gen-extra-from-sensor-yaml.patch \
             file://0002-Support-sdr-related-command-handlers.patch \
             file://0003-Get-fru-sdr-from-fru-dbus.patch \
             file://0004-Support-IPMI-power-reset-and-power-soft-commands.patch \
+            file://0005-Support-CPU-margin-showing-negative-values.patch \
             file://master_write_read_white_list.json \
            "
 

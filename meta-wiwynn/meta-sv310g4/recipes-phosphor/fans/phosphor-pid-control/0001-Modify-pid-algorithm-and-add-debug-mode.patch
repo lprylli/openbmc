@@ -1,0 +1,1035 @@
+From b1c404d06c756866ebaef7d5feb3de23e1348f10 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Fri, 19 Feb 2021 16:37:45 +0800
+Subject: [PATCH] Modify pid algorithm and add debug mode
+
+---
+ conf.hpp                   |  7 +---
+ dbus/dbusconfiguration.cpp | 29 +++------------
+ main.cpp                   | 48 ++++++++++++++++++++++++
+ pid/builder.cpp            |  4 +-
+ pid/buildjson.cpp          | 34 +++++++++++------
+ pid/controller.hpp         |  7 ++++
+ pid/ec/pid.cpp             | 14 +++++--
+ pid/ec/pid.hpp             |  5 ++-
+ pid/ec/stepwise.cpp        | 70 +++++++++++++++++++++++++++++------
+ pid/ec/stepwise.hpp        |  9 +++--
+ pid/fancontroller.cpp      | 14 +++++++
+ pid/pidcontroller.cpp      | 31 ++++++++++------
+ pid/pidcontroller.hpp      | 21 ++++++++++-
+ pid/stepwisecontroller.cpp | 22 ++++++++---
+ pid/stepwisecontroller.hpp | 27 ++++++++++++--
+ pid/thermalcontroller.cpp  | 14 ++++++-
+ pid/tuning.cpp             |  2 +
+ pid/tuning.hpp             |  2 +
+ pid/util.cpp               |  2 +
+ pid/zone.cpp               | 75 +++++++++++++++++++++++++++++---------
+ pid/zone.hpp               |  4 +-
+ pid/zone_interface.hpp     |  2 +-
+ 22 files changed, 339 insertions(+), 104 deletions(-)
+
+diff --git a/conf.hpp b/conf.hpp
+index e471f22..89d5df1 100644
+--- a/conf.hpp
++++ b/conf.hpp
+@@ -37,11 +37,8 @@ struct ControllerInfo
+     std::string type;                // fan or margin or temp?
+     std::vector<std::string> inputs; // one or more sensors.
+     double setpoint;                 // initial setpoint for thermal.
+-    union
+-    {
+-        ec::pidinfo pidInfo; // pid details
+-        ec::StepwiseInfo stepwiseInfo;
+-    };
++    ec::pidinfo pidInfo;             // pid details
++    ec::StepwiseInfo stepwiseInfo;
+ };
+ 
+ /*
+diff --git a/dbus/dbusconfiguration.cpp b/dbus/dbusconfiguration.cpp
+index 55151d3..61924cc 100644
+--- a/dbus/dbusconfiguration.cpp
++++ b/dbus/dbusconfiguration.cpp
+@@ -845,37 +845,20 @@ bool init(sdbusplus::bus::bus& bus, boost::asio::steady_timer& timer,
+                     info.stepwiseInfo.negativeHysteresis = std::visit(
+                         VariantToDoubleVisitor(), findNegHyst->second);
+                 }
+-                std::vector<double> readings =
++                info.stepwiseInfo.reading =
+                     std::get<std::vector<double>>(base.at("Reading"));
+-                if (readings.size() > ec::maxStepwisePoints)
+-                {
+-                    throw std::invalid_argument("Too many stepwise points.");
+-                }
+-                if (readings.empty())
++                if (info.stepwiseInfo.reading.empty())
+                 {
+                     throw std::invalid_argument(
+                         "Must have one stepwise point.");
+                 }
+-                std::copy(readings.begin(), readings.end(),
+-                          info.stepwiseInfo.reading);
+-                if (readings.size() < ec::maxStepwisePoints)
+-                {
+-                    info.stepwiseInfo.reading[readings.size()] =
+-                        std::numeric_limits<double>::quiet_NaN();
+-                }
+-                std::vector<double> outputs =
++                info.stepwiseInfo.output =
+                     std::get<std::vector<double>>(base.at("Output"));
+-                if (readings.size() != outputs.size())
++                if (info.stepwiseInfo.reading.size() !=
++                    info.stepwiseInfo.output.size())
+                 {
+                     throw std::invalid_argument(
+-                        "Outputs size must match readings");
+-                }
+-                std::copy(outputs.begin(), outputs.end(),
+-                          info.stepwiseInfo.output);
+-                if (outputs.size() < ec::maxStepwisePoints)
+-                {
+-                    info.stepwiseInfo.output[outputs.size()] =
+-                        std::numeric_limits<double>::quiet_NaN();
++                        "Outputs size must match reading");
+                 }
+             }
+         }
+diff --git a/main.cpp b/main.cpp
+index 9a47a00..6417551 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -34,7 +34,11 @@
+ #include <boost/asio/io_context.hpp>
+ #include <boost/asio/steady_timer.hpp>
+ #include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
+ #include <sdbusplus/bus.hpp>
++#include <sdbusplus/bus/match.hpp>
++#include <sdbusplus/server/interface.hpp>
++#include <sdbusplus/vtable.hpp>
+ 
+ #include <chrono>
+ #include <filesystem>
+@@ -73,6 +77,34 @@ static sdbusplus::asio::connection
+ static sdbusplus::asio::connection
+     passiveBus(io, sdbusplus::bus::new_system().release());
+ 
++// Setup debug mode dbus objectPath/interface name.
++constexpr auto debugModeObjPath = "/xyz/openbmc_project/settings/fanctrl/debug";
++constexpr auto debugModeIntfName = "xyz.openbmc_project.Control.DebugMode";
++
++// Register debug mode signal handler
++void registerDebugSignalHandler()
++{
++    char signalSetting[512];
++
++    memset(signalSetting, 0, sizeof(signalSetting));
++    snprintf(signalSetting, sizeof(signalSetting),
++             "type='signal',interface='%s',member='Open',path='%s'",
++             debugModeIntfName, debugModeObjPath);
++    static sdbusplus::bus::match::match openDebugMode(
++        modeControlBus, signalSetting,
++        [](sdbusplus::message::message& message) { debugModeEnabled = true; });
++
++    memset(signalSetting, 0, sizeof(signalSetting));
++    snprintf(signalSetting, sizeof(signalSetting),
++             "type='signal',interface='%s',member='Close',path='%s'",
++             debugModeIntfName, debugModeObjPath);
++    static sdbusplus::bus::match::match closeDebugMode(
++        modeControlBus, signalSetting,
++        [](sdbusplus::message::message& message) { debugModeEnabled = false; });
++
++    return;
++}
++
+ namespace pid_control
+ {
+ 
+@@ -172,6 +204,7 @@ int main(int argc, char* argv[])
+     loggingPath = "";
+     loggingEnabled = false;
+     tuningEnabled = false;
++    debugModeEnabled = false;
+ 
+     CLI::App app{"OpenBMC Fan Control Daemon"};
+ 
+@@ -218,6 +251,21 @@ int main(int argc, char* argv[])
+     hostBus.request_name("xyz.openbmc_project.Hwmon.external");
+     modeControlBus.request_name("xyz.openbmc_project.State.FanCtrl");
+ 
++    // Create debug mode object.
++    std::shared_ptr<sdbusplus::asio::connection> modeCtrlPtr(&modeControlBus);
++    sdbusplus::asio::object_server modeCtrlServer(modeCtrlPtr);
++    modeCtrlServer.add_interface(debugModeObjPath, debugModeIntfName);
++
++    // Create debug mode signal
++    const sd_bus_vtable modeVtable[] = {
++        sdbusplus::vtable::start(), sdbusplus::vtable::signal("Open", "", 0),
++        sdbusplus::vtable::signal("Close", "", 0), sdbusplus::vtable::end()};
++    sdbusplus::server::interface::interface createDebugModeVtable(
++        static_cast<sdbusplus::bus::bus&>(modeControlBus), debugModeObjPath,
++        debugModeIntfName, modeVtable, NULL);
++
++    registerDebugSignalHandler();
++
+     /*
+      * All sensors are managed by one manager, but each zone has a pointer to
+      * it.
+diff --git a/pid/builder.cpp b/pid/builder.cpp
+index 505ca98..450be75 100644
+--- a/pid/builder.cpp
++++ b/pid/builder.cpp
+@@ -110,7 +110,7 @@ std::unordered_map<int64_t, std::shared_ptr<ZoneInterface>>
+ 
+                 zone->addThermalPID(std::move(pid));
+             }
+-            else if (info.type == "stepwise")
++            else if (info.type == "stepwise" || info.type == "linear")
+             {
+                 for (const auto& i : info.inputs)
+                 {
+@@ -118,7 +118,7 @@ std::unordered_map<int64_t, std::shared_ptr<ZoneInterface>>
+                     zone->addThermalInput(i);
+                 }
+                 auto stepwise = StepwiseController::createStepwiseController(
+-                    zone.get(), name, inputs, info.stepwiseInfo);
++                    zone.get(), name, info.type, inputs, info.stepwiseInfo);
+                 zone->addThermalPID(std::move(stepwise));
+             }
+ 
+diff --git a/pid/buildjson.cpp b/pid/buildjson.cpp
+index e078fdb..fb2b986 100644
+--- a/pid/buildjson.cpp
++++ b/pid/buildjson.cpp
+@@ -55,7 +55,7 @@ void from_json(const json& j, conf::ControllerInfo& c)
+         p.at("negativeHysteresis").get_to(negativeHysteresisValue);
+     }
+ 
+-    if (c.type != "stepwise")
++    if (c.type != "stepwise" && c.type != "linear")
+     {
+         p.at("samplePeriod").get_to(c.pidInfo.ts);
+         p.at("proportionalCoeff").get_to(c.pidInfo.proportionalCoeff);
+@@ -68,7 +68,14 @@ void from_json(const json& j, conf::ControllerInfo& c)
+         p.at("outLim_max").get_to(c.pidInfo.outLim.max);
+         p.at("slewNeg").get_to(c.pidInfo.slewNeg);
+         p.at("slewPos").get_to(c.pidInfo.slewPos);
++        auto derivativeCoeff = p.find("derivativeCoeff");
++        auto derivativeCoeffValue = 0.0;
++        if (derivativeCoeff != p.end())
++        {
++            p.at("derivativeCoeff").get_to(derivativeCoeffValue);
++        }
+ 
++        c.pidInfo.derivativeCoeff = derivativeCoeffValue;
+         c.pidInfo.positiveHysteresis = positiveHysteresisValue;
+         c.pidInfo.negativeHysteresis = negativeHysteresisValue;
+     }
+@@ -77,23 +84,21 @@ void from_json(const json& j, conf::ControllerInfo& c)
+         p.at("samplePeriod").get_to(c.stepwiseInfo.ts);
+         p.at("isCeiling").get_to(c.stepwiseInfo.isCeiling);
+ 
+-        for (size_t i = 0; i < ec::maxStepwisePoints; i++)
+-        {
+-            c.stepwiseInfo.reading[i] =
+-                std::numeric_limits<double>::quiet_NaN();
+-            c.stepwiseInfo.output[i] = std::numeric_limits<double>::quiet_NaN();
+-        }
+-
+         auto reading = p.find("reading");
+         if (reading != p.end())
+         {
+             auto r = p.at("reading");
+-            for (size_t i = 0; i < ec::maxStepwisePoints; i++)
++            for (size_t i = 0;; ++i)
+             {
+                 auto n = r.find(std::to_string(i));
+                 if (n != r.end())
+                 {
+-                    r.at(std::to_string(i)).get_to(c.stepwiseInfo.reading[i]);
++                    c.stepwiseInfo.reading.emplace_back(
++                        std::move(r.at(std::to_string(i))));
++                }
++                else
++                {
++                    break;
+                 }
+             }
+         }
+@@ -102,12 +107,17 @@ void from_json(const json& j, conf::ControllerInfo& c)
+         if (output != p.end())
+         {
+             auto o = p.at("output");
+-            for (size_t i = 0; i < ec::maxStepwisePoints; i++)
++            for (size_t i = 0;; ++i)
+             {
+                 auto n = o.find(std::to_string(i));
+                 if (n != o.end())
+                 {
+-                    o.at(std::to_string(i)).get_to(c.stepwiseInfo.output[i]);
++                    c.stepwiseInfo.output.emplace_back(
++                        std::move(o.at(std::to_string(i))));
++                }
++                else
++                {
++                    break;
+                 }
+             }
+         }
+diff --git a/pid/controller.hpp b/pid/controller.hpp
+index 5680052..35783b1 100644
+--- a/pid/controller.hpp
++++ b/pid/controller.hpp
+@@ -25,6 +25,13 @@ struct Controller
+     virtual void process(void) = 0;
+ 
+     virtual std::string getID(void) = 0;
++
++    /*
++     * Get the sensor name from zone profile name for example:
++     * Profile name is : Linear_Temp_CPU0.
++     * Return string will be Temp_CPU0.
++     */
++    virtual std::string getProfileName(void) const = 0;
+ };
+ 
+ } // namespace pid_control
+diff --git a/pid/ec/pid.cpp b/pid/ec/pid.cpp
+index 98968f7..338a5c1 100644
+--- a/pid/ec/pid.cpp
++++ b/pid/ec/pid.cpp
+@@ -16,6 +16,9 @@
+ 
+ #include "pid.hpp"
+ 
++#include <cmath>
++#include <iostream>
++
+ namespace pid_control
+ {
+ namespace ec
+@@ -42,12 +45,14 @@ static double clamp(double x, double min, double max)
+  *  pid code
+  *  Note: Codes assumes the ts field is non-zero
+  */
+-double pid(pid_info_t* pidinfoptr, double input, double setpoint)
++double pid(pid_info_t* pidinfoptr, double input, double setpoint,
++           double lastInput)
+ {
+     double error;
+ 
+     double proportionalTerm;
+     double integralTerm = 0.0f;
++    double derivativeTerm = 0.0f;
+     double feedFwdTerm = 0.0f;
+ 
+     double output;
+@@ -55,7 +60,7 @@ double pid(pid_info_t* pidinfoptr, double input, double setpoint)
+     // calculate P, I, D, FF
+ 
+     // Pid
+-    error = setpoint - input;
++    error = std::abs(setpoint - input);
+     proportionalTerm = pidinfoptr->proportionalCoeff * error;
+ 
+     // pId
+@@ -67,11 +72,14 @@ double pid(pid_info_t* pidinfoptr, double input, double setpoint)
+                              pidinfoptr->integralLimit.max);
+     }
+ 
++    // piD
++    derivativeTerm = pidinfoptr->derivativeCoeff * (input - lastInput);
++
+     // FF
+     feedFwdTerm =
+         (setpoint + pidinfoptr->feedFwdOffset) * pidinfoptr->feedFwdGain;
+ 
+-    output = proportionalTerm + integralTerm + feedFwdTerm;
++    output = proportionalTerm + integralTerm + derivativeTerm + feedFwdTerm;
+     output = clamp(output, pidinfoptr->outLim.min, pidinfoptr->outLim.max);
+ 
+     // slew rate
+diff --git a/pid/ec/pid.hpp b/pid/ec/pid.hpp
+index 29c7bb3..074699f 100644
+--- a/pid/ec/pid.hpp
++++ b/pid/ec/pid.hpp
+@@ -26,6 +26,7 @@ typedef struct
+ 
+     double proportionalCoeff; // coeff for P
+     double integralCoeff;     // coeff for I
++    double derivativeCoeff;   // coeff for D
+     double feedFwdOffset;     // offset coeff for feed-forward term
+     double feedFwdGain;       // gain for feed-forward term
+ 
+@@ -37,7 +38,8 @@ typedef struct
+     double negativeHysteresis;
+ } pid_info_t;
+ 
+-double pid(pid_info_t* pidinfoptr, double input, double setpoint);
++double pid(pid_info_t* pidinfoptr, double input, double setpoint,
++           double lastInput);
+ 
+ /* Condensed version for use by the configuration. */
+ struct pidinfo
+@@ -45,6 +47,7 @@ struct pidinfo
+     double ts;                  // sample time in seconds
+     double proportionalCoeff;   // coeff for P
+     double integralCoeff;       // coeff for I
++    double derivativeCoeff;     // coeff for D
+     double feedFwdOffset;       // offset coeff for feed-forward term
+     double feedFwdGain;         // gain for feed-forward term
+     ec::limits_t integralLimit; // clamp of integral
+diff --git a/pid/ec/stepwise.cpp b/pid/ec/stepwise.cpp
+index 0065228..d3b6453 100644
+--- a/pid/ec/stepwise.cpp
++++ b/pid/ec/stepwise.cpp
+@@ -25,27 +25,75 @@ namespace pid_control
+ namespace ec
+ {
+ 
+-double stepwise(const ec::StepwiseInfo& info, double input)
++double stepwise(const std::vector<double>& reading,
++                const std::vector<double>& output, double input)
+ {
+-    double value = info.output[0]; // if we are below the lowest
+-                                   // point, we set the lowest value
++    /*
++     * if input is smaller than the minimum reading point
++     * return the minimum value of output.
++     */
++    double value = output[0];
+ 
+-    for (size_t ii = 1; ii < ec::maxStepwisePoints; ii++)
++    /*
++     * if input is higher than the max reading point
++     * return the max value of output.
++     */
++    if (input >= reading.back())
+     {
+-
+-        if (std::isnan(info.reading[ii]))
++        value = output.back();
++    }
++    else if (input > reading[0])
++    {
++        for (size_t i = 1; i < reading.size(); ++i)
+         {
+-            break;
++            if (reading[i] > input)
++            {
++                break;
++            }
++            value = output[i];
+         }
+-        if (info.reading[ii] > input)
++    }
++
++    return value;
++}
++
++double linear(const std::vector<double>& reading,
++              const std::vector<double>& output, double input)
++{
++    /*
++     * if input is smaller than the minimum reading point
++     * return the minimum value of output.
++     */
++    double value = output[0];
++
++    /*
++     * if input is higher than the max reading point
++     * return the max value of output.
++     */
++    if (input >= reading.back())
++    {
++        value = output.back();
++    }
++    else if (input > reading[0])
++    {
++        for (size_t i = 1; i < reading.size(); ++i)
+         {
+-            break;
++            // Do Interpolation
++            if (reading[i] > input)
++            {
++                double inputLow = reading[i - 1];
++                double inputHigh = reading[i];
++                double outputLow = output[i - 1];
++                double outputHigh = output[i];
++                value = outputLow +
++                        ((outputHigh - outputLow) / (inputHigh - inputLow)) *
++                            (input - inputLow);
++                break;
++            }
+         }
+-        value = info.output[ii];
+     }
+ 
+     return value;
+ }
+-
+ } // namespace ec
+ } // namespace pid_control
+diff --git a/pid/ec/stepwise.hpp b/pid/ec/stepwise.hpp
+index 88db332..168aed2 100644
+--- a/pid/ec/stepwise.hpp
++++ b/pid/ec/stepwise.hpp
+@@ -29,14 +29,17 @@ constexpr size_t maxStepwisePoints = 20;
+ struct StepwiseInfo
+ {
+     double ts; // sample time in seconds
+-    double reading[maxStepwisePoints];
+-    double output[maxStepwisePoints];
++    std::vector<double> reading;
++    std::vector<double> output;
+     double positiveHysteresis;
+     double negativeHysteresis;
+     bool isCeiling;
+ };
+ 
+-double stepwise(const ec::StepwiseInfo& info, double value);
++double stepwise(const std::vector<double>& reading,
++                const std::vector<double>& output, double input);
++double linear(const std::vector<double>& reading,
++              const std::vector<double>& output, double input);
+ 
+ } // namespace ec
+ } // namespace pid_control
+diff --git a/pid/fancontroller.cpp b/pid/fancontroller.cpp
+index d3c58ca..3d44284 100644
+--- a/pid/fancontroller.cpp
++++ b/pid/fancontroller.cpp
+@@ -123,6 +123,7 @@ double FanController::setptProc(void)
+ 
+ void FanController::outputProc(double value)
+ {
++    static bool failsafePrint = false;
+     double percent = value;
+ 
+     /* If doing tuning, don't go into failsafe mode. */
+@@ -135,7 +136,20 @@ void FanController::outputProc(double value)
+             {
+                 percent = _owner->getFailSafePercent();
+             }
++            if ((failsafePrint == false) || (debugModeEnabled == true))
++            {
++                std::cerr << "Fans output failsafe pwm: " << percent << "\n";
++                failsafePrint = true;
++            }
+         }
++        else
++        {
++            failsafePrint = false;
++            if (debugModeEnabled)
++            {
++                std::cerr << "Fans output pwm: " << percent << "\n";
++            }
++         }
+     }
+ 
+     // value and kFanFailSafeDutyCycle are 10 for 10% so let's fix that.
+diff --git a/pid/pidcontroller.cpp b/pid/pidcontroller.cpp
+index e7a4ad1..c2478e8 100644
+--- a/pid/pidcontroller.cpp
++++ b/pid/pidcontroller.cpp
+@@ -42,13 +42,20 @@ void PIDController::process(void)
+     // Get input value
+     input = inputProc();
+ 
++    // Initialize if not set yet
++    if (std::isnan(lastInput))
++    {
++        lastInput = setpt;
++    }
++
++
+     auto info = getPIDInfo();
+ 
+     // if no hysteresis, maintain previous behavior
+     if (info->positiveHysteresis == 0 && info->negativeHysteresis == 0)
+     {
+         // Calculate new output
+-        output = ec::pid(info, input, setpt);
++        output = ec::pid(info, input, setpt, lastInput);
+ 
+         // this variable isn't actually used in this context, but we're setting
+         // it here incase somebody uses it later it's the correct value
+@@ -56,24 +63,24 @@ void PIDController::process(void)
+     }
+     else
+     {
+-        // initialize if not set yet
+-        if (std::isnan(lastInput))
++        // over the hysteresis bounds, keep counting pid
++        if (input > setpt + info->positiveHysteresis)
+         {
++            output = ec::pid(info, input, setpt, lastInput);
+             lastInput = input;
+         }
+-
+-        // if reading is outside of hysteresis bounds, use it for reading,
+-        // otherwise use last reading without updating it first
+-        else if ((input - lastInput) > info->positiveHysteresis)
++        // under the hysteresis bounds, initialize pid
++        else if (input < setpt - info->negativeHysteresis)
+         {
+-            lastInput = input;
++            lastInput = setpt;
++            info->integral = 0;
++            output = 0;
+         }
+-        else if ((lastInput - input) > info->negativeHysteresis)
++        // inside the hysteresis bounds, keep last output
++        else
+         {
+-            lastInput = input;
++            output = lastOutput;
+         }
+-
+-        output = ec::pid(info, lastInput, setpt);
+     }
+ 
+     // Output new value
+diff --git a/pid/pidcontroller.hpp b/pid/pidcontroller.hpp
+index cb92377..94a9065 100644
+--- a/pid/pidcontroller.hpp
++++ b/pid/pidcontroller.hpp
+@@ -21,7 +21,8 @@ class PIDController : public Controller
+ {
+   public:
+     PIDController(const std::string& id, ZoneInterface* owner) :
+-        Controller(), _owner(owner), _setpoint(0), _id(id)
++        Controller(), _owner(owner), _setpoint(0), _id(id),
++        _profileName(id.substr(id.find("_") + 1))
+     {}
+ 
+     virtual ~PIDController()
+@@ -37,6 +38,12 @@ class PIDController : public Controller
+     {
+         return _id;
+     }
++
++    std::string getProfileName(void) const override
++    {
++        return _profileName;
++    }
++
+     double getSetpoint(void)
+     {
+         return _setpoint;
+@@ -56,6 +63,16 @@ class PIDController : public Controller
+         return lastInput;
+     }
+ 
++    double getLastOutput(void)
++    {
++        return lastOutput;
++    }
++
++    void setLastOutput(double value)
++    {
++        lastOutput = value;
++    }
++
+   protected:
+     ZoneInterface* _owner;
+ 
+@@ -64,7 +81,9 @@ class PIDController : public Controller
+     ec::pid_info_t _pid_info;
+     double _setpoint;
+     std::string _id;
++    std::string _profileName;
+     double lastInput = std::numeric_limits<double>::quiet_NaN();
++    double lastOutput = 0;
+ };
+ 
+ } // namespace pid_control
+diff --git a/pid/stepwisecontroller.cpp b/pid/stepwisecontroller.cpp
+index c8ec219..ed0798a 100644
+--- a/pid/stepwisecontroller.cpp
++++ b/pid/stepwisecontroller.cpp
+@@ -45,17 +45,17 @@ void StepwiseController::process(void)
+     // Calculate new output if hysteresis allows
+     if (std::isnan(output))
+     {
+-        output = ec::stepwise(info, input);
++        output = pwmFunction(info.reading, info.output, input);
+         lastInput = input;
+     }
+     else if ((input - lastInput) > info.positiveHysteresis)
+     {
+-        output = ec::stepwise(info, input);
++        output = pwmFunction(info.reading, info.output, input);
+         lastInput = input;
+     }
+     else if ((lastInput - input) > info.negativeHysteresis)
+     {
+-        output = ec::stepwise(info, input);
++        output = pwmFunction(info.reading, info.output, input);
+         lastInput = input;
+     }
+ 
+@@ -67,7 +67,7 @@ void StepwiseController::process(void)
+ }
+ 
+ std::unique_ptr<Controller> StepwiseController::createStepwiseController(
+-    ZoneInterface* owner, const std::string& id,
++    ZoneInterface* owner, const std::string& id, const std::string& type,
+     const std::vector<std::string>& inputs, const ec::StepwiseInfo& initial)
+ {
+     // StepwiseController requires at least 1 input
+@@ -77,7 +77,8 @@ std::unique_ptr<Controller> StepwiseController::createStepwiseController(
+         return nullptr;
+     }
+ 
+-    auto thermal = std::make_unique<StepwiseController>(id, inputs, owner);
++    auto thermal =
++        std::make_unique<StepwiseController>(id, type, inputs, owner);
+     thermal->setStepwiseInfo(initial);
+ 
+     return thermal;
+@@ -90,6 +91,11 @@ double StepwiseController::inputProc(void)
+     {
+         value = std::max(value, _owner->getCachedValue(in));
+     }
++    if (debugModeEnabled)
++    {
++        std::cerr << getID()
++                  << " choose the maximum temperature value: " << value << "\n";
++    }
+     return value;
+ }
+ 
+@@ -101,7 +107,11 @@ void StepwiseController::outputProc(double value)
+     }
+     else
+     {
+-        _owner->addSetPoint(value);
++        _owner->addSetPoint(getProfileName(), value);
++        if (debugModeEnabled)
++        {
++            std::cerr << getID() << " stepwise output pwm: " << value << "\n";
++        }
+     }
+     return;
+ }
+diff --git a/pid/stepwisecontroller.hpp b/pid/stepwisecontroller.hpp
+index a3b3965..401a972 100644
+--- a/pid/stepwisecontroller.hpp
++++ b/pid/stepwisecontroller.hpp
+@@ -4,6 +4,7 @@
+ #include "ec/stepwise.hpp"
+ #include "fan.hpp"
+ 
++#include <functional>
+ #include <limits>
+ #include <memory>
+ #include <vector>
+@@ -18,15 +19,26 @@ class StepwiseController : public Controller
+   public:
+     static std::unique_ptr<Controller>
+         createStepwiseController(ZoneInterface* owner, const std::string& id,
++                                 const std::string& type,
+                                  const std::vector<std::string>& inputs,
+                                  const ec::StepwiseInfo& initial);
+ 
+-    StepwiseController(const std::string& id,
++    StepwiseController(const std::string& id, const std::string& type,
+                        const std::vector<std::string>& inputs,
+                        ZoneInterface* owner) :
+         Controller(),
+-        _owner(owner), _id(id), _inputs(inputs)
+-    {}
++        _owner(owner), _id(id), _inputs(inputs),
++        _profileName(id.substr(id.find("_") + 1))
++    {
++        if (type == "stepwise")
++        {
++            pwmFunction = ec::stepwise;
++        }
++        else if (type == "linear")
++        {
++            pwmFunction = ec::linear;
++        }
++    }
+ 
+     double inputProc(void) override;
+ 
+@@ -39,6 +51,11 @@ class StepwiseController : public Controller
+         return _id;
+     }
+ 
++    std::string getProfileName(void) const override
++    {
++        return _profileName;
++    }
++
+     ec::StepwiseInfo& getStepwiseInfo(void)
+     {
+         return _stepwise_info;
+@@ -57,6 +74,10 @@ class StepwiseController : public Controller
+     ec::StepwiseInfo _stepwise_info;
+     std::string _id;
+     std::vector<std::string> _inputs;
++    std::string _profileName;
++    std::function<double(const std::vector<double>&, const std::vector<double>&,
++                         double)>
++        pwmFunction;
+     double lastInput = std::numeric_limits<double>::quiet_NaN();
+     double lastOutput = std::numeric_limits<double>::quiet_NaN();
+ };
+diff --git a/pid/thermalcontroller.cpp b/pid/thermalcontroller.cpp
+index 8125349..5d9329a 100644
+--- a/pid/thermalcontroller.cpp
++++ b/pid/thermalcontroller.cpp
+@@ -92,6 +92,12 @@ double ThermalController::inputProc(void)
+         acceptable = true;
+     }
+ 
++    if (debugModeEnabled)
++    {
++        std::cerr << getID()
++                  << " choose the maximum temperature value: " << value << "\n";
++    }
++
+     if (!acceptable)
+     {
+         // While not optimal, zero is better than garbage
+@@ -123,7 +129,13 @@ double ThermalController::setptProc(void)
+ // bmc_set_pid_output
+ void ThermalController::outputProc(double value)
+ {
+-    _owner->addSetPoint(value);
++    _owner->addSetPoint(getProfileName(), value);
++    if (debugModeEnabled)
++    {
++        std::cerr << getID() << " pid output pwm: " << value << "\n";
++    }
++
++    setLastOutput(value);
+ 
+     return;
+ }
+diff --git a/pid/tuning.cpp b/pid/tuning.cpp
+index 3422e34..de3a4f8 100644
+--- a/pid/tuning.cpp
++++ b/pid/tuning.cpp
+@@ -20,3 +20,5 @@ bool tuningEnabled = false;
+ 
+ std::string loggingPath;
+ bool loggingEnabled = false;
++
++bool debugModeEnabled = false;
+diff --git a/pid/tuning.hpp b/pid/tuning.hpp
+index ba4ec32..612e8ac 100644
+--- a/pid/tuning.hpp
++++ b/pid/tuning.hpp
+@@ -11,3 +11,5 @@ extern bool tuningEnabled;
+ extern std::string loggingPath;
+ /** Boolean variable whether loggingPath is non-empty. */
+ extern bool loggingEnabled;
++/** Boolean variable whether debug mode is enabled. */
++extern bool debugModeEnabled;
+diff --git a/pid/util.cpp b/pid/util.cpp
+index ad7c139..5b7cd5f 100644
+--- a/pid/util.cpp
++++ b/pid/util.cpp
+@@ -31,6 +31,7 @@ void initializePIDStruct(ec::pid_info_t* info, const ec::pidinfo& initial)
+     info->ts = initial.ts;
+     info->proportionalCoeff = initial.proportionalCoeff;
+     info->integralCoeff = initial.integralCoeff;
++    info->derivativeCoeff = initial.derivativeCoeff;
+     info->feedFwdOffset = initial.feedFwdOffset;
+     info->feedFwdGain = initial.feedFwdGain;
+     info->integralLimit.min = initial.integralLimit.min;
+@@ -48,6 +49,7 @@ void dumpPIDStruct(ec::pid_info_t* info)
+     std::cerr << " ts: " << info->ts
+               << " proportionalCoeff: " << info->proportionalCoeff
+               << " integralCoeff: " << info->integralCoeff
++              << " derivativeCoeff: " << info->derivativeCoeff
+               << " feedFwdOffset: " << info->feedFwdOffset
+               << " feedFwdGain: " << info->feedFwdGain
+               << " integralLimit.min: " << info->integralLimit.min
+diff --git a/pid/zone.cpp b/pid/zone.cpp
+index 441031a..9a38b29 100644
+--- a/pid/zone.cpp
++++ b/pid/zone.cpp
+@@ -95,9 +95,9 @@ int64_t DbusPidZone::getZoneID(void) const
+     return _zoneId;
+ }
+ 
+-void DbusPidZone::addSetPoint(double setpoint)
++void DbusPidZone::addSetPoint(std::string profileName, double setpoint)
+ {
+-    _SetPoints.push_back(setpoint);
++    _SetPoints[profileName] += setpoint;
+ }
+ 
+ void DbusPidZone::addRPMCeiling(double ceiling)
+@@ -112,7 +112,10 @@ void DbusPidZone::clearRPMCeilings(void)
+ 
+ void DbusPidZone::clearSetPoints(void)
+ {
+-    _SetPoints.clear();
++    for (auto& it : _SetPoints)
++    {
++        it.second = 0;
++    }
+ }
+ 
+ double DbusPidZone::getFailSafePercent(void) const
+@@ -209,14 +212,27 @@ void DbusPidZone::determineMaxSetPointRequest(void)
+ 
+     if (_SetPoints.size() > 0)
+     {
+-        result = std::max_element(_SetPoints.begin(), _SetPoints.end());
+-        max = *result;
++        for (auto& sp : _SetPoints)
++        {
++            if (debugModeEnabled)
++            {
++                std::cerr << sp.first << " total output pwm: " << sp.second
++                          << "\n";
++            }
++
++            if (sp.second > max)
++            {
++                max = sp.second;
++            }
++        }
+     }
+ 
+     if (_RPMCeilings.size() > 0)
+     {
+-        result = std::min_element(_RPMCeilings.begin(), _RPMCeilings.end());
+-        max = std::min(max, *result);
++        std::vector<double>::iterator resultRPMCeiling;
++        resultRPMCeiling =
++            std::min_element(_RPMCeilings.begin(), _RPMCeilings.end());
++        max = std::min(max, *resultRPMCeiling);
+     }
+ 
+     /*
+@@ -327,21 +343,30 @@ void DbusPidZone::updateFanTelemetry(void)
+         }
+ 
+         // check if fan fail.
++        auto failsafeFind = _failSafeSensors.find(f);
+         if (sensor->getFailed())
+         {
+-            _failSafeSensors.insert(f);
++            if (failsafeFind == _failSafeSensors.end())
++            {
++                std::cerr << f << " fan sensor get failed\n";
++                _failSafeSensors.insert(f);
++            }
+         }
+         else if (timeout != 0 && duration >= period)
+         {
+-            _failSafeSensors.insert(f);
++            if (failsafeFind == _failSafeSensors.end())
++            {
++                std::cerr << f << " fan sensor timeout\n";
++                _failSafeSensors.insert(f);
++            }
+         }
+         else
+         {
+             // Check if it's in there: remove it.
+-            auto kt = _failSafeSensors.find(f);
+-            if (kt != _failSafeSensors.end())
++            if (failsafeFind == _failSafeSensors.end())
+             {
+-                _failSafeSensors.erase(kt);
++                std::cerr << f << " is erased from failsafe fan set\n";
++                _failSafeSensors.erase(failsafeFind);
+             }
+         }
+     }
+@@ -369,28 +394,42 @@ void DbusPidZone::updateSensors(void)
+         ReadReturn r = sensor->read();
+         int64_t timeout = sensor->getTimeout();
+ 
++        if (debugModeEnabled)
++        {
++            std::cerr << t << " temperature sensor reading: " << r.value
++                      << "\n";
++        }
++
+         _cachedValuesByName[t] = r.value;
+         tstamp then = r.updated;
+ 
+         auto duration = duration_cast<std::chrono::seconds>(now - then).count();
+         auto period = std::chrono::seconds(timeout).count();
+ 
++        auto failsafeFind = _failSafeSensors.find(t);
+         if (sensor->getFailed())
+         {
+-            _failSafeSensors.insert(t);
++            if (failsafeFind == _failSafeSensors.end())
++            {
++                std::cerr << t << " temperature sensor getfailed\n";
++                _failSafeSensors.insert(t);
++            }
+         }
+         else if (timeout != 0 && duration >= period)
+         {
+-            // std::cerr << "Entering fail safe mode.\n";
+-            _failSafeSensors.insert(t);
++            if (failsafeFind == _failSafeSensors.end())
++            {
++                std::cerr << t << " temperature sensor timeout\n";
++                _failSafeSensors.insert(t);
++            }
+         }
+         else
+         {
+             // Check if it's in there: remove it.
+-            auto kt = _failSafeSensors.find(t);
+-            if (kt != _failSafeSensors.end())
++            if (failsafeFind == _failSafeSensors.end())
+             {
+-                _failSafeSensors.erase(kt);
++                std::cerr << t << " is erased from failsafe sensor set\n";
++                _failSafeSensors.erase(failsafeFind);
+             }
+         }
+     }
+diff --git a/pid/zone.hpp b/pid/zone.hpp
+index 3bea9c2..d8189e4 100644
+--- a/pid/zone.hpp
++++ b/pid/zone.hpp
+@@ -57,7 +57,7 @@ class DbusPidZone : public ZoneInterface, public ModeObject
+     bool getFailSafeMode(void) const override;
+ 
+     int64_t getZoneID(void) const;
+-    void addSetPoint(double setpoint) override;
++    void addSetPoint(std::string profileName, double setpoint) override;
+     double getMaxSetPointRequest(void) const override;
+     void addRPMCeiling(double ceiling) override;
+     void clearSetPoints(void) override;
+@@ -99,7 +99,7 @@ class DbusPidZone : public ZoneInterface, public ModeObject
+ 
+     std::set<std::string> _failSafeSensors;
+ 
+-    std::vector<double> _SetPoints;
++    std::map<std::string, double> _SetPoints;
+     std::vector<double> _RPMCeilings;
+     std::vector<std::string> _fanInputs;
+     std::vector<std::string> _thermalInputs;
+diff --git a/pid/zone_interface.hpp b/pid/zone_interface.hpp
+index a024c0e..7c9a688 100644
+--- a/pid/zone_interface.hpp
++++ b/pid/zone_interface.hpp
+@@ -45,7 +45,7 @@ class ZoneInterface
+     virtual double getCachedValue(const std::string& name) = 0;
+ 
+     /** Add a set point value for the Max Set Point computation. */
+-    virtual void addSetPoint(double setpoint) = 0;
++    virtual void addSetPoint(std::string profileName, double setpoint) = 0;
+     /** Clear all set points specified via addSetPoint */
+     virtual void clearSetPoints(void) = 0;
+ 
+-- 
+2.17.1
+

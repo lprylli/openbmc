@@ -1,0 +1,47 @@
+From ff6b78218475213b686fec71e02f7ac0780019d1 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Mon, 22 Feb 2021 14:29:21 +0800
+Subject: [PATCH] Remove manual folder when service restart
+
+---
+ main.cpp | 3 +++
+ util.hpp | 3 +++
+ 2 files changed, 6 insertions(+)
+ mode change 100644 => 100755 main.cpp
+ mode change 100644 => 100755 util.hpp
+
+diff --git a/main.cpp b/main.cpp
+old mode 100644
+new mode 100755
+index 00cc948..bf3e35c
+--- a/main.cpp
++++ b/main.cpp
+@@ -276,6 +276,9 @@ int main(int argc, char* argv[])
+         std::cerr << "Tuning enabled\n";
+     }
+ 
++    // Remove manual folder when fan control restart.
++    std::filesystem::remove_all(pid_control::manualFileDir);
++
+     static constexpr auto modeRoot = "/xyz/openbmc_project/settings/fanctrl";
+     // Create a manager for the ModeBus because we own it.
+     sdbusplus::server::manager::manager(
+diff --git a/util.hpp b/util.hpp
+old mode 100644
+new mode 100755
+index d1e68db..5ec0d76
+--- a/util.hpp
++++ b/util.hpp
+@@ -16,6 +16,9 @@
+ namespace pid_control
+ {
+ 
++// Last pwm file path.
++const std::string manualFileDir("/tmp/fanCtrlManual/");
++
+ constexpr double defaultTjMax = 105.0;
+ 
+ void tryRestartControlLoops(void);
+-- 
+2.17.1
+

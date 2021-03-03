@@ -1,0 +1,538 @@
+From 1e745c29e6ac232df4468efbe11f549e64584f47 Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Thu, 25 Feb 2021 16:39:20 +0800
+Subject: [PATCH] Get tjmax from dbus
+
+---
+ dbus/dbushelper.cpp           | 11 ++++++---
+ dbus/dbushelper_interface.hpp |  1 +
+ dbus/dbuspassive.cpp          |  6 +++++
+ dbus/dbuspassive.hpp          |  2 ++
+ dbus/dbusutil.hpp             | 17 ++++++++++++++
+ interfaces.hpp                |  5 ++++
+ pid/ec/pid.cpp                | 15 ++++++++++++
+ pid/fancontroller.cpp         | 12 +++++-----
+ pid/fancontroller.hpp         |  4 +++-
+ pid/pidcontroller.cpp         |  7 ++++++
+ pid/stepwisecontroller.cpp    | 24 +++++++++++--------
+ pid/stepwisecontroller.hpp    |  3 ++-
+ pid/thermalcontroller.cpp     | 10 --------
+ pid/zone.cpp                  | 43 ++++++++++++++++++++++-------------
+ sensors/builder.cpp           |  9 +++++++-
+ 15 files changed, 122 insertions(+), 47 deletions(-)
+
+diff --git a/dbus/dbushelper.cpp b/dbus/dbushelper.cpp
+index 8601733..7669d3b 100644
+--- a/dbus/dbushelper.cpp
++++ b/dbus/dbushelper.cpp
+@@ -22,6 +22,7 @@
+ #include <phosphor-logging/log.hpp>
+ #include <sdbusplus/bus.hpp>
+ 
++#include <iostream>
+ #include <map>
+ #include <string>
+ #include <variant>
+@@ -31,7 +32,7 @@ namespace pid_control
+ {
+ 
+ using Property = std::string;
+-using Value = std::variant<int64_t, double, std::string, bool>;
++using Value = std::variant<int64_t, int32_t, double, std::string, bool>;
+ using PropertyMap = std::map<Property, Value>;
+ 
+ using namespace phosphor::logging;
+@@ -60,8 +61,6 @@ std::string DbusHelper::getService(const std::string& intf,
+     }
+     catch (const sdbusplus::exception::SdBusError& ex)
+     {
+-        log<level::ERR>("ObjectMapper call failure",
+-                        entry("WHAT=%s", ex.what()));
+         throw;
+     }
+ 
+@@ -111,10 +110,12 @@ void DbusHelper::getProperties(const std::string& service,
+     auto findScale = propMap.find("Scale");
+     auto findMax = propMap.find("MaxValue");
+     auto findMin = propMap.find("MinValue");
++    auto findTjMax = propMap.find("TctlMAX");
+ 
+     prop->min = 0;
+     prop->max = 0;
+     prop->scale = 0;
++    prop->tjMax = 0;
+     if (findScale != propMap.end())
+     {
+         prop->scale = std::get<int64_t>(findScale->second);
+@@ -127,6 +128,10 @@ void DbusHelper::getProperties(const std::string& service,
+     {
+         prop->min = std::visit(VariantToDoubleVisitor(), findMin->second);
+     }
++    if (findTjMax != propMap.end())
++    {
++        prop->tjMax = std::visit(VariantToInt32Visitor(), findTjMax->second);
++    }
+ 
+     prop->value = std::visit(VariantToDoubleVisitor(), propMap["Value"]);
+ 
+diff --git a/dbus/dbushelper_interface.hpp b/dbus/dbushelper_interface.hpp
+index 3f7d744..5cf06f1 100644
+--- a/dbus/dbushelper_interface.hpp
++++ b/dbus/dbushelper_interface.hpp
+@@ -13,6 +13,7 @@ struct SensorProperties
+     double min;
+     double max;
+     std::string unit;
++    int32_t tjMax;
+ };
+ 
+ class DbusHelperInterface
+diff --git a/dbus/dbuspassive.cpp b/dbus/dbuspassive.cpp
+index 3286e46..02ac9d8 100644
+--- a/dbus/dbuspassive.cpp
++++ b/dbus/dbuspassive.cpp
+@@ -90,6 +90,7 @@ DbusPassive::DbusPassive(
+     _scale = settings.scale;
+     _min = settings.min * std::pow(10.0, _scale);
+     _max = settings.max * std::pow(10.0, _scale);
++    _tjMax = settings.tjMax;
+ 
+     // Cache this type knowledge, to avoid repeated string comparison
+     _typeMargin = (type == "margin");
+@@ -149,6 +150,11 @@ bool DbusPassive::getFailed(void) const
+     return !_functional || !_available;
+ }
+ 
++double DbusPassive::getTjMax(void) const
++{
++    return _tjMax;
++}
++
+ void DbusPassive::setFailed(bool value)
+ {
+     _failed = value;
+diff --git a/dbus/dbuspassive.hpp b/dbus/dbuspassive.hpp
+index 54645c5..48fcda9 100644
+--- a/dbus/dbuspassive.hpp
++++ b/dbus/dbuspassive.hpp
+@@ -55,6 +55,7 @@ class DbusPassive : public ReadInterface
+ 
+     ReadReturn read(void) override;
+     bool getFailed(void) const override;
++    double getTjMax(void) const override;
+ 
+     void updateValue(double value, bool force);
+     void setValue(double value);
+@@ -77,6 +78,7 @@ class DbusPassive : public ReadInterface
+     double _value = 0;
+     double _max = 0;
+     double _min = 0;
++    double _tjMax = 0;
+     bool _failed = false;
+     bool _functional = true;
+     bool _available = true;
+diff --git a/dbus/dbusutil.hpp b/dbus/dbusutil.hpp
+index fec9d25..a436d41 100644
+--- a/dbus/dbusutil.hpp
++++ b/dbus/dbusutil.hpp
+@@ -45,6 +45,23 @@ struct VariantToBoolVisitor
+     }
+ };
+ 
++struct VariantToInt32Visitor
++{
++    template <typename T>
++    std::enable_if_t<std::is_arithmetic<T>::value, int32_t>
++        operator()(const T& t) const
++    {
++        return static_cast<int32_t>(t);
++    }
++
++    template <typename T>
++    std::enable_if_t<!std::is_arithmetic<T>::value, int32_t>
++        operator()(const T& t) const
++    {
++        throw std::invalid_argument("Cannot translate type to int32_t");
++    }
++};
++
+ std::string getSensorPath(const std::string& type, const std::string& id);
+ std::string getMatch(const std::string& type, const std::string& id);
+ void scaleSensorReading(const double min, const double max, double& value);
+diff --git a/interfaces.hpp b/interfaces.hpp
+index 8ec474b..62b563f 100644
+--- a/interfaces.hpp
++++ b/interfaces.hpp
+@@ -35,6 +35,11 @@ class ReadInterface
+     {
+         return false;
+     }
++
++    virtual double getTjMax(void) const
++    {
++        return 0;
++    }
+ };
+ 
+ /*
+diff --git a/pid/ec/pid.cpp b/pid/ec/pid.cpp
+index 338a5c1..467e280 100644
+--- a/pid/ec/pid.cpp
++++ b/pid/ec/pid.cpp
+@@ -16,6 +16,8 @@
+ 
+ #include "pid.hpp"
+ 
++#include "pid/tuning.hpp"
++
+ #include <cmath>
+ #include <iostream>
+ 
+@@ -125,6 +127,19 @@ double pid(pid_info_t* pidinfoptr, double input, double setpoint,
+     pidinfoptr->initialized = true;
+     pidinfoptr->lastOutput = output;
+ 
++    if (debugModeEnabled)
++    {
++        std::cerr << "Kp " << pidinfoptr->proportionalCoeff << ", Ki "
++                  << pidinfoptr->integralCoeff << ", Kd "
++                  << pidinfoptr->derivativeCoeff << ", FFOffset "
++                  << pidinfoptr->feedFwdOffset << ", FFGain "
++                  << pidinfoptr->feedFwdGain << ", Error " << error
++                  << ", derivative " << input - lastInput << "\n";
++        std::cerr << "P (" << proportionalTerm << ") + I (" << integralTerm
++                  << ") + D (" << derivativeTerm << ") + FF (" << feedFwdTerm
++                  << ") = Output (" << output << ")\n";
++    }
++
+     return output;
+ }
+ 
+diff --git a/pid/fancontroller.cpp b/pid/fancontroller.cpp
+index 3791966..5750608 100644
+--- a/pid/fancontroller.cpp
++++ b/pid/fancontroller.cpp
+@@ -123,8 +123,7 @@ double FanController::setptProc(void)
+ 
+ void FanController::outputProc(double value)
+ {
+-    static bool failsafePrint = false;
+-    double percent = value;
++    double percent = std::round(value);
+ 
+     /* If doing tuning, don't go into failsafe mode. */
+     if (!tuningEnabled)
+@@ -133,20 +132,21 @@ void FanController::outputProc(double value)
+         if (_owner->getFailSafe(failsafePercent))
+         {
+             /* In case it's being set to 100% */
+-            if (percent < failsafePercent)
++            if (percent < failsafePercent || std::isnan(percent) == true)
+             {
+                 percent = failsafePercent;
+             }
+-            if ((failsafePrint == false) || (debugModeEnabled == true))
++
++            if ((_isFailsafePrint == false) || (debugModeEnabled == true))
+             {
+                 std::cerr << "Zone " << _owner->getZoneID()
+                           << " fans output failsafe pwm: " << percent << "\n";
+-                failsafePrint = true;
++                _isFailsafePrint = true;
+             }
+         }
+         else
+         {
+-            failsafePrint = false;
++            _isFailsafePrint = false;
+             if (debugModeEnabled)
+             {
+                 std::cerr << "Zone " << _owner->getZoneID()
+diff --git a/pid/fancontroller.hpp b/pid/fancontroller.hpp
+index 25eebad..34f019b 100644
+--- a/pid/fancontroller.hpp
++++ b/pid/fancontroller.hpp
+@@ -27,7 +27,8 @@ class FanController : public PIDController
+     FanController(const std::string& id, const std::vector<std::string>& inputs,
+                   ZoneInterface* owner) :
+         PIDController(id, owner),
+-        _inputs(inputs), _direction(FanSpeedDirection::NEUTRAL)
++        _inputs(inputs), _direction(FanSpeedDirection::NEUTRAL),
++        _isFailsafePrint(false)
+     {}
+ 
+     double inputProc(void) override;
+@@ -47,6 +48,7 @@ class FanController : public PIDController
+   private:
+     std::vector<std::string> _inputs;
+     FanSpeedDirection _direction;
++    bool _isFailsafePrint;
+ };
+ 
+ } // namespace pid_control
+diff --git a/pid/pidcontroller.cpp b/pid/pidcontroller.cpp
+index 2e81bc1..6433417 100644
+--- a/pid/pidcontroller.cpp
++++ b/pid/pidcontroller.cpp
+@@ -17,6 +17,7 @@
+ #include "pidcontroller.hpp"
+ 
+ #include "ec/pid.hpp"
++#include "tuning.hpp"
+ 
+ #include <algorithm>
+ #include <chrono>
+@@ -57,6 +58,12 @@ void PIDController::process(void)
+ 
+     auto info = getPIDInfo();
+ 
++    if (debugModeEnabled)
++    {
++        std::cerr << "PID_" << _profileName << " reading " << input
++                  << ", setpoint " << setpt << "\n";
++    }
++
+     // if no hysteresis, maintain previous behavior
+     if (info->positiveHysteresis == 0 && info->negativeHysteresis == 0)
+     {
+diff --git a/pid/stepwisecontroller.cpp b/pid/stepwisecontroller.cpp
+index cfbcca6..0261004 100644
+--- a/pid/stepwisecontroller.cpp
++++ b/pid/stepwisecontroller.cpp
+@@ -69,6 +69,20 @@ void StepwiseController::process(void)
+     // Output new value
+     outputProc(output);
+ 
++    if (debugModeEnabled)
++    {
++        if (_type == "stepwise")
++        {
++            std::cerr << "Stepwise_" << _profileName << " reading " << input
++                      << ", output " << output << "\n";
++        }
++        else if (_type == "linear")
++        {
++            std::cerr << "Linear_" << _profileName << " reading " << input
++                      << ", output " << output << "\n";
++        }
++    }
++
+     return;
+ }
+ 
+@@ -90,11 +104,7 @@ double StepwiseController::inputProc(void)
+     {
+         value = std::max(value, _owner->getCachedValue(in));
+     }
+-    if (debugModeEnabled)
+-    {
+-        std::cerr << getID()
+-                  << " choose the maximum temperature value: " << value << "\n";
+-    }
++
+     return value;
+ }
+ 
+@@ -107,10 +117,6 @@ void StepwiseController::outputProc(double value)
+     else
+     {
+         _owner->addSetPoint(getProfileName(), value);
+-        if (debugModeEnabled)
+-        {
+-            std::cerr << getID() << " stepwise output pwm: " << value << "\n";
+-        }
+     }
+     return;
+ }
+diff --git a/pid/stepwisecontroller.hpp b/pid/stepwisecontroller.hpp
+index 401a972..7a77b7c 100644
+--- a/pid/stepwisecontroller.hpp
++++ b/pid/stepwisecontroller.hpp
+@@ -28,7 +28,7 @@ class StepwiseController : public Controller
+                        ZoneInterface* owner) :
+         Controller(),
+         _owner(owner), _id(id), _inputs(inputs),
+-        _profileName(id.substr(id.find("_") + 1))
++        _profileName(id.substr(id.find("_") + 1)), _type(type)
+     {
+         if (type == "stepwise")
+         {
+@@ -75,6 +75,7 @@ class StepwiseController : public Controller
+     std::string _id;
+     std::vector<std::string> _inputs;
+     std::string _profileName;
++    std::string _type;
+     std::function<double(const std::vector<double>&, const std::vector<double>&,
+                          double)>
+         pwmFunction;
+diff --git a/pid/thermalcontroller.cpp b/pid/thermalcontroller.cpp
+index af65036..5d7df77 100644
+--- a/pid/thermalcontroller.cpp
++++ b/pid/thermalcontroller.cpp
+@@ -85,12 +85,6 @@ double ThermalController::inputProc(void)
+         acceptable = true;
+     }
+ 
+-    if (debugModeEnabled)
+-    {
+-        std::cerr << getID()
+-                  << " choose the maximum temperature value: " << value << "\n";
+-    }
+-
+     if (!acceptable)
+     {
+         // While not optimal, zero is better than garbage
+@@ -123,10 +117,6 @@ double ThermalController::setptProc(void)
+ void ThermalController::outputProc(double value)
+ {
+     _owner->addSetPoint(getProfileName(), value);
+-    if (debugModeEnabled)
+-    {
+-        std::cerr << getID() << " pid output pwm: " << value << "\n";
+-    }
+ 
+     setLastOutput(value);
+ 
+diff --git a/pid/zone.cpp b/pid/zone.cpp
+index b22fc70..76c09c1 100644
+--- a/pid/zone.cpp
++++ b/pid/zone.cpp
+@@ -97,8 +97,8 @@ void DbusPidZone::setManualMode(bool mode)
+ 
+ bool DbusPidZone::getFailSafe(double& failsafePercent) const
+ {
+-    static bool fanFailPrint = false;
+-    static bool sensorFailPrint = false;
++    static std::map<int64_t, bool> isFanFailPrint;
++    static std::map<int64_t, bool> isSensorFailPrint;
+     double fanFailsafePercent = 0.0;
+     double sensorFailsafePercent = 0.0;
+     if (_failSafeFans.size() != 0)
+@@ -206,24 +206,25 @@ bool DbusPidZone::getFailSafe(double& failsafePercent) const
+ 
+     if (fanFailsafePercent == 0.0)
+     {
+-        fanFailPrint = false;
++        isFanFailPrint[_zoneId] = false;
+     }
+-    else if ((debugModeEnabled == true) || (fanFailPrint == false))
++    else if ((debugModeEnabled == true) || (isFanFailPrint[_zoneId] == false))
+     {
+         std::cerr << "Zone " << getZoneID()
+                   << " enter failsafe mode: fan failures\n";
+-        fanFailPrint = true;
++        isFanFailPrint[_zoneId] = true;
+     }
+ 
+     if (sensorFailsafePercent == 0.0)
+     {
+-        sensorFailPrint = false;
++        isSensorFailPrint[_zoneId] = false;
+     }
+-    else if ((debugModeEnabled == true) || (sensorFailPrint == false))
++    else if ((debugModeEnabled == true) ||
++             (isSensorFailPrint[_zoneId] == false))
+     {
+         std::cerr << "Zone " << getZoneID()
+                   << " enter failsafe mode: sensor failures\n";
+-        sensorFailPrint = true;
++        isSensorFailPrint[_zoneId] = true;
+     }
+ 
+     failsafePercent = std::max(fanFailsafePercent, sensorFailsafePercent);
+@@ -503,13 +504,14 @@ void DbusPidZone::updateFanTelemetry(void)
+         }
+ 
+         ReadReturn r = sensor->read();
++        double roundValue = std::round(r.value);
+ 
+         if (debugModeEnabled)
+         {
+-            std::cerr << f << " fan sensor reading: " << r.value << "\n";
++            std::cerr << f << " fan sensor reading: " << roundValue << "\n";
+         }
+ 
+-        _cachedValuesByName[f] = r.value;
++        _cachedValuesByName[f] = roundValue;
+         int64_t timeout = sensor->getTimeout();
+         tstamp then = r.updated;
+ 
+@@ -548,7 +550,7 @@ void DbusPidZone::updateFanTelemetry(void)
+                 struct SensorProperties properties;
+                 _helper.getProperties(
+                     service, sensor->getSensorInfo()->readPath, &properties);
+-                _cachedValuesByName[f] = properties.value;
++                _cachedValuesByName[f] = std::round(properties.value);
+ 
+                 bool available = true;
+                 _helper.getProperty<bool>(
+@@ -699,8 +701,16 @@ void DbusPidZone::updateSensors(void)
+                 PluggableSensor* plugSensor =
+                     dynamic_cast<PluggableSensor*>(sensor);
+                 plugSensor->setReader(std::move(ri));
+-                double tjMax =
+-                    getTjMaxFromPath(info->tjMaxPath, info->tjMaxScale);
++
++                // Get TjMax from D-Bus.
++                double tjMax = ri->getTjMax();
++
++                // Get TjMax from Path.
++                if (tjMax == 0)
++                {
++                    tjMax = getTjMaxFromPath(info->tjMaxPath, info->tjMaxScale);
++                }
++
+                 if (tjMax != 0)
+                 {
+                     plugSensor->setTjMax(tjMax);
+@@ -746,15 +756,16 @@ void DbusPidZone::updateSensors(void)
+         }
+ 
+         ReadReturn r = sensor->read();
++        double roundValue = std::round(r.value);
+         int64_t timeout = sensor->getTimeout();
+ 
+         if (debugModeEnabled)
+         {
+-            std::cerr << t << " temperature sensor reading: " << r.value
++            std::cerr << t << " temperature sensor reading: " << roundValue
+                       << "\n";
+         }
+ 
+-        _cachedValuesByName[t] = r.value;
++        _cachedValuesByName[t] = roundValue;
+         tstamp then = r.updated;
+ 
+         auto duration = duration_cast<std::chrono::seconds>(now - then).count();
+@@ -780,7 +791,7 @@ void DbusPidZone::updateSensors(void)
+                 struct SensorProperties properties;
+                 _helper.getProperties(
+                     service, sensor->getSensorInfo()->readPath, &properties);
+-                _cachedValuesByName[t] = properties.value;
++                _cachedValuesByName[t] = std::round(properties.value);
+ 
+                 bool available = true;
+                 _helper.getProperty<bool>(
+diff --git a/sensors/builder.cpp b/sensors/builder.cpp
+index 6bb90c5..d09d956 100644
+--- a/sensors/builder.cpp
++++ b/sensors/builder.cpp
+@@ -172,7 +172,14 @@ SensorManager
+             double tjMax = 0;
+             if (ri != nullptr)
+             {
+-                tjMax = getTjMaxFromPath(info->tjMaxPath, info->tjMaxScale);
++                // Get TjMax from D-Bus.
++                tjMax = ri->getTjMax();
++
++                // Get TjMax from Path.
++                if (tjMax == 0)
++                {
++                    tjMax = getTjMaxFromPath(info->tjMaxPath, info->tjMaxScale);
++                }
+             }
+ 
+             if (IOInterfaceType::EXTERNAL == rtype)
+-- 
+2.17.1
+

@@ -106,6 +106,33 @@
             # Sensor type specific offset
             0xFF:
               type: double
+0x5: # CPU0 Margin
+    entityID: 0x03
+    entityInstance: 0x02
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/CPU0_Margin
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: CPU0 Margin
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x6: # CPU1 Temp
     entityID: 0x03
     entityInstance: 0x03
@@ -152,6 +179,33 @@
     serviceInterface: org.freedesktop.DBus.Properties
     readingType: readingData
     sensorName: CPU1 DTSmax
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
+0x8: # CPU1 Margin
+    entityID: 0x03
+    entityInstance: 0x05
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/CPU1_Margin
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: CPU1 Margin
     sdrType: SdrType::sdr_full_record
     interfaces:
       xyz.openbmc_project.Sensor.Value:

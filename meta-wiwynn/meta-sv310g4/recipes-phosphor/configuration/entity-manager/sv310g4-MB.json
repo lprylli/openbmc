@@ -24,7 +24,8 @@
                     "DIMM_G2": "CPU0_DIMM_G1",
                     "DIMM_H1": "CPU0_DIMM_H0",
                     "DIMM_H2": "CPU0_DIMM_H1",
-                    "Tjmax": "CPU0_DTSmax"
+                    "Tjmax": "CPU0_DTSmax",
+                    "Margin": "CPU0_Margin"
                 }
             ],
             "Thresholds": [
@@ -174,7 +175,8 @@
                     "DIMM_G2": "CPU1_DIMM_G1",
                     "DIMM_H1": "CPU1_DIMM_H0",
                     "DIMM_H2": "CPU1_DIMM_H1",
-                    "Tjmax": "CPU1_DTSmax"
+                    "Tjmax": "CPU1_DTSmax",
+                    "Margin": "CPU1_Margin"
                 }
             ],
             "Thresholds": [

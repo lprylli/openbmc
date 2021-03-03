@@ -95,7 +95,7 @@ do
     else
         if [ $zoneId -eq 1 ]; then
             if [ $pwmNum -lt 3 ]; then
-                    wtitePWM $path
+                    writePWM $path
             fi
         elif [ $zoneId -eq 2 ]; then
             if [ $pwmNum -gt 2 ]; then
