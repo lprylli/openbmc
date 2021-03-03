@@ -1,0 +1,198 @@
+From 364cf666dc82b91f9aa9013478e968831c5ad2a3 Mon Sep 17 00:00:00 2001
+From: "Shao-Yu, Wang" <shaw_wang@wiwynn.com>
+Date: Tue, 2 Mar 2021 10:32:08 +0800
+Subject: [PATCH] Support for count PSU PIN sum
+
+---
+ include/PSUSensor.hpp |  5 ++++
+ src/PSUSensor.cpp     | 65 ++++++++++++++++++++++++++++++++++++++-----
+ src/PSUSensorMain.cpp | 23 +++++++++++++++
+ 3 files changed, 86 insertions(+), 7 deletions(-)
+
+diff --git a/include/PSUSensor.hpp b/include/PSUSensor.hpp
+index 5ad501c..d65e63b 100644
+--- a/include/PSUSensor.hpp
++++ b/include/PSUSensor.hpp
+@@ -24,6 +24,7 @@ class PSUSensor : public Sensor, public std::enable_shared_from_this<PSUSensor>
+               PowerState readState);
+     ~PSUSensor();
+     void setupRead(void);
++    void setupPINSumRead(void);
+ 
+   private:
+     sdbusplus::asio::object_server& objServer;
+@@ -33,16 +34,20 @@ class PSUSensor : public Sensor, public std::enable_shared_from_this<PSUSensor>
+     std::string path;
+     std::string pathRatedMin;
+     std::string pathRatedMax;
++    std::string sensorName;
+     size_t errCount;
+     unsigned int sensorFactor;
+     uint8_t minMaxReadCounter;
+     void handleResponse(const boost::system::error_code& err);
++    void handlePINResponse(const boost::system::error_code& err);
+     void checkThresholds(void) override;
+     void updateMinMaxValues(void);
+ 
+     int fd;
+     static constexpr unsigned int sensorPollMs = 1000;
+     static constexpr size_t warnAfterErrorCount = 10;
++    static inline double PSU0_PIN = 0.0;
++    static inline double PSU1_PIN = 0.0;
+ 
+     // Power-on sensor
+     thresholds::ThresholdTimer thresholdTimer;
+diff --git a/src/PSUSensor.cpp b/src/PSUSensor.cpp
+index 81db844..1bd1427 100644
+--- a/src/PSUSensor.cpp
++++ b/src/PSUSensor.cpp
+@@ -49,8 +49,9 @@ PSUSensor::PSUSensor(const std::string& path, const std::string& objectType,
+            conn, readState),
+     std::enable_shared_from_this<PSUSensor>(), objServer(objectServer),
+     inputDev(io), waitTimer(io), path(path), pathRatedMax(""), pathRatedMin(""),
+-    sensorFactor(factor), minMaxReadCounter(0), thresholdTimer(io, this)
++    sensorFactor(factor), minMaxReadCounter(0), thresholdTimer(io, this), sensorName(sensorName)
+ {
++    
+     if constexpr (DEBUG)
+     {
+         std::cerr << "Constructed sensor: path " << path << " type "
+@@ -60,13 +61,16 @@ PSUSensor::PSUSensor(const std::string& path, const std::string& objectType,
+                   << sensorName << "\"\n";
+     }
+ 
+-    fd = open(path.c_str(), O_RDONLY);
+-    if (fd < 0)
++    if (sensorName != "PSU PIN TOTAL")
+     {
+-        std::cerr << "PSU sensor failed to open file\n";
+-        return;
++        fd = open(path.c_str(), O_RDONLY);
++        if (fd < 0)
++        {
++            std::cerr << "PSU sensor failed to open file\n";
++            return;
++        }
++        inputDev.assign(fd);
+     }
+-    inputDev.assign(fd);
+ 
+     std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
+ 
+@@ -146,6 +150,17 @@ void PSUSensor::setupRead(void)
+         });
+ }
+ 
++void PSUSensor::setupPINSumRead(void)
++{
++    std::weak_ptr<PSUSensor> weakRef = weak_from_this();
++    std::shared_ptr<PSUSensor> self = weakRef.lock();
++    boost::system::error_code ec;
++    if (self)
++    {
++        self->handlePINResponse(ec);
++    }
++}
++
+ void PSUSensor::updateMinMaxValues(void)
+ {
+     if (auto newVal = readFile(pathRatedMin, sensorFactor))
+@@ -175,6 +190,14 @@ void PSUSensor::handleResponse(const boost::system::error_code& err)
+     if (!readingStateGood())
+     {
+         markAvailable(false);
++        if (sensorName == "PSU0 PIN")
++        {
++            PSU0_PIN = 0;
++        }
++        if (sensorName == "PSU1 PIN")
++        {
++            PSU1_PIN = 0;
++        }
+         goto finish;
+     }
+ 
+@@ -186,10 +209,18 @@ void PSUSensor::handleResponse(const boost::system::error_code& err)
+             std::getline(responseStream, response);
+             rawValue = std::stod(response);
+             responseStream.clear();
++            
+             double nvalue = rawValue / sensorFactor;
+ 
+             updateValue(nvalue);
+-
++            if (sensorName == "PSU0 PIN")
++            {
++                PSU0_PIN = nvalue;
++            }
++            if (sensorName == "PSU1 PIN")
++            {
++                PSU1_PIN = nvalue;
++            }
+             if (minMaxReadCounter++ % 8 == 0)
+             {
+                 updateMinMaxValues();
+@@ -224,6 +255,26 @@ finish:
+     });
+ }
+ 
++void PSUSensor::handlePINResponse(const boost::system::error_code& err)
++{
++    double nvalue = PSU0_PIN + PSU1_PIN;
++    updateValue(nvalue);
++    std::weak_ptr<PSUSensor> weakRef = weak_from_this();
++    waitTimer.expires_from_now(boost::asio::chrono::milliseconds(sensorPollMs));
++    waitTimer.async_wait([weakRef](const boost::system::error_code& ec) {
++        std::shared_ptr<PSUSensor> self = weakRef.lock();
++        if (ec == boost::asio::error::operation_aborted)
++        {
++            std::cerr << "Failed to reschedule\n";
++            return;
++        }
++        if (self)
++        {
++            self->setupPINSumRead();
++        }
++    });
++}
++
+ void PSUSensor::checkThresholds(void)
+ {
+     // thresholds::checkThresholds(this);
+diff --git a/src/PSUSensorMain.cpp b/src/PSUSensorMain.cpp
+index cd6aa61..e8691ad 100644
+--- a/src/PSUSensorMain.cpp
++++ b/src/PSUSensorMain.cpp
+@@ -848,6 +848,29 @@ void createSensors(boost::asio::io_service& io,
+         }
+     }
+ 
++    /*Add PSU TOTAL*/
++    std::string PINsensorPathStr = "";
++    std::string PINsensorType = "xyz.openbmc_project.Configuration.pmbus";
++    std::string PINsensorName = "PSU PIN TOTAL";
++    std::vector<thresholds::Threshold> PINSumThresholds;
++    std::string interfacePathStr = "";
++    std::string PINsensorSubType = "power/";
++    unsigned int PINfactor = 1000;
++    double PINmaxReading = 6000;
++    double PINminReading = 0;
++    std::string PINlabelHead = "pin";
++    unsigned int PINthresholdConfSize = 0;
++
++    sensors[PINsensorName] = std::make_shared<PSUSensor>(
++                PINsensorPathStr, PINsensorType, objectServer, dbusConnection, io,
++                PINsensorName, std::move(PINSumThresholds), interfacePathStr,
++                PINsensorSubType, PINfactor, PINmaxReading, PINminReading,
++                PINlabelHead, PINthresholdConfSize, PowerState::always);
++
++    sensors[PINsensorName]->setupPINSumRead();
++    ++numCreated;
++    /*Add PSU TOTAL*/
++
+     if constexpr (DEBUG)
+     {
+         std::cerr << "Created total of " << numCreated << " sensors\n";
+-- 
+2.17.1
+

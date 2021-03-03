@@ -1078,6 +1078,33 @@
             # Sensor type specific offset
             0xFF:
               type: double
+0x4e: # PSU PIN SUM
+    entityID: 0x0a
+    entityInstance: 0x0e
+    sensorType: 0x08
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/power/PSU_PIN_TOTAL
+    multiplierM: 0x32
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: -1
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.Watts
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: PSU PIN TOTAL
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x4f: # PSU0 POUT
     entityID: 0x0a
     entityInstance: 0x00

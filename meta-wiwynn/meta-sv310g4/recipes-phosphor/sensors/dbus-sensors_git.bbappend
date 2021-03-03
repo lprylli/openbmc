@@ -9,6 +9,7 @@ SRC_URI += " \
             file://0006-Add-to-support-NVMe-sensor.patch \
             file://0007-Support-NIC-card-temperature-over-MCTP.patch \
             file://0008-Add-to-support-miscellaneous-temperature-sensor.patch \
+            file://0009-Support-to-sum-total-PSU-PIN.patch \
             "
 
 DEPENDS += "obmc-libi2c \
