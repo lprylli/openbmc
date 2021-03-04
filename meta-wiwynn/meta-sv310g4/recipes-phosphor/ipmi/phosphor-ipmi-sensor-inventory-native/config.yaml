@@ -1,5 +1,5 @@
 0x1: #SYS Inlet
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x01
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -26,7 +26,7 @@
             0xFF:
               type: double
 0x2: # SYS Outlet
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x02
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -53,7 +53,7 @@
             0xFF:
               type: double
 0x3: # CPU0 Temp
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x00
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -80,7 +80,7 @@
             0xFF:
               type: double
 0x4: # CPU0 DTSmax
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x01
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -107,7 +107,7 @@
             0xFF:
               type: double
 0x5: # CPU0 Margin
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x02
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -134,7 +134,7 @@
             0xFF:
               type: double
 0x6: # CPU1 Temp
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x03
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -161,7 +161,7 @@
             0xFF:
               type: double
 0x7: # CPU1 DTSmax
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x04
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -188,7 +188,7 @@
             0xFF:
               type: double
 0x8: # CPU1 Margin
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x05
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -215,7 +215,7 @@
             0xFF:
               type: double
 0x9: # PCH Temp
-    entityID: 0x03
+  - entityID: 0x03
     entityInstance: 0x06
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -242,7 +242,7 @@
             0xFF:
               type: double
 0xa: # FPB Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x00
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -269,7 +269,7 @@
             0xFF:
               type: double
 0x0c: # CPU0 DIMM A0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x00
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -296,7 +296,7 @@
             0xFF:
               type: double
 0x0d: # CPU0 DIMM A1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x01
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -323,7 +323,7 @@
             0xFF:
               type: double
 0x0e: # CPU0 DIMM B0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x02
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -350,7 +350,7 @@
             0xFF:
               type: double
 0x0f: # CPU0 DIMM B1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x03
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -377,7 +377,7 @@
             0xFF:
               type: double
 0x10: # CPU0 DIMM C0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x04
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -404,7 +404,7 @@
             0xFF:
               type: double
 0x11: # CPU0 DIMM C1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x05
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -431,7 +431,7 @@
             0xFF:
               type: double
 0x12: # CPU0 DIMM D0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x06
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -458,7 +458,7 @@
             0xFF:
               type: double
 0x13: # CPU0 DIMM D1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x07
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -485,7 +485,7 @@
             0xFF:
               type: double
 0x14: # CPU0 DIMM E0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x08
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -512,7 +512,7 @@
             0xFF:
               type: double
 0x15: # CPU0 DIMM E1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x09
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -539,7 +539,7 @@
             0xFF:
               type: double
 0x16: # CPU0 DIMM F0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0a
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -566,7 +566,7 @@
             0xFF:
               type: double
 0x17: # CPU0 DIMM F1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0b
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -593,7 +593,7 @@
             0xFF:
               type: double
 0x18: # CPU0 DIMM G0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0c
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -620,7 +620,7 @@
             0xFF:
               type: double
 0x19: # CPU0 DIMM G1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0d
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -647,7 +647,7 @@
             0xFF:
               type: double
 0x1a: # CPU0 DIMM H0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0e
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -674,7 +674,7 @@
             0xFF:
               type: double
 0x1b: # CPU0 DIMM H1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x0f
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -701,7 +701,7 @@
             0xFF:
               type: double
 0x1c: # CPU1 DIMM A0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x10
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -728,7 +728,7 @@
             0xFF:
               type: double
 0x1d: # CPU1 DIMM A1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x11
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -755,7 +755,7 @@
             0xFF:
               type: double
 0x1e: # CPU1 DIMM B0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x12
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -782,7 +782,7 @@
             0xFF:
               type: double
 0x1f: # CPU1 DIMM B1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x13
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -809,7 +809,7 @@
             0xFF:
               type: double
 0x20: # CPU1 DIMM C0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x14
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -836,7 +836,7 @@
             0xFF:
               type: double
 0x21: # CPU1 DIMM C1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x15
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -863,7 +863,7 @@
             0xFF:
               type: double
 0x22: # CPU1 DIMM D0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x16
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -890,7 +890,7 @@
             0xFF:
               type: double
 0x23: # CPU1 DIMM D1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x17
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -917,7 +917,7 @@
             0xFF:
               type: double
 0x24: # CPU1 DIMM E0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x18
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -944,7 +944,7 @@
             0xFF:
               type: double
 0x25: # CPU1 DIMM E1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x19
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -971,7 +971,7 @@
             0xFF:
               type: double
 0x26: # CPU1 DIMM F0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1a
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -998,7 +998,7 @@
             0xFF:
               type: double
 0x27: # CPU1 DIMM F1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1b
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1025,7 +1025,7 @@
             0xFF:
               type: double
 0x28: # CPU1 DIMM G0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1c
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1052,7 +1052,7 @@
             0xFF:
               type: double
 0x29: # CPU1 DIMM G1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1d
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1079,7 +1079,7 @@
             0xFF:
               type: double
 0x2a: # CPU1 DIMM H0
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1e
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1106,7 +1106,7 @@
             0xFF:
               type: double
 0x2b: # CPU1 DIMM H1
-    entityID: 0x20
+  - entityID: 0x20
     entityInstance: 0x1f
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1133,7 +1133,7 @@
             0xFF:
               type: double
 0x4e: # PSU PIN SUM
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x0e
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1160,7 +1160,7 @@
             0xFF:
               type: double
 0x4f: # PSU0 POUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x00
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1187,7 +1187,7 @@
             0xFF:
               type: double
 0x50: # PSU0 PIN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x01
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1214,7 +1214,7 @@
             0xFF:
               type: double
 0x51: # PSU0 IOUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x02
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -1241,7 +1241,7 @@
             0xFF:
               type: double
 0x52: # PSU0 VOUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x03
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1268,7 +1268,7 @@
             0xFF:
               type: double
 0x53: # PSU0 VIN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x04
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1295,7 +1295,7 @@
             0xFF:
               type: double
 0x54: # PSU0 Temp
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x05
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1322,7 +1322,7 @@
             0xFF:
               type: double
 0x55: # PSU0 FAN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x06
     sensorType: 0x04
     sensorReadingType: 0x01
@@ -1349,7 +1349,7 @@
             0xFF:
               type: double
 0x56: # PSU1 POUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x07
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1376,7 +1376,7 @@
             0xFF:
               type: double
 0x57: # PSU1 PIN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x08
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1403,7 +1403,7 @@
             0xFF:
               type: double
 0x58: # PSU1 IOUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x09
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -1430,7 +1430,7 @@
             0xFF:
               type: double
 0x59: # PSU1 VOUT
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x0a
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1457,7 +1457,7 @@
             0xFF:
               type: double
 0x5a: # PSU1 VIN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x0b
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1484,7 +1484,7 @@
             0xFF:
               type: double
 0x5b: # PSU1 Temp
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x0c
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -1511,7 +1511,7 @@
             0xFF:
               type: double
 0x5c: # PSU1 FAN
-    entityID: 0x0a
+  - entityID: 0x0a
     entityInstance: 0x0d
     sensorType: 0x04
     sensorReadingType: 0x01
@@ -1538,7 +1538,7 @@
             0xFF:
               type: double
 0x5d: # Fan Voltage
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x1D
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1565,7 +1565,7 @@
             0xFF:
               type: double
 0x5e: # Fan Power
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x1E
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -1592,7 +1592,7 @@
             0xFF:
               type: double
 0x5f: # Fan Current
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x1F
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -1619,7 +1619,7 @@
             0xFF:
               type: double
 0x2d: # P12V
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4d
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1646,7 +1646,7 @@
             0xFF:
               type: double
 0x2e: # P3V3
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4e
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1673,7 +1673,7 @@
             0xFF:
               type: double
 0x2f: # PVNN_PCH_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4f
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1700,7 +1700,7 @@
             0xFF:
               type: double
 0x30: # P1V05_PCH_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x50
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1727,7 +1727,7 @@
             0xFF:
               type: double
 0x31: # P12V_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x51
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1754,7 +1754,7 @@
             0xFF:
               type: double
 0x32: # P3V3_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x52
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1781,7 +1781,7 @@
             0xFF:
               type: double
 0x33: # P1V8_PCH
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x53
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1808,7 +1808,7 @@
             0xFF:
               type: double
 0x34: # P3V_BAT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x54
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1835,7 +1835,7 @@
             0xFF:
               type: double
 0x35: # P1V2_BMC_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x55
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1862,7 +1862,7 @@
             0xFF:
               type: double
 0x36: # P5V_AUX
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x56
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1889,7 +1889,7 @@
             0xFF:
               type: double
 0x37: # PVCCIN_CPU0
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x57
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1916,7 +1916,7 @@
             0xFF:
               type: double
 0x38: # PVCCIN_CPU1
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x58
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1943,7 +1943,7 @@
             0xFF:
               type: double
 0x39: # PVDDQ_ABCD
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x59
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1970,7 +1970,7 @@
             0xFF:
               type: double
 0x3a: # PVDDQ_EFGH
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x5a
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -1997,7 +1997,7 @@
             0xFF:
               type: double
 0x3b: # PVDDQ_JKLM
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x5b
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2024,7 +2024,7 @@
             0xFF:
               type: double
 0x3c: # PVDDQ_NPRT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x5c
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2051,8 +2051,8 @@
             0xFF:
               type: double
 0x3d: # SYS FAN0
-    entityID: 0x1D
-    entityInstance: 0x7d
+  - entityID: 0x1D
+    entityInstance: 0x00
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN0
@@ -2078,8 +2078,8 @@
             0xFF:
               type: double
 0x3e: # SYS FAN1
-    entityID: 0x1D
-    entityInstance: 0x7e
+  - entityID: 0x1D
+    entityInstance: 0x01
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN1
@@ -2105,8 +2105,8 @@
             0xFF:
               type: double
 0x3f: # SYS FAN2
-    entityID: 0x1D
-    entityInstance: 0x7f
+  - entityID: 0x1D
+    entityInstance: 0x02
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN2
@@ -2132,8 +2132,8 @@
             0xFF:
               type: double
 0x40: # SYS FAN3
-    entityID: 0x1D
-    entityInstance: 0x80
+  - entityID: 0x1D
+    entityInstance: 0x03
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN3
@@ -2159,8 +2159,8 @@
             0xFF:
               type: double
 0x41: # SYS FAN4
-    entityID: 0x1D
-    entityInstance: 0x81
+  - entityID: 0x1D
+    entityInstance: 0x04
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN4
@@ -2186,8 +2186,8 @@
             0xFF:
               type: double
 0x42: # SYS FAN5
-    entityID: 0x1D
-    entityInstance: 0x82
+  - entityID: 0x1D
+    entityInstance: 0x05
     sensorType: 0x04
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/fan_tach/SYS_FAN5
@@ -2213,7 +2213,7 @@
             0xFF:
               type: double
 0x49: # OCP NIC Temp
-    entityID: 0x0b
+  - entityID: 0x0b
     entityInstance: 0x00
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2240,34 +2240,34 @@
             0xFF:
               type: double
 0x4a: # M.2_Temp
-  entityID: 0x0b
-  entityInstance: 0x01
-  sensorType: 0x01
-  sensorReadingType: 0x01
-  path: /xyz/openbmc_project/sensors/temperature/M2_Temp
-  multiplierM: 0x01
-  offsetB: 0
-  bExp: 0
-  # Result exponent field in Type 1 SDR(2's complement, signed)
-  rExp: 0
-  # Applies for analog sensors, the actual reading value for the sensor is
-  # Value * 10^N
-  scale: 0
-  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingData
-  sensorName: M2 Temp
-  sdrType: SdrType::sdr_full_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: double
+  - entityID: 0x0b
+    entityInstance: 0x01
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/M2_Temp
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: M2 Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x4b: # T4 Temp
-    entityID: 0x0b
+  - entityID: 0x0b
     entityInstance: 0x02
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2294,115 +2294,115 @@
             0xFF:
               type: double
 0x60: # NVMe_0_Temp
-  entityID: 0x04
-  entityInstance: 0x00
-  sensorType: 0x01
-  sensorReadingType: 0x01
-  path: /xyz/openbmc_project/sensors/temperature/NVMe_0_Temp
-  multiplierM: 0x01
-  offsetB: 0
-  bExp: 0
-  # Result exponent field in Type 1 SDR(2's complement, signed)
-  rExp: 0
-  # Applies for analog sensors, the actual reading value for the sensor is
-  # Value * 10^N
-  scale: 0
-  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingData
-  sensorName: NVMe 0 Temp
-  sdrType: SdrType::sdr_full_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: double
+  - entityID: 0x04
+    entityInstance: 0x00
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/NVMe_0_Temp
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: NVMe 0 Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x61: # NVMe_1_Temp
-  entityID: 0x04
-  entityInstance: 0x01
-  sensorType: 0x01
-  sensorReadingType: 0x01
-  path: /xyz/openbmc_project/sensors/temperature/NVMe_1_Temp
-  multiplierM: 0x01
-  offsetB: 0
-  bExp: 0
-  # Result exponent field in Type 1 SDR(2's complement, signed)
-  rExp: 0
-  # Applies for analog sensors, the actual reading value for the sensor is
-  # Value * 10^N
-  scale: 0
-  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingData
-  sensorName: NVMe 1 Temp
-  sdrType: SdrType::sdr_full_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: double
+  - entityID: 0x04
+    entityInstance: 0x01
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/NVMe_1_Temp
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: NVMe 1 Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x62: # NVMe_2_Temp
-  entityID: 0x04
-  entityInstance: 0x02
-  sensorType: 0x01
-  sensorReadingType: 0x01
-  path: /xyz/openbmc_project/sensors/temperature/NVMe_2_Temp
-  multiplierM: 0x01
-  offsetB: 0
-  bExp: 0
-  # Result exponent field in Type 1 SDR(2's complement, signed)
-  rExp: 0
-  # Applies for analog sensors, the actual reading value for the sensor is
-  # Value * 10^N
-  scale: 0
-  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingData
-  sensorName: NVMe 2 Temp
-  sdrType: SdrType::sdr_full_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: double
+  - entityID: 0x04
+    entityInstance: 0x02
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/NVMe_2_Temp
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: NVMe 2 Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x63: # NVMe_3_Temp
-  entityID: 0x04
-  entityInstance: 0x03
-  sensorType: 0x01
-  sensorReadingType: 0x01
-  path: /xyz/openbmc_project/sensors/temperature/NVMe_3_Temp
-  multiplierM: 0x01
-  offsetB: 0
-  bExp: 0
-  # Result exponent field in Type 1 SDR(2's complement, signed)
-  rExp: 0
-  # Applies for analog sensors, the actual reading value for the sensor is
-  # Value * 10^N
-  scale: 0
-  unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingData
-  sensorName: NVMe 3 Temp
-  sdrType: SdrType::sdr_full_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: double
+  - entityID: 0x04
+    entityInstance: 0x03
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/NVMe_3_Temp
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    # Result exponent field in Type 1 SDR(2's complement, signed)
+    rExp: 0
+    # Applies for analog sensors, the actual reading value for the sensor is
+    # Value * 10^N
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorName: NVMe 3 Temp
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: double
 0x73: #CPU0_VccIN_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x0d
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2429,7 +2429,7 @@
             0xFF:
               type: double
 0x74: #CPU0_VccIN_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x0e
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -2456,7 +2456,7 @@
             0xFF:
               type: double
 0x75: #CPU0_VccIN_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x0f
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2483,7 +2483,7 @@
             0xFF:
               type: double
 0x76: #CPU0_VccIN_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x10
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2510,7 +2510,7 @@
             0xFF:
               type: double
 0x77: #CPU0_VccIN_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x11
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2537,7 +2537,7 @@
             0xFF:
               type: double
 0x85: #VDDQ_ABCD_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x22
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2564,7 +2564,7 @@
             0xFF:
               type: double
 0x86: #VDDQ_ABCD_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x23
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -2591,7 +2591,7 @@
             0xFF:
               type: double
 0x87: #VDDQ_ABCD_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x24
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2618,7 +2618,7 @@
             0xFF:
               type: double
 0x88: #VDDQ_ABCD_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x25
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2645,7 +2645,7 @@
             0xFF:
               type: double
 0x89: #VDDQ_ABCD_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x26
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2672,7 +2672,7 @@
             0xFF:
               type: double
 0x8a: #VDDQ_EFGH_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x27
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2699,7 +2699,7 @@
             0xFF:
               type: double
 0x8b: #VDDQ_EFGH_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x28
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -2726,7 +2726,7 @@
             0xFF:
               type: double
 0x8c: #VDDQ_EFGH_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x29
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2753,7 +2753,7 @@
             0xFF:
               type: double
 0x8d: #VDDQ_EFGH_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x2a
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2780,7 +2780,7 @@
             0xFF:
               type: double
 0x8e: #VDDQ_EFGH_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x2b
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2807,7 +2807,7 @@
             0xFF:
               type: double
 0x94: #CPU1_VccIN_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x31
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2834,7 +2834,7 @@
             0xFF:
               type: double
 0x95: #CPU1_VccIN_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x32
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -2861,7 +2861,7 @@
             0xFF:
               type: double
 0x96: #CPU1_VccIN_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x33
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2888,7 +2888,7 @@
             0xFF:
               type: double
 0x97: #CPU1_VccIN_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x34
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -2915,7 +2915,7 @@
             0xFF:
               type: double
 0x98: #CPU1_VccIN_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x35
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -2942,7 +2942,7 @@
             0xFF:
               type: double
 0xa6: #VDDQ_JKLM_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x43
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -2969,7 +2969,7 @@
             0xFF:
               type: double
 0xa7: #VDDQ_JKLM_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x44
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -2996,7 +2996,7 @@
             0xFF:
               type: double
 0xa8: #VDDQ_JKLM_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x45
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -3023,7 +3023,7 @@
             0xFF:
               type: double
 0xa9: #VDDQ_JKLM_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x46
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -3050,7 +3050,7 @@
             0xFF:
               type: double
 0xaa: #VDDQ_JKLM_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x47
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -3077,7 +3077,7 @@
             0xFF:
               type: double
 0xab: #VDDQ_NPRT_VOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x48
     sensorType: 0x02
     sensorReadingType: 0x01
@@ -3104,7 +3104,7 @@
             0xFF:
               type: double
 0xac: #VDDQ_NPRT_IOUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x49
     sensorType: 0x03
     sensorReadingType: 0x01
@@ -3131,7 +3131,7 @@
             0xFF:
               type: double
 0xad: #VDDQ_NPRT_PIN
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4a
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -3158,7 +3158,7 @@
             0xFF:
               type: double
 0xae: #VDDQ_NPRT_POUT
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4b
     sensorType: 0x08
     sensorReadingType: 0x01
@@ -3185,7 +3185,7 @@
             0xFF:
               type: double
 0xaf: #VDDQ_NPRT_Temp
-    entityID: 0x07
+  - entityID: 0x07
     entityInstance: 0x4c
     sensorType: 0x01
     sensorReadingType: 0x01
@@ -3211,7 +3211,45 @@
             # Sensor type specific offset
             0xFF:
               type: double
-0xd4: # ACPI_Power_State
+0xfa: # End of POST
+  - entityID: 0x22
+    entityInstance: 0x00
+    sensorType: 0x12
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/End_of_Post
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: End of Post
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd3: # CPU0 Status
+  - ownerID: 0x21
+    entityID: 0x3
+    entityInstance: 0x3
+    sensorType: 0x7
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_Status
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 Status
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd4:
+  - ownerID: 0x20  # ACPI_Power_State
     entityID: 0x06
     entityInstance: 0x03
     sensorType: 0x22
@@ -3229,21 +3267,667 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
-0xfa: # End of POST
-  entityID: 0x22
-  entityInstance: 0x00
-  sensorType: 0x12
-  sensorReadingType: 0x6f
-  path: /xyz/openbmc_project/sensors/discrete/End_of_Post
-  mutability: Mutability::Write|Mutability::Read
-  serviceInterface: org.freedesktop.DBus.Properties
-  readingType: readingAssertion
-  sensorName: End of Post
-  sdrType: SdrType::sdr_event_record
-  interfaces:
-    xyz.openbmc_project.Sensor.Value:
-      Value:
-        Offsets:
-          # Sensor type specific offset
-          0xFF:
-            type: uint32_t
+  - ownerID: 0x21  # CPU1 Status
+    entityID: 0x4
+    entityInstance: 0x1
+    sensorType: 0x7
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_Status
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 Status
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd6: # CPU0 DIMMA0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x10
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMA0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMA0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd7: # CPU0 DIMMA1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x11
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMA1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMA1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd8: # CPU0 DIMMB0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x12
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMB0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMB0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xd9: # CPU0 DIMMB1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x13
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMB1 STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMB1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xda: # CPU0 DIMMC0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x14
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMC0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMC0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xdb: # CPU0 DIMMC1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x15
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMC1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMC1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xdc: # CPU0 DIMMD0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x16
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMD0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMD0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xdd: # CPU0 DIMMD1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x17
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMD1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMD1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xde: # CPU0 DIMME0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x18
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMME0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMME0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xdf: # CPU0 DIMME1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x19
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMME1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMME1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe0: # CPU0 DIMMF0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1a
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMF0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMF0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe1: # CPU0 DIMMF1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1b
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMF1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMF1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe2: # CPU0 DIMMG0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1c
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMG0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMG0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe3: # CPU0 DIMMG1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1d
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMG1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMG1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe4: # CPU0 DIMMH0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1e
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMH0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMH0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe5: # CPU0 DIMMH1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x1f
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMMH1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU0 DIMMH1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe6: # CPU1 DIMMA0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x20
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMA0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMA0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe7: # CPU1 DIMMA1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x21
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMA0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMA1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe8: # CPU1 DIMMB0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x22
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMB0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMB0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xe9: # CPU1 DIMMB1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x23
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMB1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMB1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xea: # CPU1 DIMMC0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x24
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMC0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMC0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xeb: # CPU1 DIMMC1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x25
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMC1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMC1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xec: # CPU1 DIMMD0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x26
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMD0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMD0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xed: # CPU1 DIMMD1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x27
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMD1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMD1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xee: # CPU1 DIMME0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x28
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMME0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMME0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xef: # CPU1 DIMME1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x29
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMME1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMME1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf0: # CPU1 DIMMF0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2a
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMF0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMF0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf1: # CPU1 DIMMF1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2b
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMF1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMF1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf2: # CPU1 DIMMG0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2c
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMG0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMG0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf3: # CPU1 DIMMG1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2d
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMG1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMG1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf4: # CPU1 DIMMH0 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2e
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMH0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMH0 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf5: # CPU1 DIMMH1 STS
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0x2f
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMMH1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: CPU1 DIMMH1 STS
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf6: # MRC Error
+  - ownerID: 0x21
+    entityID: 0x20
+    entityInstance: 0xf5
+    sensorType: 0x0c
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/MRC_Error
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: MRC Error
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf7: # Critical IRQ
+  - ownerID: 0x1
+    entityID: 0x20
+    entityInstance: 0x1
+    sensorType: 0x13
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Critical_IRQ
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Critical IRQ
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
