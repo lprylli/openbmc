@@ -6,6 +6,7 @@ SRC_URI += "file://0001-Create-sensor-gen-extra-from-sensor-yaml.patch \
             file://0004-Support-IPMI-power-reset-and-power-soft-commands.patch \
             file://0005-Support-CPU-margin-showing-negative-values.patch \
             file://0006-Support-ownerID-config-in-SDR.patch \
+            file://0007-Add-sensor-MRB-value-in-sensor-gen-extra.patch \
             file://master_write_read_white_list.json \
            "
 

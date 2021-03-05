@@ -1,0 +1,67 @@
+From f72f0c4aebbb93eeea595da889efbcbb997af162 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Fri, 5 Mar 2021 07:05:05 +0800
+Subject: [PATCH] Set sensor hysteresis to 0
+
+---
+ include/sensor.hpp      | 2 +-
+ src/ADCSensor.cpp       | 2 +-
+ src/HwmonTempSensor.cpp | 2 +-
+ src/TachSensor.cpp      | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/sensor.hpp b/include/sensor.hpp
+index 0ef87d5..d2fa2c7 100644
+--- a/include/sensor.hpp
++++ b/include/sensor.hpp
+@@ -45,7 +45,7 @@ struct Sensor
+         name(std::regex_replace(name, std::regex("[^a-zA-Z0-9_/]+"), "_")),
+         configurationPath(configurationPath), objectType(objectType),
+         maxValue(max), minValue(min), thresholds(std::move(thresholdData)),
+-        hysteresisTrigger((max - min) * 0.01),
++        hysteresisTrigger(0),
+         hysteresisPublish((max - min) * 0.0001), dbusConnection(conn),
+         readState(readState), errCount(0),
+         instrumentation(enableInstrumentation
+diff --git a/src/ADCSensor.cpp b/src/ADCSensor.cpp
+index 7afb2ab..1e6a0e5 100644
+--- a/src/ADCSensor.cpp
++++ b/src/ADCSensor.cpp
+@@ -35,7 +35,7 @@
+ #include <string>
+ #include <vector>
+ 
+-static constexpr unsigned int sensorPollMs = 500;
++static constexpr unsigned int sensorPollMs = 1000;
+ static constexpr size_t warnAfterErrorCount = 10;
+ static constexpr unsigned int gpioBridgeEnableMs = 20;
+ // scaling factor from hwmon
+diff --git a/src/HwmonTempSensor.cpp b/src/HwmonTempSensor.cpp
+index eaaa9e8..a47c81e 100644
+--- a/src/HwmonTempSensor.cpp
++++ b/src/HwmonTempSensor.cpp
+@@ -32,7 +32,7 @@
+ #include <string>
+ #include <vector>
+ 
+-static constexpr unsigned int sensorPollMs = 500;
++static constexpr unsigned int sensorPollMs = 1000;
+ static constexpr unsigned int sensorScaleFactor = 1000;
+ static constexpr size_t warnAfterErrorCount = 10;
+ 
+diff --git a/src/TachSensor.cpp b/src/TachSensor.cpp
+index 0490135..5a4c4d6 100644
+--- a/src/TachSensor.cpp
++++ b/src/TachSensor.cpp
+@@ -39,7 +39,7 @@
+ #include <utility>
+ #include <vector>
+ 
+-static constexpr unsigned int pwmPollMs = 500;
++static constexpr unsigned int pwmPollMs = 1000;
+ static constexpr size_t warnAfterErrorCount = 10;
+ 
+ TachSensor::TachSensor(const std::string& path, const std::string& objectType,
+-- 
+2.17.1
+

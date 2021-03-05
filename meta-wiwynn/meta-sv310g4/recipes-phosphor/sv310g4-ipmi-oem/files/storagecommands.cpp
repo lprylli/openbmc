@@ -11,7 +11,7 @@
 #include <sdbusplus/timer.hpp>
 
 #include <filesystem>
-//#include <openbmc/sensor-gen-extra.cpp>
+#include <openbmc/sensor-gen-extra.cpp>
 namespace ipmi
 {
 
@@ -842,6 +842,20 @@ ipmi::RspType<uint16_t, // Next Record ID
             {
                 std::cerr << "Invalid Generator ID\n";
             }
+
+            // Get sensor type, sensor number, and event type for the sensor.
+            auto sensor = ipmi::sensor::sensorsInfo.find(sensorPath);
+            if (sensor != ipmi::sensor::sensorsInfo.end())
+            {
+                sensorNum = sensor->second.sensorNumber;
+                sensorType = sensor->second.sensorType;
+                eventType = sensor->second.sensorReadingType;
+            }
+            else
+            {
+                std::cerr << "Unknown sensor path: " << sensorPath << "\n";
+            }
+
             // Get the event direction
             try
             {
@@ -864,6 +878,17 @@ ipmi::RspType<uint16_t, // Next Record ID
             systemEventType{timestamp, generatorID, evmRev, sensorType,
                             sensorNum, eventType, eventDir, eventData});
     }
+    else if ((recordType >= oemEventFirst) && (recordType <= oemEventLast))
+    {
+        // Only keep the bytes that fit in the record
+        std::array<uint8_t, oemEventSize> eventData{};
+        std::copy_n(eventDataBytes.begin(),
+                    std::min(eventDataBytes.size(), eventData.size()),
+                    eventData.begin());
+
+        return ipmi::responseSuccess(nextRecordID, recordID, recordType,
+                                     eventData);
+    }
     else if ((recordType >= oemTsEventFirst && recordType <= oemTsEventLast) ||
              targetEntryFields.size() == 4)
     {
@@ -885,17 +910,6 @@ ipmi::RspType<uint16_t, // Next Record ID
 
         return ipmi::responseSuccess(nextRecordID, recordID, recordType,
                                      oemTsEventType{timestamp, eventData});
-    }
-    else if ((recordType >= oemEventFirst) && (recordType <= oemEventLast))
-    {
-        // Only keep the bytes that fit in the record
-        std::array<uint8_t, oemEventSize> eventData{};
-        std::copy_n(eventDataBytes.begin(),
-                    std::min(eventDataBytes.size(), eventData.size()),
-                    eventData.begin());
-
-        return ipmi::responseSuccess(nextRecordID, recordID, recordType,
-                                     eventData);
     }
 
     return ipmi::responseUnspecifiedError();
@@ -939,15 +953,35 @@ ipmi::RspType<uint16_t> ipmiStorageAddSELEntry(
     cancelSELReservation();
 
     std::vector<uint8_t> eventData(9, 0xFF);
-    eventData[0] = generatorID;
-    eventData[1] = generatorID >> 8;
-    eventData[2] = evmRev;
-    eventData[3] = sensorType;
-    eventData[4] = sensorNum;
-    eventData[5] = eventType;
-    eventData[6] = eventData1;
-    eventData[7] = eventData2;
-    eventData[8] = eventData3;
+    if (recordType < oemEventFirst)
+    {
+        eventData[0] = generatorID;
+        eventData[1] = generatorID >> 8;
+        eventData[2] = evmRev;
+        eventData[3] = sensorType;
+        eventData[4] = sensorNum;
+        eventData[5] = eventType;
+        eventData[6] = eventData1;
+        eventData[7] = eventData2;
+        eventData[8] = eventData3;
+    }
+    else
+    {
+        eventData.resize(13, 0xFF);
+        eventData[0] = timestamp & 0xFF;
+        eventData[1] = (timestamp >> 8) & 0XFF;
+        eventData[2] = (timestamp >> 16) & 0xFF;
+        eventData[3] = (timestamp >> 24) & 0xFF;
+        eventData[4] = generatorID;
+        eventData[5] = generatorID >> 8;
+        eventData[6] = evmRev;
+        eventData[7] = sensorType;
+        eventData[8] = sensorNum;
+        eventData[9] = eventType;
+        eventData[10] = eventData1;
+        eventData[11] = eventData2;
+        eventData[12] = eventData3;
+    }
 
     std::shared_ptr<sdbusplus::asio::connection> bus = getSdBus();
     auto writeSEL = bus->new_method_call(ipmiSelService, ipmiSelPath,
