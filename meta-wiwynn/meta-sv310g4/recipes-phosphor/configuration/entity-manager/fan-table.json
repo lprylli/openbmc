@@ -8,18 +8,18 @@
         "ignoreDbusMinMax": true
     },
     {
-        "name": "CPU0_Margin",
+        "name": "CPU0_Temp",
         "type": "temp",
-        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_Margin",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU0_Temp",
         "tjMaxPath": "/sys/bus/peci/devices/0-30/peci-cputemp.0/hwmon/**/temp5_input",
         "tjMaxScale": 0.001,
         "timeout": 10,
         "ignoreDbusMinMax": true
     },
     {
-        "name": "CPU1_Margin",
+        "name": "CPU1_Temp",
         "type": "temp",
-        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_Margin",
+        "readPath": "/xyz/openbmc_project/sensors/temperature/CPU1_Temp",
         "tjMaxPath": "/sys/bus/peci/devices/0-31/peci-cputemp.1/hwmon/**/temp5_input",
         "tjMaxScale": 0.001,
         "timeout": 10,
@@ -382,8 +382,8 @@
                     "sensorNames": [
                         "FPB_Temp",
                         "OCP_NIC_Temp",
-                        "CPU0_Margin",
-                        "CPU1_Margin"
+                        "CPU0_Temp",
+                        "CPU1_Temp"
                     ],
                     "outputType": "value",
                     "failsafePercent": 90.0
@@ -453,9 +453,9 @@
                     }
                 },
                 {
-                    "name": "Linear_CPU0_Margin",
+                    "name": "Linear_CPU0_Temp",
                     "type": "linear",
-                    "inputs": ["CPU0_Margin"],
+                    "inputs": ["CPU0_Temp"],
                     "setpoint": 0.0,
                     "pid": {
                         "samplePeriod": 1,
@@ -483,9 +483,9 @@
                     }
                 },
                 {
-                    "name": "Linear_CPU1_Margin",
+                    "name": "Linear_CPU1_Temp",
                     "type": "linear",
-                    "inputs": ["CPU1_Margin"],
+                    "inputs": ["CPU1_Temp"],
                     "setpoint": 0.0,
                     "pid": {
                         "samplePeriod": 1,

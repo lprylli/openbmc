@@ -1,6 +1,6 @@
 #!/bin/sh
 
-zones=("zone1" "zone2")
+zones=("zone1")
 manualFilePathBase="/tmp/fanCtrlManual/"
 pwmFilePathBase="/sys/devices/platform/ahb/ahb:apb/1e786000.pwm-tacho-controller/hwmon/**/"
 

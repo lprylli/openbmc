@@ -4,6 +4,7 @@ SRC_URI += " file://0001-Modify-pid-algorithm-and-add-debug-mode.patch \
              file://0002-Check-sensor-fan-fail-and-reinitialize-sensors.patch \
              file://0003-Remove-manual-folder-when-service-restart.patch \
              file://0004-Get-tjmax-from-dbus.patch \
+             file://0005-When-the-postcomplete-is-high-make-all-fans-speed-up-to-100-percent.patch \
              file://writePwm.sh \
              file://keepManualPwm.sh \
              file://phosphor-pid-control.sh \
