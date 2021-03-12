@@ -607,6 +607,116 @@
             ]
     },
     {
+            "Name": "M2_Temp",
+            "Bus": 17,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 69
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 72
+                }
+            ],
+            "Type": "NVME"
+    },
+    {
+            "Name": "NVME0_Temp",
+            "Bus": 22,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 68
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+    },
+    {
+            "Name": "NVME1_Temp",
+            "Bus": 23,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                 {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 68
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+    },
+    {
+            "Name": "NVME2_Temp",
+            "Bus": 24,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                 {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 68
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+    },
+    {
+            "Name": "NVME3_Temp",
+            "Bus": 25,
+            "SensorType": "temp",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Thresholds": [
+                 {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 68
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 70
+                }
+            ],
+            "Type": "NVME"
+    },
+    {
         "Index": 0,
         "Name": "CPU0_VCORE",
         "ScaleFactor": 1,
