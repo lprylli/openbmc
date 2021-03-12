@@ -10,6 +10,7 @@ SRC_URI += "file://0001-Revise-transporthandler-for-some-feature.patch \
 	    file://0008-Support-CPU-margin-showing-negative-values.patch \
             file://0009-Support-ownerID-config-in-SDR.patch \
             file://0010-Add-sensor-MRB-value-in-sensor-gen-extra.patch \
+            file://0011-Add-the-word-Chassis-PSU-NIC-in-FRU-Device-Descripti.patch \
            "
 	   
 EXTRA_OECONF += "--disable-i2c-whitelist-check"

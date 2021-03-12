@@ -1,0 +1,64 @@
+From 04bccea6e392c11ea918b90eac6607702735401c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Chang=2EJamesWC=20=E5=BC=B5=E6=96=87=E9=87=91=20TAO?=
+ <chang.jameswc@inventec.com>
+Date: Thu, 11 Mar 2021 15:11:27 +0800
+Subject: [PATCH] Add the word Chassis/PSU/NIC in FRU Device Description
+
+---
+ sensorhandler.cpp | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
+
+diff --git a/sensorhandler.cpp b/sensorhandler.cpp
+index cf69027..a86b636 100644
+--- a/sensorhandler.cpp
++++ b/sensorhandler.cpp
+@@ -1192,21 +1192,45 @@ ipmi_ret_t ipmi_fru_get_sdr(ipmi_request_t request, ipmi_response_t response,
+ 
+     auto fruData = fruDeviceFind->second.find("xyz.openbmc_project.FruDevice");
+ 
+-    std::string deviceID;
++    std::string deviceID, tempID;
++
++    if(fruID == 0)
++    {
++        deviceID ="Chassis-";
++    }
++    else if(fruID == 1 || fruID == 2)
++    {
++        deviceID ="PSU-";
++    }
++    else if (fruID == 3)
++    {
++        deviceID ="NIC-";
++    }
++    else
++    {
++        
++    }
++
+     auto findProductName = fruData->second.find("BOARD_PRODUCT_NAME");
+     auto findBoardName = fruData->second.find("PRODUCT_PRODUCT_NAME");
+     if (findProductName != fruData->second.end())
+     {
+-        deviceID = std::get<std::string>(findProductName->second);
++        //deviceID = std::get<std::string>(findProductName->second);
++        tempID = std::get<std::string>(findProductName->second);
+     }
+     else if (findBoardName != fruData->second.end())
+     {
+-        deviceID = std::get<std::string>(findBoardName->second);
++        //deviceID = std::get<std::string>(findBoardName->second);
++        tempID = std::get<std::string>(findBoardName->second);
+     }
+     else
+     {
+-        deviceID = "UNKNOWN";
++       // deviceID = "UNKNOWN";
++        tempID = "UNKNOWN";
+     }
++    
++    deviceID =  deviceID + tempID;
++
+     if (deviceID.size() > get_sdr::FRU_RECORD_DEVICE_ID_MAX_LENGTH)
+     {
+         deviceID = deviceID.substr(0, get_sdr::FRU_RECORD_DEVICE_ID_MAX_LENGTH);
