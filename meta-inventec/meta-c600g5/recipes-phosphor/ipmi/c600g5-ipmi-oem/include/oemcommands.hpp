@@ -45,6 +45,7 @@ static constexpr NetFn netFnOem_3E = netFnOemEight;
 
 namespace netFn_30_cmds
 {
+    static constexpr Cmd cmdRamdomDelayACRestorePowerON = 0x18;
     static constexpr Cmd cmdSetServiceStatus = 0x0D;
     static constexpr Cmd cmdGetServiceStatus = 0x0E;
 } // namespace netFn_30_cmds
