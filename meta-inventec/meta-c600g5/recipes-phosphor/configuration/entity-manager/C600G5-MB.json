@@ -537,22 +537,347 @@
                 }
 	    ],
             "Type": "XeonCPU"
-	},
-	{
-            "Address": "0x8",
-            "Class": "METemp",
-            "Name": "PCH Temp",
-            "PowerState": "On",
-            "Thresholds": [
-                {
-                    "Direction": "greater than",
-                    "Name": "upper critical",
-                    "Severity": 1,
-                    "Value": 77
-                }
-            ],
-            "Type": "IpmbSensor"
-        }
+    },
+    {
+        "Address": "0x8",
+        "Class": "METemp",
+        "Name": "PCH_Temp",
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 77
+            }
+        ],
+        "Type": "IpmbSensor"
+    },
+    {
+        "Address": "0x4c",
+        "Bus": 9,
+        "Name": "SYS_Inlet0",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 38
+            }
+        ],
+        "Type": "EMC1412"
+    },
+    {
+        "Address": "0x4c",
+        "Bus": 2,
+        "Name": "SYS_Outlet",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 75
+            }
+        ],
+        "Type": "EMC1412"
+    },
+    {
+        "Index": 0,
+        "Name": "CPU0_VCORE",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.1
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 1,
+        "Name": "P3V3_STBY",
+        "ScaleFactor": 0.4107,
+        "MaxReading": 4,
+        "MinReading": 0,
+        "PowerState": "Always",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 3.63
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2.97
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 2,
+        "Name": "P3V3",
+        "ScaleFactor": 0.4107,
+        "MaxReading": 4,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 3.63
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2.97
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 3,
+        "Name": "CPU1_VCORE",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.1
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 4,
+        "Name": "P3V_VBAT",
+        "ScaleFactor": 0.3333,
+        "MaxReading": 4,
+        "MinReading": 0,
+        "PowerState": "Always",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2.5
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 10,
+        "Name": "CPU0_DDR_VDD1",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.3
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 11,
+        "Name": "CPU0_DDR_VDD2",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.3
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 14,
+        "Name": "CPU1_DDR_VDD1",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.3
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 15,
+        "Name": "CPU1_DDR_VDD2",
+        "ScaleFactor": 1,
+        "MaxReading": 1.28,
+        "MinReading": 0,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 1.3
+            },
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 0.9
+            }
+        ],
+        "Type": "ADC"
+    },
+    {
+        "Index": 1,
+        "Name": "SYS_FAN1",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    },
+    {
+        "Index": 3,
+        "Name": "SYS_FAN2",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    },
+    {
+        "Index": 5,
+        "Name": "SYS_FAN3",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    },
+    {
+        "Index": 7,
+        "Name": "SYS_FAN4",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    },
+    {
+        "Index": 9,
+        "Name": "SYS_FAN5",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    },
+    {
+        "Index": 11,
+        "Name": "SYS_FAN6",
+        "MaxReading": 30000,
+        "MinReading": 2300,
+        "PowerState": "On",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 2300
+            }
+        ],
+        "Type": "AspeedFan"
+    }
     ],
     "Fru":[
         {

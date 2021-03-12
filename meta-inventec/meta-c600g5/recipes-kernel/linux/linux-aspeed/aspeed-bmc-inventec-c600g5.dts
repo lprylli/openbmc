@@ -167,7 +167,7 @@
 
 &i2c1 {
 	status = "okay";
-//	multi-master =<1>;
+	multi-master =<1>;
 	ipmb@10 {
 		compatible = "ipmb-dev";
 		reg = <0x10>;
@@ -177,10 +177,10 @@
 
 &i2c2 {
 	status = "okay";
-    
-	therm_sense1: emc1412@7c {
+
+	therm_sense1: emc1412@49 {
 		compatible = "microchip,emc1412";
-		reg = <0x7c>;
+		reg = <0x49>;
 	};
 
 	bmc_fru: 24c512_fru@53 {
@@ -188,7 +188,7 @@
 		reg = <0x53>;
 		pagesize = <128>;
 	};
-
+	//for  outlet
 	therm_sense2: emc1412@4c {
 		compatible = "microchip,emc1412";
 		reg = <0x4c>;
@@ -198,7 +198,7 @@
 		compatible = "microchip,emc1412";
 		reg = <0x4d>;
 	};
-
+        // 5v
 	adc4: tla2024@48 {
 		compatible = "ti,tla2024";
 		reg = <0x48>;
@@ -209,6 +209,7 @@
 		v1@1 {
 			single-channel = <1>;
 		};
+		// read voltage
 		v23@2 {
 			diff-channels = <2 3>;
 		};
@@ -440,6 +441,12 @@
 
 &i2c9 {
 	status = "okay";
+
+	//for  inlet0/1
+	therm_sense4: emc1412@4c {
+		compatible = "microchip,emc1412";
+		reg = <0x4c>;
+	};
 };
 
 &i2c10 {
