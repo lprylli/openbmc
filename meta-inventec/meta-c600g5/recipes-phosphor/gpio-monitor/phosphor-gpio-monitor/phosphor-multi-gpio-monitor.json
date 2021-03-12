@@ -32,7 +32,7 @@
         "Name": "POSTComplete",
         "ChipId": "0",
         "GpioNum": 60,
-        "EventMon": "BOTH",
+        "EventMon": "FALLING",
 	"Continue": true,
         "Target":
         {
@@ -55,6 +55,48 @@
             ],
             "RISING": [
                 "power-button-released.service"
+            ]
+        }
+    },
+    {
+        "Name": "CPU0_Status",
+        "GpioNum": 26,
+        "ChipId": "0",
+        "EventMon": "FALLING",
+        "Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "cpu0-thermal-trip.service"
+            ]
+        }
+    },
+    {
+        "Name": "CPU1_Status",
+        "GpioNum": 27,
+        "ChipId": "0",
+        "EventMon": "FALLING",
+        "Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "cpu1-thermal-trip.service"
+            ]
+        }
+    },
+    {
+        "Name": "CPU_Throttle",
+        "GpioNum": 194,
+        "ChipId": "0",
+        "EventMon": "BOTH",
+        "Continue": true,
+        "Target":
+        {
+            "FALLING": [
+                "cpu-throttle-deassert.service"
+            ],
+            "RISING": [
+                "cpu-throttle-assert.service"
             ]
         }
     }

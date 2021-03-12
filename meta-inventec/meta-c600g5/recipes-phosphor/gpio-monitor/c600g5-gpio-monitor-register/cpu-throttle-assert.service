@@ -1,0 +1,6 @@
+[Unit]
+Description=c600g5 CPU Throttle event assert Service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env identify_cpu_throttle_event.sh throttle skip assert
