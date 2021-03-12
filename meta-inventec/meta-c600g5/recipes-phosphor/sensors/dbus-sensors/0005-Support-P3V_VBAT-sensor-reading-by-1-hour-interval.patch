@@ -1,0 +1,67 @@
+From d6e9a4ec06d6648f6baee436dad594a5adaef36c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Chang=2EJamesWC=20=E5=BC=B5=E6=96=87=E9=87=91=20TAO?=
+ <chang.jameswc@inventec.com>
+Date: Thu, 11 Mar 2021 15:05:07 +0800
+Subject: [PATCH] Support P3V_VBAT sensor reading by 1 hour interval
+
+---
+ src/ADCSensor.cpp | 39 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 35 insertions(+), 4 deletions(-)
+
+diff --git a/src/ADCSensor.cpp b/src/ADCSensor.cpp
+index 7afb2ab..8f90b05 100644
+--- a/src/ADCSensor.cpp
++++ b/src/ADCSensor.cpp
+@@ -45,6 +45,9 @@ static constexpr double roundFactor = 10000; // 3 decimal places
+ static constexpr double maxReading = 20;
+ static constexpr double minReading = 0;
+ 
++static constexpr unsigned int p3v_vatPollMs = 7200;   // 1 hour
++unsigned int pre_p3v_vat = 0, pre_p3v_vat_count = 0;
++
+ ADCSensor::ADCSensor(const std::string& path,
+                      sdbusplus::asio::object_server& objectServer,
+                      std::shared_ptr<sdbusplus::asio::connection>& conn,
+@@ -168,10 +171,38 @@ void ADCSensor::handleResponse(const boost::system::error_code& err)
+         // todo read scaling factors from configuration
+         try
+         {
+-            rawValue = std::stod(response);
+-            double nvalue = (rawValue / sensorScaleFactor) / scaleFactor;
+-            nvalue = std::round(nvalue * roundFactor) / roundFactor;
+-            updateValue(nvalue);
++            if(name != "P3V_VBAT")
++            {
++                rawValue = std::stod(response);
++                double nvalue = (rawValue / sensorScaleFactor) / scaleFactor;
++                nvalue = std::round(nvalue * roundFactor) / roundFactor;
++                updateValue(nvalue);
++            }
++            else //P3V_VBAT handler : read P3V_VBAT by 1 hour interval
++            {
++                if(pre_p3v_vat_count == 0 || pre_p3v_vat_count == p3v_vatPollMs)
++                {
++                    system("/usr/bin/gpioset gpiochip0 61=1");
++                    usleep(500); // delay 500ms for enable p3v_vat read
++                    rawValue = std::stod(response);
++                    double nvalue = (rawValue / sensorScaleFactor) / scaleFactor;
++                    nvalue = std::round(nvalue * roundFactor) / roundFactor;
++                    updateValue(nvalue);
++                    pre_p3v_vat = nvalue;
++                    pre_p3v_vat_count = 1;
++                    system("/usr/bin/gpioset gpiochip0 61=0");
++
++                    //std::cout << "sensor name : " << name << "\n";
++                    //std::cout << "get actual reading value: " << nvalue << "\n";
++                }
++                else
++                {
++                    double nvalue = pre_p3v_vat;
++                    pre_p3v_vat_count++;
++                    //std::cout << "sensor name : " << name << "\n";
++                    //std::cout << "get previous  reading value : " << nvalue << "\n";
++                }
++            } 
+         }
+         catch (std::invalid_argument&)
+         {
