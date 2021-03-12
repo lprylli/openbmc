@@ -1,0 +1,100 @@
+From afe77d12cbcb33ab963ecf944be92aaa884dc4ce Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Thu, 4 Mar 2021 20:39:10 +0800
+Subject: [PATCH] Use sensor yaml MBR in threshold event sel
+
+---
+ include/sensorutils.hpp             | 26 +++++++++++++-------------
+ include/threshold_event_monitor.hpp | 18 ++++--------------
+ 2 files changed, 17 insertions(+), 27 deletions(-)
+
+diff --git a/include/sensorutils.hpp b/include/sensorutils.hpp
+index 16eb8ce..df0f30b 100644
+--- a/include/sensorutils.hpp
++++ b/include/sensorutils.hpp
+@@ -19,6 +19,7 @@
+ 
+ #include <cmath>
+ #include <iostream>
++#include <openbmc/sensor-gen-extra.cpp>
+ 
+ namespace ipmi
+ {
+@@ -182,22 +183,21 @@ static inline uint8_t
+     }
+ }
+ 
+-static inline uint8_t getScaledIPMIValue(const double value, const double max,
+-                                         const double min)
++static inline uint8_t getScaledIPMIValue(const double value,
++                                         const std::string path)
+ {
+-    int16_t mValue = 0;
+-    int8_t rExp = 0;
+-    int16_t bValue = 0;
+-    int8_t bExp = 0;
+-    bool bSigned = 0;
+-    bool result = 0;
+-
+-    result = getSensorAttributes(max, min, mValue, rExp, bValue, bExp, bSigned);
+-    if (!result)
++    auto findSensor = ipmi::sensor::sensorsInfo.find(path);
++    if (findSensor == ipmi::sensor::sensorsInfo.end())
+     {
+-        throw std::runtime_error("Illegal sensor attributes");
++        throw std::runtime_error("Failed to find sensor information");
+     }
+-    return scaleIPMIValueFromDouble(value, mValue, rExp, bValue, bExp, bSigned);
++
++    auto sensorInfo = findSensor->second;
++    double scaledValue =
++        value * std::pow(10, sensorInfo.scale - sensorInfo.exponentR);
++
++    return static_cast<uint8_t>((scaledValue - sensorInfo.scaledOffset) /
++                                sensorInfo.coefficientM);
+ }
+ 
+ } // namespace ipmi
+\ No newline at end of file
+diff --git a/include/threshold_event_monitor.hpp b/include/threshold_event_monitor.hpp
+index f1df9bd..cfe5103 100644
+--- a/include/threshold_event_monitor.hpp
++++ b/include/threshold_event_monitor.hpp
+@@ -132,22 +132,11 @@ inline static sdbusplus::bus::match::match startThresholdAssertMonitor(
+                       << "\n";
+             return;
+         }
+-        double max = 0;
+-        auto findMax = sensorValue.find("MaxValue");
+-        if (findMax != sensorValue.end())
+-        {
+-            max = std::visit(ipmi::VariantToDoubleVisitor(), findMax->second);
+-        }
+-        double min = 0;
+-        auto findMin = sensorValue.find("MinValue");
+-        if (findMin != sensorValue.end())
+-        {
+-            min = std::visit(ipmi::VariantToDoubleVisitor(), findMin->second);
+-        }
+ 
+         try
+         {
+-            eventData[1] = ipmi::getScaledIPMIValue(assertValue, max, min);
++            eventData[1] =
++                ipmi::getScaledIPMIValue(assertValue, pathAndEvent.first); 
+         }
+         catch (const std::exception& e)
+         {
+@@ -194,7 +183,8 @@ inline static sdbusplus::bus::match::match startThresholdAssertMonitor(
+         }
+         try
+         {
+-            eventData[2] = ipmi::getScaledIPMIValue(thresholdVal, max, min);
++            eventData[2] =
++                ipmi::getScaledIPMIValue(thresholdVal, pathAndEvent.first);
+         }
+         catch (const std::exception& e)
+         {
+-- 
+2.17.1
+

@@ -1,0 +1,25 @@
+From 7b5b1519b7bf514b6bda7e88ab1155ca84ed47d7 Mon Sep 17 00:00:00 2001
+From: "Shao-Yu, Wang" <shaw_wang@wiwynn.com>
+Date: Wed, 10 Mar 2021 09:41:59 +0800
+Subject: [PATCH] Support to reset SEL ID after clear list
+
+---
+ include/sel_logger.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/sel_logger.hpp b/include/sel_logger.hpp
+index 35f8b95..00e6350 100644
+--- a/include/sel_logger.hpp
++++ b/include/sel_logger.hpp
+@@ -34,7 +34,7 @@ static constexpr size_t selEvtDataMaxSize = 3;
+ static constexpr size_t selOemDataMaxSize = 13;
+ static constexpr uint8_t selEvtDataUnspecified = 0xFF;
+ 
+-static const std::filesystem::path selLogDir = "/var/log";
++static const std::filesystem::path selLogDir = "/usr/share/sel";
+ static const std::string selLogFilename = "ipmi_sel";
+ 
+ template <typename... T>
+-- 
+2.17.1
+
