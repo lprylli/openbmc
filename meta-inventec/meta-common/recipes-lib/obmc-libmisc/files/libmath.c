@@ -1,5 +1,16 @@
 #include "libmisc.h"
 
+uint8_t Get_Twos_Complement_Int_Data_Format(uint32_t raw_value, double *real_value) {
+    int16_t value = raw_value & 0xFFFF;
+
+    if (((value >> 15) & 0x01) == 0x01) {
+        value = ((~raw_value & 0xFFFF) + 1) *(-1); //two's complement
+    }
+
+    *real_value = value;
+    return 0;
+}
+
 uint8_t Get_Linear_Data_Format(double *real_value, uint32_t raw_value) {
     int16_t exp;
     int8_t base;
@@ -18,6 +29,13 @@ uint8_t Get_Linear_Data_Format(double *real_value, uint32_t raw_value) {
     } else {
         *real_value = exp * pow(2, base);
     }
+    return 1;
+}
+
+uint8_t Get_Linear16_Data_Format(double *real_value, uint32_t raw_value) {
+    double base;
+    base = (double)raw_value;
+    *real_value = base / 256; // set exp as -8
     return 1;
 }
 

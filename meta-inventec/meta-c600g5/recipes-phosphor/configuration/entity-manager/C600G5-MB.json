@@ -877,6 +877,31 @@
             }
         ],
         "Type": "AspeedFan"
+    },
+    {
+        "Name": "P12V",
+        "Bus": 6,
+        "Address": "0x6a",
+        "Command": "0x88",
+        "Page": 0,
+        "PowerState": "On",
+        "SensorType": "volt",
+        "Mode": "Linear",
+        "Thresholds": [
+            {
+                "Direction": "less than",
+                "Name": "lower critical",
+                "Severity": 1,
+                "Value": 11.400
+            },
+            {
+                "Direction": "greater than",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 12.600
+            }
+        ],
+        "Type": "XDPE11284"
     }
     ],
     "Fru":[
