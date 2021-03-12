@@ -1697,6 +1697,686 @@
             0xFF:
               type: double
 
+0x9B:  # CPU0_Status
+  - ownerID: 0x21
+    entityID: 0x3
+    entityInstance: 0x3
+    sensorType: 0x7
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_Status
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+
+0x9C:  # CPU1_Status
+  - ownerID: 0x21
+    entityID: 0x3
+    entityInstance: 0x4
+    sensorType: 0x7
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_Status
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t             
+
+0xA8: # CPU0_DIMM_A0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x02
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_A0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+  
+0xA9: # CPU0_DIMM_A1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x03
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_A1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xAA: # CPU0_DIMM_B0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x04
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_B0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xAB: # CPU0_DIMM_B1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x05
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_B1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+  
+0xAC: # CPU0_DIMM_C0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x05
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_C0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xAD: # CPU0_DIMM_C1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x07
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_C1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xAE: # CPU0_DIMM_D0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x08
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_D0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xAF: # CPU0_DIMM_D1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x09
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_D1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB0: # CPU0_DIMM_E0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x10
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_E0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+  
+0xB1: # CPU0_DIMM_E1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x11
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_E1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB2: # CPU0_DIMM_F0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x12
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_F0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+ 
+0xB3: # CPU0_DIMM_F1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x13
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_F1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB4: # CPU0_DIMM_G0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x14
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_G0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB5: # CPU0_DIMM_G1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x15
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_G1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB6: # CPU0_DIMM_H0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x16
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_H0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB7: # CPU0_DIMM_H1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x17
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU0_DIMM_H1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB8: # CPU1_DIMM_A0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x18
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_A0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xB9: # CPU1_DIMM_A1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x19
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_A1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xBA: # CPU1_DIMM_B0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1a
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_B0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xBB: # CPU1_DIMM_B1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1b
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_B1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xBC: # CPU1_DIMM_C0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1c
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_C0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+  
+0xBD: # CPU1_DIMM_C1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1d
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_C1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xBE: # CPU1_DIMM_D0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1e
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_D0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xBF: # CPU1_DIMM_D1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x1f
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_D1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC0: # CPU1_DIMM_E0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x20
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_E0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC1: # CPU1_DIMM_E1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x21
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_E1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC2: # CPU1_DIMM_F0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x22
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_F0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+ 
+0xC3: # CPU1_DIMM_F1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x23
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_F1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC4: # CPU1_DIMM_G0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x24
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_G0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC5: # CPU1_DIMM_G1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x25
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_G1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC6: # CPU1_DIMM_H0_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x26
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_H0_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t
+
+0xC7: # CPU1_DIMM_H1_STS
+  - ownerID: 0x21
+    entityID: 0x07
+    entityInstance: 0x27
+    sensorType: 0xc
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/CPU1_DIMM_H1_STS
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset : OEM System Boot Event
+            0xFF:
+              type: uint32_t   
+
 0xd4: # ACPI_Power_State
     - ownerID: 0x20
       entityID: 0x06
