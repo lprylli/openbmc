@@ -12,6 +12,7 @@ SRC_URI += "file://0001-Revise-transporthandler-for-some-feature.patch \
             file://0010-Add-sensor-MRB-value-in-sensor-gen-extra.patch \
            "
 	   
+EXTRA_OECONF += "--disable-i2c-whitelist-check"
 
 do_install_append(){
   install -d ${D}${includedir}/phosphor-ipmi-host
