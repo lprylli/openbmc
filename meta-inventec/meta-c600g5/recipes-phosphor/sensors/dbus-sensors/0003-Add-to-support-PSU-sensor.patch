@@ -1,0 +1,256 @@
+From c0f12d6226cd2fa7722007e58834f9f3dd6ebee1 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Fri, 29 Jan 2021 12:47:14 +0800
+Subject: [PATCH] Add to support PSU sensor
+
+---
+ include/PSUSensor.hpp |  8 +++--
+ src/PSUSensor.cpp     | 39 ++++++++++++++++++------
+ src/PSUSensorMain.cpp | 71 +++++++++++++++++++++++++++++++++++--------
+ 3 files changed, 95 insertions(+), 23 deletions(-)
+
+diff --git a/include/PSUSensor.hpp b/include/PSUSensor.hpp
+index 102fe63..5ad501c 100644
+--- a/include/PSUSensor.hpp
++++ b/include/PSUSensor.hpp
+@@ -20,14 +20,15 @@ class PSUSensor : public Sensor, public std::enable_shared_from_this<PSUSensor>
+               std::vector<thresholds::Threshold>&& thresholds,
+               const std::string& sensorConfiguration,
+               std::string& sensorTypeName, unsigned int factor, double max,
+-              double min, const std::string& label, size_t tSize);
++              double min, const std::string& label, size_t tSize,
++              PowerState readState);
+     ~PSUSensor();
+     void setupRead(void);
+ 
+   private:
+     sdbusplus::asio::object_server& objServer;
+     boost::asio::posix::stream_descriptor inputDev;
+-    boost::asio::deadline_timer waitTimer;
++    boost::asio::steady_timer waitTimer;
+     std::shared_ptr<boost::asio::streambuf> readBuf;
+     std::string path;
+     std::string pathRatedMin;
+@@ -42,6 +43,9 @@ class PSUSensor : public Sensor, public std::enable_shared_from_this<PSUSensor>
+     int fd;
+     static constexpr unsigned int sensorPollMs = 1000;
+     static constexpr size_t warnAfterErrorCount = 10;
++
++    // Power-on sensor
++    thresholds::ThresholdTimer thresholdTimer;
+ };
+ 
+ class PSUProperty
+diff --git a/src/PSUSensor.cpp b/src/PSUSensor.cpp
+index 25cc5ad..81db844 100644
+--- a/src/PSUSensor.cpp
++++ b/src/PSUSensor.cpp
+@@ -21,7 +21,6 @@
+ #include <boost/algorithm/string/predicate.hpp>
+ #include <boost/algorithm/string/replace.hpp>
+ #include <boost/asio/read_until.hpp>
+-#include <boost/date_time/posix_time/posix_time.hpp>
+ #include <sdbusplus/asio/connection.hpp>
+ #include <sdbusplus/asio/object_server.hpp>
+ 
+@@ -44,13 +43,13 @@ PSUSensor::PSUSensor(const std::string& path, const std::string& objectType,
+                      const std::string& sensorConfiguration,
+                      std::string& sensorTypeName, unsigned int factor,
+                      double max, double min, const std::string& label,
+-                     size_t tSize) :
++                     size_t tSize, PowerState readState) :
+     Sensor(boost::replace_all_copy(sensorName, " ", "_"),
+            std::move(_thresholds), sensorConfiguration, objectType, max, min,
+-           conn),
++           conn, readState),
+     std::enable_shared_from_this<PSUSensor>(), objServer(objectServer),
+     inputDev(io), waitTimer(io), path(path), pathRatedMax(""), pathRatedMin(""),
+-    sensorFactor(factor), minMaxReadCounter(0)
++    sensorFactor(factor), minMaxReadCounter(0), thresholdTimer(io, this)
+ {
+     if constexpr (DEBUG)
+     {
+@@ -162,13 +161,23 @@ void PSUSensor::updateMinMaxValues(void)
+ 
+ void PSUSensor::handleResponse(const boost::system::error_code& err)
+ {
++    std::istream responseStream(readBuf.get());
++    std::weak_ptr<PSUSensor> weakRef = weak_from_this();
++
+     if ((err == boost::system::errc::bad_file_descriptor) ||
+         (err == boost::asio::error::misc_errors::not_found))
+     {
+         std::cerr << "Bad file descriptor from\n";
+         return;
+     }
+-    std::istream responseStream(readBuf.get());
++
++    // Set as sensor reading invalid for power-on type sensor
++    if (!readingStateGood())
++    {
++        markAvailable(false);
++        goto finish;
++    }
++
+     if (!err)
+     {
+         std::string response;
+@@ -198,10 +207,9 @@ void PSUSensor::handleResponse(const boost::system::error_code& err)
+         incrementError();
+     }
+ 
++finish:
+     lseek(fd, 0, SEEK_SET);
+-    waitTimer.expires_from_now(boost::posix_time::milliseconds(sensorPollMs));
+-
+-    std::weak_ptr<PSUSensor> weakRef = weak_from_this();
++    waitTimer.expires_from_now(boost::asio::chrono::milliseconds(sensorPollMs));
+     waitTimer.async_wait([weakRef](const boost::system::error_code& ec) {
+         std::shared_ptr<PSUSensor> self = weakRef.lock();
+         if (ec == boost::asio::error::operation_aborted)
+@@ -218,5 +226,18 @@ void PSUSensor::handleResponse(const boost::system::error_code& err)
+ 
+ void PSUSensor::checkThresholds(void)
+ {
+-    thresholds::checkThresholds(this);
++    // thresholds::checkThresholds(this);
++    if (!readingStateGood())
++    {
++        return;
++    }
++
++    if(readState == PowerState::always)
++    {
++        thresholds::checkThresholds(this);
++    }
++    else
++    {
++        thresholds::checkThresholdsPowerDelay(this, thresholdTimer);
++    }
+ }
+diff --git a/src/PSUSensorMain.cpp b/src/PSUSensorMain.cpp
+index 1a1cb3c..cd6aa61 100644
+--- a/src/PSUSensorMain.cpp
++++ b/src/PSUSensorMain.cpp
+@@ -216,6 +216,51 @@ static void
+     }
+ }
+ 
++static bool checkPowerState(const SensorData& sensorData,
++                            PowerState& sensorReadState,
++                            const std::string* matchLabel)
++{
++    sensorReadState = PowerState::always;
++
++    if (matchLabel == nullptr)
++    {
++        return false;
++    }
++
++    for (const auto& item : sensorData)
++    {
++        if (item.first.find("PowerStates") == std::string::npos)
++        {
++            continue;
++        }
++
++        auto labelFind = item.second.find("Label");
++        if (labelFind == item.second.end())
++        {
++            continue;
++        }
++        if (std::visit(VariantToStringVisitor(), labelFind->second) !=
++            *matchLabel)
++        {
++            continue;
++        }
++
++        auto findPowerState = item.second.find("PowerState");
++        if (findPowerState == item.second.end())
++        {
++            std::cerr << "failed to find PowerState in configuration\n";
++            return false;
++        }
++
++        std::string powerState = std::visit(
++                            VariantToStringVisitor(), findPowerState->second);
++        setReadState(powerState, sensorReadState);
++
++        break;
++    }
++    return true;
++}
++
+ void createSensors(boost::asio::io_service& io,
+                    sdbusplus::asio::object_server& objectServer,
+                    std::shared_ptr<sdbusplus::asio::connection>& dbusConnection)
+@@ -527,10 +572,10 @@ void createSensors(boost::asio::io_service& io,
+                 std::cerr << "Sensor type=\"" << sensorNameSubStr
+                           << "\" label=\"" << labelHead << "\"\n";
+             }
+-
++/*
+             checkPWMSensor(sensorPath, labelHead, *interfacePath,
+                            dbusConnection, objectServer, psuNames[0]);
+-
++*/
+             if (!findLabels.empty())
+             {
+                 /* Check if this labelHead is enabled in config file */
+@@ -780,11 +825,20 @@ void createSensors(boost::asio::io_service& io,
+                           << "\"\n";
+             }
+ 
++            PowerState sensorReadState;
++            if (!checkPowerState(*sensorData, sensorReadState, &labelHead))
++            {
++                std::cerr << "failed to find the sensor read power state for "
++                          << sensorNameSubStr << "\n";
++            }
++
+             sensors[sensorName] = std::make_shared<PSUSensor>(
+                 sensorPathStr, sensorType, objectServer, dbusConnection, io,
+                 sensorName, std::move(sensorThresholds), *interfacePath,
+                 findSensorType->second, factor, psuProperty->maxReading,
+-                psuProperty->minReading, labelHead, thresholdConfSize);
++                psuProperty->minReading, labelHead, thresholdConfSize,
++                sensorReadState);
++
+             sensors[sensorName]->setupRead();
+             ++numCreated;
+             if constexpr (DEBUG)
+@@ -792,13 +846,6 @@ void createSensors(boost::asio::io_service& io,
+                 std::cerr << "Created " << numCreated << " sensors so far\n";
+             }
+         }
+-
+-        // OperationalStatus event
+-        combineEvents[*psuName + "OperationalStatus"] = nullptr;
+-        combineEvents[*psuName + "OperationalStatus"] =
+-            std::make_unique<PSUCombineEvent>(
+-                objectServer, dbusConnection, io, *psuName, eventPathList,
+-                groupEventPathList, "OperationalStatus");
+     }
+ 
+     if constexpr (DEBUG)
+@@ -911,7 +958,7 @@ int main()
+     propertyInitialize();
+ 
+     io.post([&]() { createSensors(io, objectServer, systemBus); });
+-    boost::asio::deadline_timer filterTimer(io);
++    boost::asio::steady_timer filterTimer(io);
+     std::function<void(sdbusplus::message::message&)> eventHandler =
+         [&](sdbusplus::message::message& message) {
+             if (message.is_method_error())
+@@ -919,7 +966,7 @@ int main()
+                 std::cerr << "callback method error\n";
+                 return;
+             }
+-            filterTimer.expires_from_now(boost::posix_time::seconds(3));
++            filterTimer.expires_from_now(boost::asio::chrono::seconds(3));
+             filterTimer.async_wait([&](const boost::system::error_code& ec) {
+                 if (ec == boost::asio::error::operation_aborted)
+                 {
+-- 
+2.17.1
+
