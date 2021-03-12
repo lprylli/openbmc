@@ -1,0 +1,675 @@
+From a7740c8d23b8acdfaa911db3ba5c33deafb37c8b Mon Sep 17 00:00:00 2001
+From: "Ken.Wang" <Wang.Ken@inventec.com>
+Date: Fri, 12 Mar 2021 14:20:26 +0000
+Subject: [PATCH] Implement GPGPU nvidia T4 Card temperature sensor
+
+---
+ CMakeLists.txt                                |  19 +-
+ include/I2CDEVSensor.hpp                      |  52 +++
+ .../xyz.openbmc_project.i2cdevsensor.service  |  13 +
+ src/I2CDEVSensor.cpp                          | 194 +++++++++++
+ src/I2CDEVSensorMain.cpp                      | 319 ++++++++++++++++++
+ 5 files changed, 596 insertions(+), 1 deletion(-)
+ create mode 100644 include/I2CDEVSensor.hpp
+ create mode 100644 service_files/xyz.openbmc_project.i2cdevsensor.service
+ create mode 100644 src/I2CDEVSensor.cpp
+ create mode 100644 src/I2CDEVSensorMain.cpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d2d4144..158ea56 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,6 +48,7 @@ option (DISABLE_PSU "Disable installing PSU sensor" OFF)
+ option (DISABLE_NVME "Disable installing NVME sensor" OFF)
+ option (DISABLE_VOLTAGE "Disable installing Voltage sensor" OFF)
+ option (DISABLE_NIC "Disable installing NIC sensor" OFF)
++option (DISABLE_I2CDEV "Disable installing I2CDEV sensor" OFF)
+ option (BMC_CPU_SENSOR_TCONTROL "Enable Tcontrol Threshold setting" ON)
+ 
+ include ("cmake/HunterGate.cmake")
+@@ -84,6 +85,8 @@ set (VOLTAGE_SRC_FILES src/Utils.cpp src/VoltSensor.cpp src/Thresholds.cpp)
+ 
+ set (NIC_SRC_FILES src/Utils.cpp src/NICSensor.cpp src/Thresholds.cpp)
+ 
++set (I2CDEV_SRC_FILES src/Utils.cpp src/I2CDEVSensor.cpp src/Thresholds.cpp)
++
+ set (EXTERNAL_PACKAGES Boost sdbusplus-project nlohmann-json)
+ set (SENSOR_LINK_LIBS -lsystemd -lobmci2c -lobmcmisc stdc++fs sdbusplus)
+ 
+@@ -224,6 +227,12 @@ if (NOT DISABLE_NIC)
+     target_link_libraries (nicsensor ${SENSOR_LINK_LIBS})
+ endif()
+ 
++if (NOT DISABLE_I2CDEV)
++    add_executable (i2cdevsensor src/I2CDEVSensorMain.cpp ${I2CDEV_SRC_FILES})
++    add_dependencies (i2cdevsensor sdbusplus-project)
++    target_link_libraries (i2cdevsensor ${SENSOR_LINK_LIBS})
++    endif()
++
+ if (NOT YOCTO)
+     add_dependencies (adcsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (cpusensor ${EXTERNAL_PACKAGES})
+@@ -236,6 +245,7 @@ if (NOT YOCTO)
+     add_dependencies (psusensor ${EXTERNAL_PACKAGES})
+     add_dependencies (nicsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (nvmesensor ${EXTERNAL_PACKAGES})
++    add_dependencies (i2cdevsensor ${EXTERNAL_PACKAGES})
+ endif ()
+ 
+ set (SERVICE_FILE_SRC_DIR ${PROJECT_SOURCE_DIR}/service_files)
+@@ -333,4 +343,11 @@ if (NOT DISABLE_NIC)
+             ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.nicsensor.service
+             DESTINATION ${SERVICE_FILE_INSTALL_DIR}
+     )
+-endif ()
+\ No newline at end of file
++endif ()
++
++if (NOT DISABLE_I2CDEV)
++    install (TARGETS i2cdevsensor DESTINATION bin)
++    install (FILES
++	         ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.i2cdevsensor.service
++                 DESTINATION ${SERVICE_FILE_INSTALL_DIR})
++endif ()
+diff --git a/include/I2CDEVSensor.hpp b/include/I2CDEVSensor.hpp
+new file mode 100644
+index 0000000..c937d36
+--- /dev/null
++++ b/include/I2CDEVSensor.hpp
+@@ -0,0 +1,52 @@
++#pragma once
++
++#include <Thresholds.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <sensor.hpp>
++#include <boost/asio/steady_timer.hpp>
++
++enum class ReadMode
++{
++    READ_BYTE = 0
++};
++
++class I2CDEVSensor : public Sensor
++{
++public:
++    I2CDEVSensor(const std::string& path, const std::string& objectType,
++               sdbusplus::asio::object_server& objectServer,
++               std::shared_ptr<sdbusplus::asio::connection>& conn,
++               boost::asio::io_service& io, const std::string& sensorName,
++               std::vector<thresholds::Threshold>&& thresholds,
++               const std::string& sensorConfiguration, 
++               std::string& sensorTypeName, const double MaxValue,
++               const double MinValue, const uint8_t busId,
++               const uint8_t slaveAddr, const uint8_t cmdCode,
++               const uint8_t muxSlaveAddr, const uint8_t muxCmdCode, const bool isMux,
++               const uint8_t readMode, const double scaleVal,
++               const double offsetVal, const int tctlMax);
++    ~I2CDEVSensor();
++private:
++    sdbusplus::asio::object_server& objServer;
++    boost::asio::steady_timer waitTimer;
++    std::string path;
++    std::string& sensorType;
++    int errCount;
++    uint8_t busId;
++    uint8_t slaveAddr;
++    uint8_t cmdCode;
++    uint8_t muxSlaveAddr;
++    uint8_t muxCmdCode;
++    bool isMux; 
++    uint8_t readMode;
++    float senValue;
++    double scaleVal;
++    double offsetVal;
++    int tctlMax;
++    thresholds::ThresholdTimer thresholdTimer;
++    int powerondelaytime;
++    void setupRead(void);
++    bool visitI2CDEVReg(void);
++    void handleResponse(void);
++    void checkThresholds(void) override;
++};
+diff --git a/service_files/xyz.openbmc_project.i2cdevsensor.service b/service_files/xyz.openbmc_project.i2cdevsensor.service
+new file mode 100644
+index 0000000..96271aa
+--- /dev/null
++++ b/service_files/xyz.openbmc_project.i2cdevsensor.service
+@@ -0,0 +1,13 @@
++[Unit]
++Description=I2CDEV Sensor
++StopWhenUnneeded=false
++Requires=xyz.openbmc_project.EntityManager.service
++After=xyz.openbmc_project.EntityManager.service
++
++[Service]
++Restart=always
++RestartSec=5
++ExecStart=/usr/bin/i2cdevsensor
++
++[Install]
++WantedBy=multi-user.target
+diff --git a/src/I2CDEVSensor.cpp b/src/I2CDEVSensor.cpp
+new file mode 100644
+index 0000000..144340a
+--- /dev/null
++++ b/src/I2CDEVSensor.cpp
+@@ -0,0 +1,194 @@
++#include "Utils.hpp"
++
++#include <openbmc/libobmci2c.h>
++#include <unistd.h>
++
++#include <I2CDEVSensor.hpp>
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <iostream>
++#include <limits>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <string>
++
++static constexpr bool DEBUG = false;
++static constexpr const char* sensorPathPrefix = "/xyz/openbmc_project/sensors/";
++
++static constexpr unsigned int sensorPollMs = 1000;
++static constexpr unsigned int sensorScaleFactor = 1000;
++static constexpr size_t warnAfterErrorCount = 10;
++
++I2CDEVSensor::I2CDEVSensor(const std::string& path, const std::string& objectType,
++                       sdbusplus::asio::object_server& objectServer,
++                       std::shared_ptr<sdbusplus::asio::connection>& conn,
++                       boost::asio::io_service& io, const std::string& sensorName,
++                       std::vector<thresholds::Threshold>&& _thresholds,
++                       const std::string& sensorConfiguration,
++                       std::string& sensorTypeName, const double MaxValue,
++                       const double MinValue, const uint8_t busId,
++                       const uint8_t slaveAddr, const uint8_t cmdCode,
++                       const uint8_t muxSlaveAddr, const uint8_t muxCmdCode, const bool isMux,
++                       const uint8_t readMode, const double scaleVal,
++                       const double offsetVal, const int tctlMax):
++    Sensor(boost::replace_all_copy(sensorName, " ", "_"),
++           std::move(_thresholds), sensorConfiguration, objectType, MaxValue,
++           MinValue, conn, PowerState::on),
++    path(path), objServer(objectServer), waitTimer(io), errCount(0),
++    senValue(0), busId(busId), slaveAddr(slaveAddr), cmdCode(cmdCode),
++    muxSlaveAddr(muxSlaveAddr), muxCmdCode(muxCmdCode), isMux(isMux),
++    readMode(readMode), sensorType(sensorTypeName), scaleVal(scaleVal),
++    offsetVal(offsetVal), tctlMax(tctlMax), thresholdTimer(io, this)
++{
++    std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
++
++    sensorInterface = objectServer.add_interface(
++                          dbusPath, "xyz.openbmc_project.Sensor.Value");
++    if(tctlMax)
++    {
++        sensorInterface->register_property("TctlMAX", tctlMax);
++    }
++    if (thresholds::hasWarningInterface(thresholds))
++    {
++        thresholdInterfaceWarning = objectServer.add_interface(
++                                        dbusPath, "xyz.openbmc_project.Sensor.Threshold.Warning");
++    }
++    if (thresholds::hasCriticalInterface(thresholds))
++    {
++        thresholdInterfaceCritical = objectServer.add_interface(
++                                         dbusPath, "xyz.openbmc_project.Sensor.Threshold.Critical");
++    }
++    association =
++        objectServer.add_interface(dbusPath, association::interface);
++    setInitialProperties(conn);
++    setupPowerMatch(conn);
++    setupRead();
++}
++
++I2CDEVSensor::~I2CDEVSensor()
++{
++    // close the Timer to cancel async operations
++    waitTimer.cancel();
++    objServer.remove_interface(thresholdInterfaceWarning);
++    objServer.remove_interface(thresholdInterfaceCritical);
++    objServer.remove_interface(sensorInterface);
++    objServer.remove_interface(association);
++}
++
++void I2CDEVSensor::setupRead(void)
++{
++    bool res = visitI2CDEVReg();
++    if (res != true)
++    {
++        incrementError();
++    }
++    else
++    {
++        handleResponse();
++    }
++
++    waitTimer.expires_from_now(boost::asio::chrono::milliseconds(sensorPollMs));
++    waitTimer.async_wait([&](const boost::system::error_code & ec) {
++        if (ec == boost::asio::error::operation_aborted)
++        {
++            return; // we're being canceled
++        }
++        setupRead();
++    });
++}
++bool I2CDEVSensor::visitI2CDEVReg(void)
++{
++    int fd = -1;
++    int res = -1;
++    std::vector<char> filename;
++    filename.assign(20, 0);
++
++    if (!readingStateGood())
++    {
++        markAvailable(false);
++        return true;
++    }
++
++    fd = open_i2c_dev(busId, filename.data(), filename.size(), 0);
++    if (fd < 0)
++    {
++        std::cerr << "Fail to open I2C device: " << path << "\n";
++        return false;
++    }
++    // Switch the I2C channel
++    if(isMux)
++    {
++        std::vector<uint8_t> switchCmdData;
++        switchCmdData.assign(1,muxCmdCode);
++        res = i2c_master_write(fd, muxSlaveAddr,
++                            switchCmdData.size(),
++                            switchCmdData.data());
++        if (res < 0)
++        {
++            std::cerr << "Cannot call open I2CDEV device, Path: " << path
++                    << ", Addr: " << muxSlaveAddr << "\n";
++            close_i2c_dev(fd);
++            return false;
++        }
++    }
++    std::vector<uint8_t> cmdData;
++    cmdData.assign(1, cmdCode);
++    std::vector<uint8_t> readBuf;
++    uint32_t raw_value;
++    switch (readMode)
++    {
++        case static_cast<int>(ReadMode::READ_BYTE): // Byte
++            readBuf.assign(1, 0x0);
++            res = i2c_master_write_read(fd, slaveAddr, cmdData.size(), cmdData.data(),
++                                        readBuf.size(), readBuf.data());
++            raw_value = readBuf.at(0);
++            break;
++        default:
++            res = -1;
++    }
++    if (res < 0)
++    {
++        if (DEBUG)
++        {
++            std::cerr << "Path: " << path
++                      << ", Addr: " << slaveAddr << "\n";
++        }
++        close_i2c_dev(fd);
++        return false;
++    }
++    //For card stand by state 
++    if (raw_value == 0xFF)
++    {
++        return false;
++    }
++
++    if (raw_value != 0 )
++    {
++        senValue = raw_value * scaleVal + offsetVal;
++    }
++
++    close_i2c_dev(fd);
++    return true;
++}
++
++void I2CDEVSensor::handleResponse()
++{
++    if (readingStateGood())
++    {
++        if (static_cast<double>(senValue) != value)
++        {
++            updateValue(senValue);
++        }
++    }
++}
++
++void I2CDEVSensor::checkThresholds(void)
++{
++    if (!readingStateGood())
++    {
++        markAvailable(false);
++        return;
++    }
++
++    thresholds::checkThresholdsPowerDelay(this, thresholdTimer);
++}
+diff --git a/src/I2CDEVSensorMain.cpp b/src/I2CDEVSensorMain.cpp
+new file mode 100644
+index 0000000..c297bc5
+--- /dev/null
++++ b/src/I2CDEVSensorMain.cpp
+@@ -0,0 +1,319 @@
++#include <Utils.hpp>
++#include <I2CDEVSensor.hpp>
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <boost/container/flat_set.hpp>
++#include <filesystem>
++#include <fstream>
++#include <regex>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++
++static constexpr bool DEBUG = false;
++
++namespace fs = std::filesystem;
++static constexpr std::array<const char*, 1> sensorTypes =
++{
++    "xyz.openbmc_project.Configuration.I2CDEV"
++};
++
++static boost::container::flat_map<std::string, std::string> sensorTable;
++static boost::container::flat_map<std::string, ReadMode> modeTable;
++
++void createSensors(
++    boost::asio::io_service& io, sdbusplus::asio::object_server& objectServer,
++    boost::container::flat_map<std::string, std::unique_ptr<I2CDEVSensor>>& sensors,
++    std::shared_ptr<sdbusplus::asio::connection>& dbusConnection,
++    const std::unique_ptr<boost::container::flat_set<std::string>>&
++    sensorsChanged)
++{
++    bool firstScan = sensorsChanged == nullptr;
++    // use new data the first time, then refresh
++    ManagedObjectType sensorConfigurations;
++    bool useCache = false;
++    for (const char* type : sensorTypes)
++    {
++        if (!getSensorConfiguration(type, dbusConnection, sensorConfigurations,
++                                    useCache))
++        {
++            std::cerr << "error communicating to entity manager\n";
++            return;
++        }
++        useCache = true;
++    }
++
++    for (const std::pair<sdbusplus::message::object_path, SensorData>& sensor :
++            sensorConfigurations)
++    {
++        const SensorData* sensorData = nullptr;
++        const std::string* interfacePath = nullptr;
++        const char* sensorType = nullptr;
++        const std::pair<std::string, boost::container::flat_map<
++        std::string, BasicVariantType>>*
++                                     baseConfiguration = nullptr;
++
++        sensorData = &(sensor.second);
++        for (const char* type : sensorTypes)
++        {
++            auto sensorBase = sensorData->find(type);
++            if (sensorBase != sensorData->end())
++            {
++                baseConfiguration = &(*sensorBase);
++                sensorType = type;
++                break;
++            }
++        }
++        if (baseConfiguration == nullptr)
++        {
++            std::cerr << "error finding base configuration for I2CDEV \n";
++            continue;
++        }
++
++        auto configurationBus = baseConfiguration->second.find("Bus");
++        auto configurationAddress = baseConfiguration->second.find("Address");
++        auto configurationCmd = baseConfiguration->second.find("Command");
++
++        if (configurationBus == baseConfiguration->second.end() ||
++                configurationAddress == baseConfiguration->second.end() ||
++                configurationCmd == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find the bus, addr, cmd, or page in JSON\n";
++            continue;
++        }
++
++        uint8_t busId =
++            static_cast<uint8_t>(std::get<uint64_t>(configurationBus->second));
++        std::string i2cBus = "/sys/class/i2c-dev/i2c-" + std::to_string(busId)
++                             + "/device";
++        uint8_t slaveAddr = static_cast<uint8_t>(
++                                std::get<uint64_t>(configurationAddress->second));
++        uint8_t cmdCode =
++            static_cast<uint8_t>(std::get<uint64_t>(configurationCmd->second));
++
++        if (0x80 <= slaveAddr)
++        {
++            std::cerr
++                    << "error i2c slave addr is out of the range (7-bit addr)\n";
++            continue;
++        }
++        /*Read if there has MUX*/
++        bool isMux = true;
++        uint8_t muxSlaveAddr=0x0;
++        uint8_t muxCmdCode=0x0;
++        auto configurationMuxAddress = baseConfiguration->second.find("MuxAddress");
++        auto configurationMuxCmd = baseConfiguration->second.find("MuxCommand");
++        if (configurationMuxAddress == baseConfiguration->second.end() ||
++                configurationMuxCmd == baseConfiguration->second.end())
++        {
++            isMux = false;
++        }
++	else
++	{
++            muxSlaveAddr = static_cast<uint8_t>(std::get<uint64_t>(configurationMuxAddress->second));
++            muxCmdCode = static_cast<uint8_t>(std::get<uint64_t>(configurationMuxCmd->second));
++	}
++
++        interfacePath = &(sensor.first.str);
++        if (interfacePath == nullptr)
++        {
++            std::cerr << " invalid sensor interface path\n";
++            continue;
++        }
++
++        auto findSensorName = baseConfiguration->second.find("Name");
++        if (findSensorName == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find sensor name in JSON\n";
++            continue;
++        }
++        std::string sensorName = std::get<std::string>(findSensorName->second);
++
++        // Sensor Type: power, curr, temp, volt
++        auto findSensorTypeJson = baseConfiguration->second.find("SensorType");
++        if (findSensorTypeJson == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find sensor type in JSON\n";
++            continue;
++        }
++        std::string SensorTypeJson =
++            std::get<std::string>(findSensorTypeJson->second);
++
++        auto findSensorType = sensorTable.find(SensorTypeJson);
++        if (findSensorType == sensorTable.end())
++        {
++            std::cerr << "fail to find match for I2CDEV sensorType: "
++                      << SensorTypeJson << "\n";
++            continue;
++        }
++
++        /* Convert Method: Byte, Word*/
++        auto findConvertModeJson = baseConfiguration->second.find("Mode");
++        if (findConvertModeJson == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find I2CDEV ConvertMode in JSON\n";
++            continue;
++        }
++        std::string ConvertModeJson =
++            std::get<std::string>(findConvertModeJson->second);
++
++        auto findConvertMode = modeTable.find(ConvertModeJson);
++        if (findConvertMode == modeTable.end())
++        {
++            std::cerr << "fail to find match for I2CDEV ConvertMode: "
++                      << ConvertModeJson << "\n";
++            continue;
++        }
++        uint32_t readMode = static_cast<int>(findConvertMode->second);
++
++        /* Initialize scale and offset value */
++        double scaleVal = 1;
++        double offsetVal = 0;
++
++        auto findScaleVal = baseConfiguration->second.find("ScaleValue");
++        if (findScaleVal != baseConfiguration->second.end())
++        {
++            scaleVal = std::visit(VariantToDoubleVisitor(),
++                                  findScaleVal->second);
++        }
++
++        auto findOffsetVal = baseConfiguration->second.find("OffsetValue");
++        if (findOffsetVal != baseConfiguration->second.end())
++        {
++            offsetVal = std::visit(VariantToDoubleVisitor(),
++                                   findOffsetVal->second);
++        }
++
++        int tctlMax = NULL;
++        auto findTctlMax =
++            baseConfiguration->second.find("TctlMax");
++        if (findTctlMax != baseConfiguration->second.end())
++        {
++
++            tctlMax = std::visit(VariantToIntVisitor(),
++                                  findTctlMax->second);
++        }
++
++        // on rescans, only update sensors we were signaled by
++        auto findSensor = sensors.find(sensorName);
++
++        std::vector<thresholds::Threshold> storesensorThresholds;
++        double initvalue = std::numeric_limits<double>::quiet_NaN();
++        bool found = false;
++
++        if (!firstScan && findSensor != sensors.end())
++        {
++            storesensorThresholds = findSensor->second->thresholds;
++            initvalue = findSensor->second->value;
++            for (auto it = sensorsChanged->begin(); it != sensorsChanged->end();
++                    it++)
++            {
++                if (boost::ends_with(*it, findSensor->second->name))
++                {
++                    sensorsChanged->erase(it);
++                    findSensor->second = nullptr;
++                    found = true;
++                    break;
++                }
++            }
++            if (!found)
++            {
++                continue;
++            }
++        }
++
++        std::vector<thresholds::Threshold> sensorThresholds;
++        if (!parseThresholdsFromConfig(*sensorData, sensorThresholds))
++        {
++            std::cerr << "error populating thresholds for " << sensorName
++                      << "\n";
++        }
++
++        if(found)
++        {
++            sensorThresholds = storesensorThresholds;
++        }
++
++        constexpr double defaultMaxReading = 255;
++        constexpr double defaultMinReading = 0;
++        auto limits = std::make_pair(defaultMinReading, defaultMaxReading);
++
++        findLimits(limits, baseConfiguration);
++        /*muxSlaveAddr, muxCmdCode*/
++        sensors[sensorName] = std::make_unique<I2CDEVSensor>(
++                    i2cBus, sensorType, objectServer, dbusConnection,
++                    io, sensorName, std::move(sensorThresholds),
++                    *interfacePath, findSensorType->second, defaultMaxReading,
++                    defaultMinReading, busId, slaveAddr, cmdCode, muxSlaveAddr, 
++                    muxCmdCode, isMux, readMode, scaleVal, offsetVal, tctlMax);
++
++        sensors[sensorName]->value = initvalue;
++    }
++}
++
++void propertyInitialize(void)
++{
++    sensorTable = {{"power", "power/"},
++        {"curr", "current/"},
++        {"temp", "temperature/"},
++        {"volt", "voltage/"}
++    };
++    modeTable = {{"Byte", ReadMode::READ_BYTE}};
++}
++
++int main()
++{
++    boost::asio::io_service io;
++    auto systemBus = std::make_shared<sdbusplus::asio::connection>(io);
++    systemBus->request_name("xyz.openbmc_project.I2CDEVSensor");
++    sdbusplus::asio::object_server objectServer(systemBus);
++    boost::container::flat_map<std::string, std::unique_ptr<I2CDEVSensor>> sensors;
++    std::vector<std::unique_ptr<sdbusplus::bus::match::match>> matches;
++    std::unique_ptr<boost::container::flat_set<std::string>> sensorsChanged =
++                std::make_unique<boost::container::flat_set<std::string>>();
++
++    propertyInitialize();
++
++    io.post([&]() {
++        createSensors(io, objectServer, sensors, systemBus, nullptr);
++    });
++
++    boost::asio::steady_timer filterTimer(io);
++    std::function<void(sdbusplus::message::message&)> eventHandler =
++    [&](sdbusplus::message::message & message) {
++        if (message.is_method_error())
++        {
++            std::cerr << "callback method error\n";
++            return;
++        }
++        sensorsChanged->insert(message.get_path());
++        // this implicitly cancels the timer
++        filterTimer.expires_from_now(boost::asio::chrono::seconds(1));
++
++        filterTimer.async_wait([&](const boost::system::error_code & ec) {
++            if (ec == boost::asio::error::operation_aborted)
++            {
++                /* we were canceled*/
++                return;
++            }
++            else if (ec)
++            {
++                std::cerr << "timer error\n";
++                return;
++            }
++
++            createSensors(io, objectServer, sensors, systemBus,
++                          sensorsChanged);
++        });
++    };
++
++    for (const char* type : sensorTypes)
++    {
++        auto match = std::make_unique<sdbusplus::bus::match::match>(
++                         static_cast<sdbusplus::bus::bus&>(*systemBus),
++                         "type='signal',member='PropertiesChanged',path_namespace='" +
++                         std::string(inventoryPath) + "',arg0namespace='" + type + "'",
++                         eventHandler);
++        matches.emplace_back(std::move(match));
++    }
++    io.run();
++}

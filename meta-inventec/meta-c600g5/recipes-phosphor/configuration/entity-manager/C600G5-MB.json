@@ -717,6 +717,31 @@
             "Type": "NVME"
     },
     {
+            "Name": "GPU_Temp",
+            "Bus": 11,
+            "Address": "0x4F",
+            "Command": "0x0",
+            "SensorType": "temp",
+            "Mode": "Byte",
+            "MaxReading": 255,
+            "MinReading": 0,
+            "Type": "I2CDEV",
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": "upper non critical",
+                    "Severity": 0,
+                    "Value": 83
+                },
+                {
+                    "Direction": "greater than",
+                    "Name": "upper critical",
+                    "Severity": 1,
+                    "Value": 85
+                }
+            ]
+    },
+    {
         "Index": 0,
         "Name": "CPU0_VCORE",
         "ScaleFactor": 1,
