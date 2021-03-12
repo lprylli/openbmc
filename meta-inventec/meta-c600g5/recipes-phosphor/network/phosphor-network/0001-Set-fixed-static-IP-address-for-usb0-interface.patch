@@ -1,0 +1,45 @@
+From 91160f5ff0e4656c55ac810322bf26bba042337a Mon Sep 17 00:00:00 2001
+From: "Lin.TommySC" <lin.tommysc@inventec.com>
+Date: Thu, 11 Mar 2021 10:59:13 +0000
+Subject: [PATCH] Set fixed static IP address for usb0 interface
+
+Symptom/Reason :
+    - To support in-band fw update via net bridge
+
+Root Cause:
+    - N/A
+
+Solution/Change:
+    - Assign static IP address 169.254.47.147 for usb0
+
+Entry Test:
+---
+ network_config.cpp | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/network_config.cpp b/network_config.cpp
+index e83b16c..ab46f6b 100644
+--- a/network_config.cpp
++++ b/network_config.cpp
+@@ -15,8 +15,20 @@ namespace bmc
+ void writeDHCPDefault(const std::string& filename, const std::string& interface)
+ {
+     std::ofstream filestream;
+-
+     filestream.open(filename);
++
++    if (interface.compare("usb0") == 0)
++    {
++        filestream << "[Match]\nName=" << interface <<
++                    "\n\n[Address]\n"
++                    "Address=169.254.47.147/24\n"
++                    "\n[Network]\n"
++                    "DHCP=false\n"
++                    "LinkLocalAddressing=no\n"
++                    "IPv6AcceptRA=false\n";
++        return;
++    }
++
+     filestream << "[Match]\nName=" << interface <<
+                 "\n[Network]\nDHCP=true\n"
+ #ifdef LINK_LOCAL_AUTOCONFIGURATION

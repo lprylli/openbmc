@@ -15,6 +15,9 @@ OBMC_IMAGE_EXTRA_INSTALL_append_c600g5 +=   " c600g5-gpio-init \
 					      phosphor-pid-control \
                                               phosphor-sel-logger \
                                               phosphor-ipmi-ipmb \                                              
+                                              phosphor-ipmi-flash \
+                                              phosphor-ipmi-blobs \
+                                              phosphor-image-signing \
                                               phosphor-gpio-monitor \
                                               phosphor-post-code-manager \
                                               phosphor-host-postd \
