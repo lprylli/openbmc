@@ -1,0 +1,52 @@
+From af50534393c7a4bcb4b8984c1ba8a780c4a9374c Mon Sep 17 00:00:00 2001
+From: James Chang <Chang.JamesWC@inventec.com>
+Date: Mon, 15 Mar 2021 09:15:59 +0800
+Subject: [PATCH] [c600g5] Add retry mechanism for p3v_vat Summary:  - BMc
+ first boot will busy to cause to read p3v_vat failure.    so add rety
+ mechanism to make sure to read p3v_vat poperty.
+
+---
+ src/ADCSensor.cpp | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/ADCSensor.cpp b/src/ADCSensor.cpp
+index 4936544..d7eb507 100644
+--- a/src/ADCSensor.cpp
++++ b/src/ADCSensor.cpp
+@@ -46,7 +46,7 @@ static constexpr double maxReading = 20;
+ static constexpr double minReading = 0;
+ 
+ static constexpr unsigned int p3v_vatPollMs = 7200;   // 1 hour
+-unsigned int pre_p3v_vat = 0, pre_p3v_vat_count = 0;
++unsigned int pre_p3v_vat = 0, pre_p3v_vat_count = 0, p3v_vat_poweron_delay = 60;
+ 
+ ADCSensor::ADCSensor(const std::string& path,
+                      sdbusplus::asio::object_server& objectServer,
+@@ -180,7 +180,8 @@ void ADCSensor::handleResponse(const boost::system::error_code& err)
+             }
+             else //P3V_VBAT handler : read P3V_VBAT by 1 hour interval
+             {
+-                if(pre_p3v_vat_count <= 10 || pre_p3v_vat_count == p3v_vatPollMs)
++                // p3v_vat_poweron_delay = 60 (about 30 seconds) is for on powe on delay  
++                if(pre_p3v_vat_count <= p3v_vat_poweron_delay || pre_p3v_vat_count == p3v_vatPollMs)
+                 {
+                     system("/usr/bin/gpioset gpiochip0 61=1");
+                     usleep(500); // delay 500ms for enable p3v_vat read
+@@ -189,9 +190,15 @@ void ADCSensor::handleResponse(const boost::system::error_code& err)
+                     nvalue = std::round(nvalue * roundFactor) / roundFactor;
+                     updateValue(nvalue);
+                     pre_p3v_vat = nvalue;
+-                    pre_p3v_vat_count = 1;
+                     system("/usr/bin/gpioset gpiochip0 61=0");
+-
++                    if (pre_p3v_vat_count <= p3v_vat_poweron_delay)  
++                    {
++                        pre_p3v_vat_count++;
++                    }
++                    else
++                    {
++                        pre_p3v_vat_count = 1;
++                    }
+                     //std::cout << "sensor name : " << name << "\n";
+                     //std::cout << "get actual reading value: " << nvalue << "\n";
+                 }
