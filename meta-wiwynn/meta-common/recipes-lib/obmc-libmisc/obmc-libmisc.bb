@@ -14,6 +14,8 @@ SRC_URI = "file://libmath.c \
            file://libdbus.c \
            file://libregister.c \
            file://libmisc.h \
+           file://libsysfs.c \
+           file://libsysfs.h \
            file://Makefile \
            file://COPYING.MIT \
           "
@@ -23,6 +25,7 @@ do_install() {
         install -Dm755 libobmcmisc.so ${D}${libdir}/libobmcmisc.so
         install -d ${D}${includedir}/openbmc
         install -m 0644 ${S}/libmisc.h ${D}${includedir}/openbmc/libmisc.h
+        install -m 0644 ${S}/libsysfs.h ${D}${includedir}/openbmc/libsysfs.h
 }
 
 FILES_${PN} = "${libdir}/libobmcmisc.so"

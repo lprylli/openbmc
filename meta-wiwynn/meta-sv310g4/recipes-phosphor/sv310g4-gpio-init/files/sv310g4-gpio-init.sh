@@ -74,7 +74,7 @@ GPIO_I2=66  # I
 GPIO_I3=67  # I
 
 # GROUP N
-GPIO_N7=111 # I - BIOS SPI
+GPIO_N7=111 # O(L) - BIOS SPI - L to BIOS
 
 # GROUP Q
 GPIO_Q6=134 # I
@@ -213,6 +213,7 @@ gpio_out_low="\
     ${GPIO_H4} \
     ${GPIO_H5} \
     ${GPIO_I1} \
+    ${GPIO_N7} \
     ${GPIO_S1} \
     ${GPIO_Y3} \
     ${GPIO_AA3} \

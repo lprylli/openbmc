@@ -18,5 +18,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              button-handler \
                                              phosphor-ipmi-ipmb \
                                              srvcfg-manager \
+                                             bios-updater \
                                            "
 
