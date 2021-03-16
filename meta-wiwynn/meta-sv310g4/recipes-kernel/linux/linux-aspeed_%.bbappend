@@ -8,6 +8,7 @@ SRC_URI += "file://sv310g4.cfg \
             file://0004-Support-CPU-margin-reading.patch \
             file://0005-Export-all-DIMMs-during-initialization.patch \
             file://0006-Add-to-support-slave-mqueue.patch \
+            file://0007-Remove-Unregister-SMC-Partitions.patch \
            "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
