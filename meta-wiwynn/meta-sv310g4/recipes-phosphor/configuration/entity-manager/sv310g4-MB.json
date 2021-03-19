@@ -873,6 +873,7 @@
             "MuxCommand": "0x1",
             "SensorType": "temp",
             "Mode": "Byte",
+            "PowerState": "BiosPost",
             "MaxReading": 255,
             "MinReading": 0,
             "Type": "MISC",

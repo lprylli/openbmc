@@ -1,0 +1,126 @@
+From fda166c78c829c2a3fc67cfb41257074ee85ec60 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Fri, 19 Mar 2021 10:34:07 +0800
+Subject: [PATCH] Fix invalid T4 temp reading
+
+---
+ include/MISCSensor.hpp |  3 +--
+ include/sensor.hpp     |  2 +-
+ src/MISCSensor.cpp     | 14 +++++++++-----
+ src/MISCSensorMain.cpp | 13 +++++++++++--
+ 4 files changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/include/MISCSensor.hpp b/include/MISCSensor.hpp
+index 1676812..6442f54 100644
+--- a/include/MISCSensor.hpp
++++ b/include/MISCSensor.hpp
+@@ -24,14 +24,13 @@ public:
+                const uint8_t slaveAddr, const uint8_t cmdCode,
+                const uint8_t muxSlaveAddr, const uint8_t muxCmdCode, const bool isMux,
+                const uint8_t readMode, const double scaleVal,
+-               const double offsetVal, const int tctlMax);
++               const double offsetVal, const int tctlMax, const PowerState readState);
+     ~MISCSensor();
+ private:
+     sdbusplus::asio::object_server& objServer;
+     boost::asio::steady_timer waitTimer;
+     std::string path;
+     std::string& sensorType;
+-    int errCount;
+     uint8_t busId;
+     uint8_t slaveAddr;
+     uint8_t cmdCode;
+diff --git a/include/sensor.hpp b/include/sensor.hpp
+index d2fa2c7..2f15da9 100644
+--- a/include/sensor.hpp
++++ b/include/sensor.hpp
+@@ -21,7 +21,7 @@ constexpr const char* availableInterfaceName =
+     "xyz.openbmc_project.State.Decorator.Availability";
+ constexpr const char* operationalInterfaceName =
+     "xyz.openbmc_project.State.Decorator.OperationalStatus";
+-constexpr const size_t errorThreshold = 5;
++constexpr const size_t errorThreshold = 10;
+ 
+ struct SensorInstrumentation
+ {
+diff --git a/src/MISCSensor.cpp b/src/MISCSensor.cpp
+index cec76f5..72b864a 100644
+--- a/src/MISCSensor.cpp
++++ b/src/MISCSensor.cpp
+@@ -30,18 +30,17 @@ MISCSensor::MISCSensor(const std::string& path, const std::string& objectType,
+                        const uint8_t slaveAddr, const uint8_t cmdCode,
+                        const uint8_t muxSlaveAddr, const uint8_t muxCmdCode, const bool isMux,
+                        const uint8_t readMode, const double scaleVal,
+-                       const double offsetVal, const int tctlMax):
++                       const double offsetVal, const int tctlMax, const PowerState readState):
+     Sensor(boost::replace_all_copy(sensorName, " ", "_"),
+            std::move(_thresholds), sensorConfiguration, objectType, MaxValue,
+-           MinValue, conn, PowerState::on),
+-    path(path), objServer(objectServer), waitTimer(io), errCount(0),
++           MinValue, conn, readState),
++    path(path), objServer(objectServer), waitTimer(io),
+     senValue(0), busId(busId), slaveAddr(slaveAddr), cmdCode(cmdCode),
+     muxSlaveAddr(muxSlaveAddr), muxCmdCode(muxCmdCode), isMux(isMux),
+     readMode(readMode), sensorType(sensorTypeName), scaleVal(scaleVal),
+     offsetVal(offsetVal), tctlMax(tctlMax), thresholdTimer(io, this)
+ {
+     std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
+-
+     sensorInterface = objectServer.add_interface(
+                           dbusPath, "xyz.openbmc_project.Sensor.Value");
+     if(tctlMax)
+@@ -170,7 +169,12 @@ void MISCSensor::handleResponse()
+ {
+     if (readingStateGood())
+     {
+-        if (static_cast<double>(senValue) != value)
++        if (name == "GPGPU_T4_Temp" && senValue == 255)
++        {
++            std::cerr << "[" << name << "] Invalid sensor value = 255\n" << std::endl;
++            incrementError();
++        }
++        else if (static_cast<double>(senValue) != value)
+         {
+             updateValue(senValue);
+         }
+diff --git a/src/MISCSensorMain.cpp b/src/MISCSensorMain.cpp
+index 24736d9..5bc10e2 100644
+--- a/src/MISCSensorMain.cpp
++++ b/src/MISCSensorMain.cpp
+@@ -184,7 +184,7 @@ void createSensors(
+                                    findOffsetVal->second);
+         }
+ 
+-        int tctlMax = NULL;
++        int tctlMax = 0;
+         auto findTctlMax =
+             baseConfiguration->second.find("TctlMax");
+         if (findTctlMax != baseConfiguration->second.end())
+@@ -194,6 +194,15 @@ void createSensors(
+                                   findTctlMax->second);
+         }
+ 
++        PowerState readState = PowerState::on;
++        auto findPowerState = baseConfiguration->second.find("PowerState");
++        if (findPowerState != baseConfiguration->second.end())
++        {
++            std::string powerState =
++                std::visit(VariantToStringVisitor(), findPowerState->second);
++            setReadState(powerState, readState);
++        }
++
+         // on rescans, only update sensors we were signaled by
+         auto findSensor = sensors.find(sensorName);
+ 
+@@ -245,7 +254,7 @@ void createSensors(
+                     io, sensorName, std::move(sensorThresholds),
+                     *interfacePath, findSensorType->second, defaultMaxReading,
+                     defaultMinReading, busId, slaveAddr, cmdCode, muxSlaveAddr, 
+-                    muxCmdCode, isMux, readMode, scaleVal, offsetVal, tctlMax);
++                    muxCmdCode, isMux, readMode, scaleVal, offsetVal, tctlMax, readState);
+ 
+         sensors[sensorName]->value = initvalue;
+     }
+-- 
+2.17.1
+

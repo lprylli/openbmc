@@ -11,6 +11,7 @@ SRC_URI += " \
             file://0008-Add-to-support-miscellaneous-temperature-sensor.patch \
             file://0009-Support-to-sum-total-PSU-PIN.patch \
             file://0010-Set-sensor-hysteresis-to-0.patch \
+            file://0011-Fix-invalid-T4-temp-reading.patch \
             "
 
 DEPENDS += "obmc-libi2c \
