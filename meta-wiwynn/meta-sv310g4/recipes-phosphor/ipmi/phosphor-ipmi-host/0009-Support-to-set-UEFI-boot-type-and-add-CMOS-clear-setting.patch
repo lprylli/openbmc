@@ -1,0 +1,233 @@
+From 793eec6819af71b67ad384539695a0c744d93fac Mon Sep 17 00:00:00 2001
+From: Eilin <eilin_li@wiwynn.com>
+Date: Wed, 17 Mar 2021 14:47:09 +0800
+Subject: [PATCH] Support to set UEFI boot type and add CMOS clear setting
+
+---
+ chassishandler.cpp | 123 +++++++++++++++++++++++++++++++++++++++++----
+ chassishandler.hpp |   7 ++-
+ 2 files changed, 118 insertions(+), 12 deletions(-)
+
+diff --git a/chassishandler.cpp b/chassishandler.cpp
+index 61f62f5..1617644 100644
+--- a/chassishandler.cpp
++++ b/chassishandler.cpp
+@@ -39,9 +39,17 @@ std::unique_ptr<phosphor::Timer> identifyTimer
+ 
+ static ChassisIDState chassisIDState = ChassisIDState::reserved;
+ static constexpr uint8_t setParmVersion = 0x01;
++// Boot Flags
+ static constexpr uint8_t setParmBootFlagsPermanent = 0x40;
+ static constexpr uint8_t setParmBootFlagsValidOneTime = 0x80;
+ static constexpr uint8_t setParmBootFlagsValidPermanent = 0xC0;
++static constexpr uint8_t setParmBootFlagsBootTypeUefi = 0x20;
++// Set In Progress
++static constexpr uint8_t setParmSetStatusComplete = 0x00;
++static constexpr uint8_t setParmSetStatusInProgress = 0x01;
++static constexpr uint8_t setParmSetStatusCommitWrite = 0x02;
++// Boot Flag Valid Bit
++static constexpr uint8_t setParmBootFlagsCMOSClearValid = 0x1F;
+ 
+ constexpr size_t sizeVersion = 2;
+ constexpr size_t DEFAULT_IDENTIFY_TIME_OUT = 15;
+@@ -67,6 +75,12 @@ static constexpr size_t chassisIdentifyReqLength = 2;
+ static constexpr size_t identifyIntervalPos = 0;
+ static constexpr size_t forceIdentifyPos = 1;
+ 
++static bool biosUefiBoot = true; // default UEFI boot
++static bool biosCMOSclear = false;
++static bool biosCMOSclearValid = false;
++static bool setInProgress = false;
++static uint8_t bootInitiatorAckData = 0xff;
++
+ namespace ipmi
+ {
+ constexpr Cc ccParmNotSupported = 0x80;
+@@ -1741,11 +1755,37 @@ ipmi::RspType<ipmi::message::Payload>
+ 
+     IpmiValue bootOption = ipmiDefault;
+ 
++    if (static_cast<uint8_t>(bootOptionParameter) ==
++        static_cast<uint8_t>(BootOptionParameter::bootSetInProgress))
++    {
++        response.pack(bootOptionParameter, reserved1,
++                      (setInProgress ? setParmSetStatusInProgress
++                                     : setParmSetStatusComplete));
++        return ipmi::responseSuccess(std::move(response));
++    }
++    else if (static_cast<uint8_t>(bootOptionParameter) ==
++             static_cast<uint8_t>(BootOptionParameter::bootInfo))
++    {
++        // Follow ipmi spec, the byte of "write mask" is write-only. And return
++        // as 00h when read.
++        uint8_t writeMak = 0x00;
++        response.pack(bootOptionParameter, reserved1, writeMak,
++                      bootInitiatorAckData);
++        return ipmi::responseSuccess(std::move(response));
++    }
++    else if (static_cast<uint8_t>(bootOptionParameter) ==
++             static_cast<uint8_t>(BootOptionParameter::bootFlagValidBitClearing))
++    {
++        response.pack(bootOptionParameter, reserved1,
++                      (biosCMOSclearValid ? setParmBootFlagsCMOSClearValid
++                                     : 0x0));
++        return ipmi::responseSuccess(std::move(response));
++    }
+     /*
+      * Parameter #5 means boot flags. Please refer to 28.13 of ipmi doc.
+      * This is the only parameter used by petitboot.
+      */
+-    if (static_cast<uint8_t>(bootOptionParameter) ==
++    else if (static_cast<uint8_t>(bootOptionParameter) ==
+         static_cast<uint8_t>(BootOptionParameter::bootFlags))
+     {
+         using namespace chassis::internal;
+@@ -1808,9 +1848,15 @@ ipmi::RspType<ipmi::message::Payload>
+             uint8_t bootOptionParam = oneTimeEnabled
+                                           ? setParmBootFlagsValidOneTime
+                                           : setParmBootFlagsValidPermanent;
++
++            if (biosUefiBoot)
++            {
++                bootOptionParam |= setParmBootFlagsBootTypeUefi;
++            }
++
+             response.pack(bootOptionParameter, reserved1, bootOptionParam,
+-                          uint2_t{}, uint4_t{bootOption}, uint2_t{}, uint8_t{},
+-                          uint8_t{}, uint8_t{});
++                          uint2_t{}, uint4_t{bootOption}, uint1_t{}, biosCMOSclear, 
++                          uint8_t{}, uint8_t{}, uint8_t{});
+             return ipmi::responseSuccess(std::move(response));
+         }
+         catch (InternalFailure& e)
+@@ -1868,7 +1914,9 @@ ipmi::RspType<> ipmiChassisSetSysBootOptions(ipmi::Context::ptr ctx,
+      */
+ 
+     if (parameterSelector ==
+-        static_cast<uint7_t>(BootOptionParameter::bootFlags))
++        static_cast<uint7_t>(BootOptionParameter::bootFlags) ||
++        parameterSelector ==
++        static_cast<uint7_t>(BootOptionParameter::biosOEM))
+     {
+         uint5_t rsvd;
+         bool validFlag;
+@@ -1905,6 +1953,17 @@ ipmi::RspType<> ipmiChassisSetSysBootOptions(ipmi::Context::ptr ctx,
+         constexpr auto oneTimePath =
+             "/xyz/openbmc_project/control/host0/boot/one_time";
+ 
++        /* make sure paremeter is valid */
++        if (validFlag)
++        {
++            biosUefiBoot = biosBootType;
++            biosCMOSclear = cmosClear;
++        }
++        else{
++            biosUefiBoot = true; // Set default boot type UEFI
++            biosCMOSclear = false;
++        }
++
+         try
+         {
+             settings::Objects& objects = getObjects();
+@@ -1995,18 +2054,12 @@ ipmi::RspType<> ipmiChassisSetSysBootOptions(ipmi::Context::ptr ctx,
+              static_cast<uint7_t>(BootOptionParameter::bootInfo))
+     {
+         uint8_t writeMak;
+-        uint5_t bootInitiatorAckData;
+-        uint3_t rsvd;
+ 
+-        if (data.unpack(writeMak, bootInitiatorAckData, rsvd) != 0 ||
++        if (data.unpack(writeMak, bootInitiatorAckData) != 0 ||
+             !data.fullyUnpacked())
+         {
+             return ipmi::responseReqDataLenInvalid();
+         }
+-        if (rsvd)
+-        {
+-            return ipmi::responseInvalidFieldRequest();
+-        }
+         // (ccSuccess). There is no implementation in OpenBMC for this
+         // parameter. This is added to support the ipmitool command `chassis
+         // bootdev` which sends set on parameter #4, before setting the boot
+@@ -2016,6 +2069,54 @@ ipmi::RspType<> ipmiChassisSetSysBootOptions(ipmi::Context::ptr ctx,
+         data.trailingOk = true;
+         return ipmi::responseSuccess();
+     }
++    else if(parameterSelector ==
++             static_cast<uint7_t>(BootOptionParameter::bootSetInProgress))
++    {
++        uint6_t rsvd;
++        uint2_t status;
++        if (data.unpack(status, rsvd) != 0 || !data.fullyUnpacked())
++        {
++            return ipmi::responseInvalidFieldRequest();
++        }
++        if (rsvd)
++        {
++            return ipmi::responseInvalidFieldRequest();
++        }
++
++        switch (static_cast<uint8_t>(status))
++        {
++            case setParmSetStatusInProgress:
++                setInProgress = true;
++                break;
++            case setParmSetStatusComplete:
++                setInProgress = false;
++                break;
++            case setParmSetStatusCommitWrite:
++                return ipmi::responseInvalidFieldRequest();
++                break;
++            default: // reserve
++                break;
++        }
++        ipmi::responseSuccess();
++    }
++    else if(parameterSelector ==
++             static_cast<uint7_t>(BootOptionParameter::bootFlagValidBitClearing))
++    {
++        uint3_t rsvd;
++        uint5_t status;
++        if (data.unpack(status, rsvd) != 0 || !data.fullyUnpacked())
++        {
++            return ipmi::responseInvalidFieldRequest();
++        }
++        if (rsvd)
++        {
++            return ipmi::responseInvalidFieldRequest();
++        }
++        biosCMOSclearValid =
++            (status & setParmBootFlagsCMOSClearValid) ==
++            setParmBootFlagsCMOSClearValid;
++        ipmi::responseSuccess();
++    }
+     else
+     {
+         if ((parameterSelector >= static_cast<uint7_t>(oemParmStart)) &&
+diff --git a/chassishandler.hpp b/chassishandler.hpp
+index 93de2c0..db4c41b 100644
+--- a/chassishandler.hpp
++++ b/chassishandler.hpp
+@@ -46,13 +46,18 @@ enum ipmi_chassis_control_cmds : uint8_t
+ };
+ enum class BootOptionParameter : size_t
+ {
++    bootSetInProgress = 0x0,
++    bootFlagValidBitClearing = 0x3,
+     bootInfo = 0x4,
+     bootFlags = 0x5,
+-    opalNetworkSettings = 0x61
++    opalNetworkSettings = 0x61,
++    biosOEM = 0x85
+ };
+ 
+ enum class BootOptionResponseSize : size_t
+ {
++    bootSetInProgress = 1,
++    bootFlagValidBitClearing = 1,
+     bootFlags = 5,
+     opalNetworkSettings = 50
+ };
+-- 
+2.17.1
+
