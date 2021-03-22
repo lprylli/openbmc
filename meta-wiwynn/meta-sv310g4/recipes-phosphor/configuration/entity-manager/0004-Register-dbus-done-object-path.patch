@@ -1,0 +1,48 @@
+From 7d93bab4133bb80888f7f7de4eb0c07528b495ba Mon Sep 17 00:00:00 2001
+From: "Shao-Yu, Wang" <shaw_wang@wiwynn.com>
+Date: Tue, 12 Jan 2021 13:22:43 +0800
+Subject: [PATCH] Register dbus done object path
+
+---
+ src/EntityManager.cpp | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/src/EntityManager.cpp b/src/EntityManager.cpp
+index 72aa4d2..a83250b 100755
+--- a/src/EntityManager.cpp
++++ b/src/EntityManager.cpp
+@@ -1911,6 +1911,31 @@ int main()
+     // removed until the same state happens
+     setupPowerMatch(SYSTEM_BUS);
+ 
++    std::shared_ptr<sdbusplus::asio::dbus_interface> doneIface;
++    sdbusplus::bus::match::match matchBoardAddInterface(
++        static_cast<sdbusplus::bus::bus&>(*SYSTEM_BUS),
++        sdbusplus::bus::match::rules::sender("xyz.openbmc_project.EntityManager") +
++        sdbusplus::bus::match::rules::interfacesAdded("/"),
++        [&](sdbusplus::message::message& m)
++        {
++            if (doneIface != nullptr)
++            {
++                return;
++            }
++
++            sdbusplus::message::object_path objPath;
++            m.read(objPath);
++            if (objPath.str.find("/xyz/openbmc_project/inventory/system") == std::string::npos)
++            {
++                return;
++            }
++
++            doneIface = objServer.add_interface(
++                "/xyz/openbmc_project/inventory/done",
++                "xyz.openbmc_project.Inventory.Done");
++            doneIface->initialize();
++        });
++
+     io.run();
+ 
+     return 0;
+-- 
+2.17.1
+

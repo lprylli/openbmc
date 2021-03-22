@@ -1,0 +1,20 @@
+[
+    {
+        "ObjPathName": "/xyz/openbmc_project/sensors/discrete/BMC_Reboot",
+        "ObjPathInfo": [
+            {
+                "InterfaceName": "xyz.openbmc_project.Sensor.Value",
+                "InterfaceInfo": [
+                    {
+                        "Name": "Value",
+                        "Type": "property",
+                        "Signature": "u"
+                    }
+                ]
+            }
+        ],
+        "MonitorType": "OneShot",
+        "SensorType": "EventOnly"
+    }
+]
+

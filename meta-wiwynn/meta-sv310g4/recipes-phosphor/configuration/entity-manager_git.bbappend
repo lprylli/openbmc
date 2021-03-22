@@ -5,17 +5,20 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 EXTRA_OEMESON += "-Dmotherboard-config-path=/usr/share/entity-manager/configurations/sv310g4-MB.json"
 
 SRC_URI += "file://sv310g4-MB.json \
+            file://sv310g4-DiscreteSensor.json \
             file://Chicony-R800-PSU.json \
             file://blacklist.json \
             file://fan-table.json \
             file://0001-Set-the-boot-order-of-EntityManager-after-FruDevice.patch \
             file://0002-Get-fru-device-from-motherboard-config.patch \
             file://0003-Remove-the-action-of-stopping-the-service.patch \
+            file://0004-Register-dbus-done-object-path.patch \
             "
 
 do_install_append(){
         install -d ${D}/usr/share/entity-manager/configurations
         install -m 0444 ${WORKDIR}/sv310g4-MB.json ${D}/usr/share/entity-manager/configurations
+        install -m 0444 ${WORKDIR}/sv310g4-DiscreteSensor.json ${D}/usr/share/entity-manager/configurations
         install -m 0444 ${WORKDIR}/Chicony-R800-PSU.json ${D}/usr/share/entity-manager/configurations
         install -m 0444 ${WORKDIR}/blacklist.json ${D}/usr/share/entity-manager
         install -m 0444 ${WORKDIR}/fan-table.json ${D}/usr/share/entity-manager/configurations

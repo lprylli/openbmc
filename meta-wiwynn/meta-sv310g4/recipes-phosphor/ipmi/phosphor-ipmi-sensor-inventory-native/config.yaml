@@ -3211,6 +3211,24 @@
             # Sensor type specific offset
             0xFF:
               type: double
+0xc6: # BMC Reboot
+  - entityID: 0x2e
+    entityInstance: 0x01
+    sensorType: 0x28
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/BMC_Reboot
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: BMC Reboot
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
 0xfa: # End of POST
   - entityID: 0x22
     entityInstance: 0x00
@@ -3817,8 +3835,26 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
-0xf2: # CPU1 DIMMG0 STS
-  - ownerID: 0x21
+0xf2:
+  - ownerID: 0x20 # BMC Health
+    entityID: 0x2e
+    entityInstance: 0x00
+    sensorType: 0x28
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/BMC_Health
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: BMC Health
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+  - ownerID: 0x21 # CPU1 DIMMG0 STS
     entityID: 0x20
     entityInstance: 0x2c
     sensorType: 0x0c
