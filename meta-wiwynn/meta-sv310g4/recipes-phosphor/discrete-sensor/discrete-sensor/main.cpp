@@ -21,6 +21,8 @@
 #include <string>
 #include <tuple>
 #include <variant>
+#include <filesystem>
+
 extern "C"
 {
 #include <gpiod.h>
@@ -359,6 +361,19 @@ int main(int argc, char** argv)
                                        clearRegValue);
                         write_register(sRAMReg, 0x0);
                         write_register(sRAMReg + 4, 0x0);
+                    }
+                    else if (sensor_name == "Power_Unit")
+                    {
+                        /* AC lost */
+                        std::filesystem::path filePath("/run/openbmc/AC-lost@0");
+                        if(std::filesystem::exists(filePath))
+                        {
+                            std::string message;
+                            std::vector<uint8_t> eventData(3, 0xFF);
+                            message = "AC lost";
+                            eventData.at(0) = 0x04;
+                            ipmiSelAdd(message, objPathName, eventData, true);
+                        }
                     }
                 }
             }

@@ -15,6 +15,23 @@
         ],
         "MonitorType": "OneShot",
         "SensorType": "EventOnly"
+    },
+    {
+        "ObjPathName": "/xyz/openbmc_project/sensors/discrete/Power_Unit",
+        "ObjPathInfo": [
+            {
+                "InterfaceName": "xyz.openbmc_project.Sensor.Value",
+                "InterfaceInfo": [
+                    {
+                        "Name": "Value",
+                        "Type": "property",
+                        "Signature": "u"
+                    }
+                ]
+            }
+        ],
+        "MonitorType": "OneShot",
+        "SensorType": "EventOnly"
     }
 ]
 

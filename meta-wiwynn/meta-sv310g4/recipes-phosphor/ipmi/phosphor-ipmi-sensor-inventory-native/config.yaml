@@ -3872,8 +3872,26 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
-0xf3: # CPU1 DIMMG1 STS
-  - ownerID: 0x21
+0xf3:
+  - ownerID: 0x20 # Power Unit
+    entityID: 0x06
+    entityInstance: 0x00
+    sensorType: 0x09
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Power_Unit
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Power Unit
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+  - ownerID: 0x21 # CPU1 DIMMG1 STS
     entityID: 0x20
     entityInstance: 0x2d
     sensorType: 0x0c
