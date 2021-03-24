@@ -12,6 +12,7 @@ SRC_URI += "  file://0001-PATCH-Add-to-support-CPU-and-DIMM-sensors.patch \
               file://0009-Implement-GPGPU-nvidia-T4-Card-temperature-sensor.patch \
               file://0010-c600g5-Add-retry-mechanism-for-p3v_vat.patch \
               file://0011-Support-temp-n-reading-and-threshold-setting.patch \
+              file://0012-Implement-NIC-card-temperature-with-MCTP-over-I2C.patch \
             "
 DEPENDS += "obmc-libi2c \
             obmc-libmisc \

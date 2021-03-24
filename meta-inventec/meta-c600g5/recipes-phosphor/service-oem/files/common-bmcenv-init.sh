@@ -1,6 +1,15 @@
 #!/bin/bash
 # common BMC environment initialization
 
+# Bind the NIC FRU EEPROM
+if [ ! -f /sys/devices/platform/ahb/ahb:apb/ahb:apb:bus@1e78a000/1e78a3c0.i2c-bus/i2c-10/10-0050/eeprom ]
+then
+    echo 10-0050 > /sys/bus/i2c/drivers/at24/bind
+    echo "Bind the NIC FRU EEPROM device"
+else
+    echo "NIC FRU EEPROM device exists!"
+fi
+
 # Create a directory to store non-volatile SEL records
 if [ ! -d /usr/share/sel ]; then
     mkdir -p /usr/share/sel
