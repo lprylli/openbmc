@@ -870,6 +870,30 @@
             0xFF:
               type: double
 
+0x31:
+  - entityID: 0x06
+    entityInstance: 2
+    sensorType: 0x01
+    sensorReadingType: 0x01
+    path: /xyz/openbmc_project/sensors/temperature/SYS_Inlet1
+    multiplierM: 0x01
+    offsetB: 0
+    bExp: 0
+    rExp: 0
+    scale: 0
+    unit: xyz.openbmc_project.Sensor.Value.Unit.DegreesC
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingData
+    sensorNamePattern: nameLeaf
+    sdrType: SdrType::sdr_full_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            0xFF:
+              type: double
+
 0x32:
   - entityID: 0x06
     entityInstance: 3

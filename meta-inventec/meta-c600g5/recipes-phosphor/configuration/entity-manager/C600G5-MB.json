@@ -557,12 +557,21 @@
         "Address": "0x4c",
         "Bus": 9,
         "Name": "SYS_Inlet0",
+        "Name1": "SYS_Inlet1",
         "Thresholds": [
             {
                 "Direction": "greater than",
+                "Label": "temp1",
                 "Name": "upper critical",
                 "Severity": 1,
-                "Value": 38
+                "Value": 37
+            },
+            {
+                "Direction": "greater than",
+                "Label": "temp2",
+                "Name": "upper critical",
+                "Severity": 1,
+                "Value": 37
             }
         ],
         "Type": "EMC1412"
@@ -574,6 +583,7 @@
         "Thresholds": [
             {
                 "Direction": "greater than",
+                "Label": "temp1",
                 "Name": "upper critical",
                 "Severity": 1,
                 "Value": 75

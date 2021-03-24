@@ -1,0 +1,47 @@
+From 4e384e15ba387644a213ccd8813442de90667c68 Mon Sep 17 00:00:00 2001
+From: James Chang <Chang.JamesWC@inventec.com>
+Date: Tue, 16 Mar 2021 13:12:18 +0800
+Subject: [PATCH] Support temp n reading and threshold setting
+
+---
+ src/HwmonTempMain.cpp | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/src/HwmonTempMain.cpp b/src/HwmonTempMain.cpp
+index b5cbf23..036c687 100644
+--- a/src/HwmonTempMain.cpp
++++ b/src/HwmonTempMain.cpp
+@@ -202,7 +202,8 @@ void createSensors(
+                     }
+                 }
+                 std::vector<thresholds::Threshold> sensorThresholds;
+-                if (!parseThresholdsFromConfig(*sensorData, sensorThresholds))
++                std::string label = "temp1";
++                if (!parseThresholdsFromConfig(*sensorData, sensorThresholds, &label))
+                 {
+                     std::cerr << "error populating thresholds for "
+                               << sensorName << "\n";
+@@ -243,6 +244,14 @@ void createSensors(
+                     }
+                     std::string sensorName =
+                         std::get<std::string>(findKey->second);
++						
++					std::vector<thresholds::Threshold> sensorThresholds;
++                    label = "temp" + std::string(1, '1' + i);
++                    if (!parseThresholdsFromConfig(*sensorData, sensorThresholds, &label))
++                    {
++                        std::cerr << "error populating thresholds for " << sensorName << "\n";
++                    }
++						
+                     hwmonFile = getFullHwmonFilePath(
+                         directory.string(), "temp" + std::to_string(i + 1),
+                         permitSet);
+@@ -253,7 +262,7 @@ void createSensors(
+                         sensor = std::make_shared<HwmonTempSensor>(
+                             *hwmonFile, sensorType, objectServer,
+                             dbusConnection, io, sensorName,
+-                            std::vector<thresholds::Threshold>(),
++                            std::move(sensorThresholds),
+                             *interfacePath, readState);
+                         sensor->setupRead();
+                     }
