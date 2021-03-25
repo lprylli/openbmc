@@ -1,0 +1,26 @@
+From a0c09486c14f888e6263e92c066d4a13ac11d797 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Thu, 25 Mar 2021 12:03:23 +0800
+Subject: [PATCH] Run power policy service for AC-lost event only
+
+---
+ service_files/phosphor-discover-system-state@.service | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/service_files/phosphor-discover-system-state@.service b/service_files/phosphor-discover-system-state@.service
+index 6b966f0..ee01b9a 100644
+--- a/service_files/phosphor-discover-system-state@.service
++++ b/service_files/phosphor-discover-system-state@.service
+@@ -7,7 +7,9 @@ After=mapper-wait@-xyz-openbmc_project-state-host%i.service
+ Wants=mapper-wait@-xyz-openbmc_project-state-chassis%i.service
+ After=mapper-wait@-xyz-openbmc_project-state-chassis%i.service
+ After=op-reset-chassis-on@%i.service
++After=multi-user.target
+ ConditionPathExists=!/run/openbmc/chassis@%i-on
++ConditionPathExists=/run/openbmc/AC-lost@%i
+ 
+ [Service]
+ Restart=no
+-- 
+2.17.1
+
