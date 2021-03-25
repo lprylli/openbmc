@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "file://phosphor-multi-gpio-monitor.service \
             file://phosphor-multi-gpio-monitor.json \
             file://0001-Support-gpio-event-multi-targets.patch \
+            file://0002-Ensure-GPIO-events-order.patch \
            "
 
 do_install_append(){

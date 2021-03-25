@@ -10,5 +10,5 @@ ExecStart=/usr/bin/busctl call "xyz.openbmc_project.Logging.IPMI" "/xyz/openbmc_
 ExecStart=/usr/bin/keepManualPwm.sh
 ExecStart=/bin/systemctl start phosphor-pid-control
 
-# ExecStopPost=/usr/bin/busctl set-property xyz.openbmc_project.GpioMonitor /xyz/openbmc_project/gpio/status xyz.openbmc_project.GpioStatus 215 s "Idle"
+ExecStopPost=/usr/bin/busctl set-property xyz.openbmc_project.GpioMonitor /xyz/openbmc_project/gpio/status xyz.openbmc_project.GpioStatus 215 s "Idle"
 

@@ -3247,8 +3247,26 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
-0xd3: # CPU0 Status
-  - ownerID: 0x21
+0xd3:
+  - ownerID: 0x20 # Watchdog2
+    entityID: 0x06
+    entityInstance: 0x02
+    sensorType: 0x23
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Watchdog2
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Watchdog2
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+  - ownerID: 0x21 # CPU0 Status
     entityID: 0x3
     entityInstance: 0x3
     sensorType: 0x7
@@ -3977,6 +3995,25 @@
     serviceInterface: org.freedesktop.DBus.Properties
     readingType: readingAssertion
     sensorName: Critical IRQ
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xfb: # Processor Fail
+  - ownerID: 0x20
+    entityID: 0x03
+    entityInstance: 0x01
+    sensorType: 0x07
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Processor_Fail
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Processor Fail
     sdrType: SdrType::sdr_event_record
     interfaces:
       xyz.openbmc_project.Sensor.Value:
