@@ -752,6 +752,29 @@
             ]
     },
     {
+            "Name": "P5V_STBY",
+            "Bus": 2,
+            "Address": "0x48",
+            "SensorType": "volt",
+            "Label": "in_voltage2_raw",
+            "Type": "ADCI2C",
+            "ScaleValue": 0.0037,
+            "Thresholds": [
+                {
+                    "Direction": "greater than",
+                    "Name": " upper critical",
+                    "Severity": 1,
+                    "Value": 5.25
+                },
+                {
+                    "Direction": "less than",
+                    "Name": "lower critical",
+                    "Severity": 1,
+                    "Value": 4.75
+                }
+            ]
+    },
+    {
         "Index": 0,
         "Name": "CPU0_VCORE",
         "ScaleFactor": 1,

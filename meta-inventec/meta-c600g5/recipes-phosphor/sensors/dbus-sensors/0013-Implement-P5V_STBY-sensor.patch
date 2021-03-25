@@ -1,0 +1,550 @@
+From a0ebad7a549a9c7c35c9fb46c63bedd705f1117b Mon Sep 17 00:00:00 2001
+From: Brenda Huang <Huang.Brenda@inventec.com>
+Date: Thu, 25 Mar 2021 02:05:20 +0000
+Subject: [PATCH] Implement P5V_STBY sensor
+
+Change-Id: I3f875e3957bd136b61f3532a301c48e6a519b6c9
+---
+ CMakeLists.txt                                |  17 ++
+ include/ADCI2CSensor.hpp                      |  39 +++
+ .../xyz.openbmc_project.adci2csensor.service  |  13 +
+ src/ADCI2CSensor.cpp                          | 132 +++++++++
+ src/ADCI2CSensorMain.cpp                      | 271 ++++++++++++++++++
+ 5 files changed, 472 insertions(+)
+ create mode 100644 include/ADCI2CSensor.hpp
+ create mode 100644 service_files/xyz.openbmc_project.adci2csensor.service
+ create mode 100644 src/ADCI2CSensor.cpp
+ create mode 100644 src/ADCI2CSensorMain.cpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 158ea56..2ce410f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,6 +50,7 @@ option (DISABLE_VOLTAGE "Disable installing Voltage sensor" OFF)
+ option (DISABLE_NIC "Disable installing NIC sensor" OFF)
+ option (DISABLE_I2CDEV "Disable installing I2CDEV sensor" OFF)
+ option (BMC_CPU_SENSOR_TCONTROL "Enable Tcontrol Threshold setting" ON)
++option (DISABLE_ADCI2C "Disable installing ADCI2C sensor" OFF)
+ 
+ include ("cmake/HunterGate.cmake")
+ 
+@@ -87,6 +88,8 @@ set (NIC_SRC_FILES src/Utils.cpp src/NICSensor.cpp src/Thresholds.cpp)
+ 
+ set (I2CDEV_SRC_FILES src/Utils.cpp src/I2CDEVSensor.cpp src/Thresholds.cpp)
+ 
++set (ADCI2C_SRC_FILES src/Utils.cpp src/ADCI2CSensor.cpp src/Thresholds.cpp)
++
+ set (EXTERNAL_PACKAGES Boost sdbusplus-project nlohmann-json)
+ set (SENSOR_LINK_LIBS -lsystemd -lobmci2c -lobmcmisc stdc++fs sdbusplus)
+ 
+@@ -233,6 +236,12 @@ if (NOT DISABLE_I2CDEV)
+     target_link_libraries (i2cdevsensor ${SENSOR_LINK_LIBS})
+     endif()
+ 
++if (NOT DISABLE_ADCI2C)
++    add_executable (adci2csensor src/ADCI2CSensorMain.cpp ${ADCI2C_SRC_FILES})
++    add_dependencies (adci2csensor sdbusplus-project)
++    target_link_libraries (adci2csensor ${SENSOR_LINK_LIBS})
++endif()
++
+ if (NOT YOCTO)
+     add_dependencies (adcsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (cpusensor ${EXTERNAL_PACKAGES})
+@@ -246,6 +255,7 @@ if (NOT YOCTO)
+     add_dependencies (nicsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (nvmesensor ${EXTERNAL_PACKAGES})
+     add_dependencies (i2cdevsensor ${EXTERNAL_PACKAGES})
++    add_dependencies (adci2csensor ${EXTERNAL_PACKAGES})
+ endif ()
+ 
+ set (SERVICE_FILE_SRC_DIR ${PROJECT_SOURCE_DIR}/service_files)
+@@ -351,3 +361,10 @@ if (NOT DISABLE_I2CDEV)
+ 	         ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.i2cdevsensor.service
+                  DESTINATION ${SERVICE_FILE_INSTALL_DIR})
+ endif ()
++
++if (NOT DISABLE_ADCI2C)
++    install (TARGETS adci2csensor DESTINATION bin)
++    install (FILES
++	         ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.adci2csensor.service
++                 DESTINATION ${SERVICE_FILE_INSTALL_DIR})
++endif ()
+diff --git a/include/ADCI2CSensor.hpp b/include/ADCI2CSensor.hpp
+new file mode 100644
+index 0000000..1f695ad
+--- /dev/null
++++ b/include/ADCI2CSensor.hpp
+@@ -0,0 +1,39 @@
++#pragma once
++
++#include <Thresholds.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <sensor.hpp>
++#include <boost/asio/steady_timer.hpp>
++
++class ADCI2CSensor : public Sensor
++{
++public:
++    ADCI2CSensor(const std::string& path, const std::string& objectType,
++               sdbusplus::asio::object_server& objectServer,
++               std::shared_ptr<sdbusplus::asio::connection>& conn,
++               boost::asio::io_service& io, const std::string& sensorName,
++               std::vector<thresholds::Threshold>&& thresholds,
++               const std::string& sensorConfiguration, 
++               std::string& sensorTypeName, const double MaxValue,
++               const double MinValue, const uint8_t busId,
++               const uint8_t slaveAddr, const double scaleVal,
++               const std::string& readLabel);
++    ~ADCI2CSensor();
++private:
++    sdbusplus::asio::object_server& objServer;
++    boost::asio::steady_timer waitTimer;
++    std::string path;
++    std::string& sensorType;
++    int errCount;
++    uint8_t busId;
++    uint8_t slaveAddr;
++    std::string readLabel;
++    double scaleVal;
++    float senValue;
++    thresholds::ThresholdTimer thresholdTimer;
++    int powerondelaytime;
++    void setupRead(void);
++    bool readADCI2Cpath(void);
++    void handleResponse(void);
++    void checkThresholds(void) override;
++};
+diff --git a/service_files/xyz.openbmc_project.adci2csensor.service b/service_files/xyz.openbmc_project.adci2csensor.service
+new file mode 100644
+index 0000000..8625675
+--- /dev/null
++++ b/service_files/xyz.openbmc_project.adci2csensor.service
+@@ -0,0 +1,13 @@
++[Unit]
++Description=ADCI2C Sensor
++StopWhenUnneeded=false
++Requires=xyz.openbmc_project.EntityManager.service
++After=xyz.openbmc_project.EntityManager.service
++
++[Service]
++Restart=always
++RestartSec=5
++ExecStart=/usr/bin/adci2csensor
++
++[Install]
++WantedBy=multi-user.target
+diff --git a/src/ADCI2CSensor.cpp b/src/ADCI2CSensor.cpp
+new file mode 100644
+index 0000000..d063337
+--- /dev/null
++++ b/src/ADCI2CSensor.cpp
+@@ -0,0 +1,132 @@
++#include "Utils.hpp"
++
++#include <openbmc/libobmci2c.h>
++#include <unistd.h>
++#include <fstream>
++#include <ADCI2CSensor.hpp>
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <iostream>
++#include <limits>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <string>
++
++namespace fs = std::filesystem;
++static constexpr bool DEBUG = false;
++static constexpr const char* sensorPathPrefix = "/xyz/openbmc_project/sensors/";
++
++static constexpr unsigned int sensorPollMs = 1000;
++static constexpr size_t warnAfterErrorCount = 10;
++
++ADCI2CSensor::ADCI2CSensor(const std::string& path, const std::string& objectType,
++                       sdbusplus::asio::object_server& objectServer,
++                       std::shared_ptr<sdbusplus::asio::connection>& conn,
++                       boost::asio::io_service& io, const std::string& sensorName,
++                       std::vector<thresholds::Threshold>&& _thresholds,
++                       const std::string& sensorConfiguration,
++                       std::string& sensorTypeName, const double MaxValue,
++                       const double MinValue, const uint8_t busId,
++                       const uint8_t slaveAddr, const double scaleVal,
++                       const std::string& readLabel):
++    Sensor(boost::replace_all_copy(sensorName, " ", "_"),
++           std::move(_thresholds), sensorConfiguration, objectType, MaxValue,
++           MinValue, conn, PowerState::on),
++    path(path), objServer(objectServer), waitTimer(io), errCount(0),
++    senValue(0), busId(busId), slaveAddr(slaveAddr), scaleVal(scaleVal),
++    readLabel(readLabel), sensorType(sensorTypeName), thresholdTimer(io, this)
++{
++    std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
++
++    sensorInterface = objectServer.add_interface(
++                          dbusPath, "xyz.openbmc_project.Sensor.Value");
++    if (thresholds::hasWarningInterface(thresholds))
++    {
++        thresholdInterfaceWarning = objectServer.add_interface(
++                                        dbusPath, "xyz.openbmc_project.Sensor.Threshold.Warning");
++    }
++    if (thresholds::hasCriticalInterface(thresholds))
++    {
++        thresholdInterfaceCritical = objectServer.add_interface(
++                                         dbusPath, "xyz.openbmc_project.Sensor.Threshold.Critical");
++    }
++    association =
++        objectServer.add_interface(dbusPath, association::interface);
++    setInitialProperties(conn);
++    setupPowerMatch(conn);
++    setupRead();
++}
++
++ADCI2CSensor::~ADCI2CSensor()
++{
++    // close the Timer to cancel async operations
++    waitTimer.cancel();
++    objServer.remove_interface(thresholdInterfaceWarning);
++    objServer.remove_interface(thresholdInterfaceCritical);
++    objServer.remove_interface(sensorInterface);
++    objServer.remove_interface(association);
++}
++
++void ADCI2CSensor::setupRead(void)
++{
++    bool res = readADCI2Cpath();
++    if (res != true)
++    {
++        incrementError();
++    }
++    else
++    {
++        handleResponse();
++    }
++
++    waitTimer.expires_from_now(boost::asio::chrono::milliseconds(sensorPollMs));
++    waitTimer.async_wait([&](const boost::system::error_code & ec) {
++        if (ec == boost::asio::error::operation_aborted)
++        {
++            return; // we're being canceled
++        }
++        setupRead();
++    });
++}
++bool ADCI2CSensor::readADCI2Cpath(void)
++{
++    std::vector<fs::path> adci2cPaths;
++    if (!findFiles(fs::path(path), readLabel, adci2cPaths))
++    {
++        std::cerr << "No ADCI2C sensor in system\n";
++        return false;
++    }
++
++    for (const auto& adci2cPath : adci2cPaths)
++    {
++        std::ifstream readFile(adci2cPath);
++        if (!readFile.good())
++        {
++            std::cerr << "Failure finding path " << adci2cPath << "\n";
++            continue;
++        }
++
++        std::string readValue;
++        std::getline(readFile, readValue);
++        readFile.close();
++        double raw_value = std::stod(readValue);
++        senValue =  raw_value * scaleVal;
++    }
++    return true;
++}
++
++void ADCI2CSensor::handleResponse()
++{
++    updateValue(senValue);
++}
++
++void ADCI2CSensor::checkThresholds(void)
++{
++    if (!readingStateGood())
++    {
++        markAvailable(false);
++        return;
++    }
++
++    thresholds::checkThresholdsPowerDelay(this, thresholdTimer);
++}
+diff --git a/src/ADCI2CSensorMain.cpp b/src/ADCI2CSensorMain.cpp
+new file mode 100644
+index 0000000..d46e5c0
+--- /dev/null
++++ b/src/ADCI2CSensorMain.cpp
+@@ -0,0 +1,271 @@
++#include <Utils.hpp>
++#include <ADCI2CSensor.hpp>
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <boost/container/flat_set.hpp>
++#include <filesystem>
++#include <fstream>
++#include <regex>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++
++static constexpr bool DEBUG = false;
++
++namespace fs = std::filesystem;
++static constexpr std::array<const char*, 1> sensorTypes =
++{
++    "xyz.openbmc_project.Configuration.ADCI2C"
++};
++
++static boost::container::flat_map<std::string, std::string> sensorTable;
++
++void createSensors(
++    boost::asio::io_service& io, sdbusplus::asio::object_server& objectServer,
++    boost::container::flat_map<std::string, std::unique_ptr<ADCI2CSensor>>& sensors,
++    std::shared_ptr<sdbusplus::asio::connection>& dbusConnection,
++    const std::unique_ptr<boost::container::flat_set<std::string>>&
++    sensorsChanged)
++{
++    bool firstScan = sensorsChanged == nullptr;
++    // use new data the first time, then refresh
++    ManagedObjectType sensorConfigurations;
++    bool useCache = false;
++    for (const char* type : sensorTypes)
++    {
++        if (!getSensorConfiguration(type, dbusConnection, sensorConfigurations,
++                                    useCache))
++        {
++            std::cerr << "error communicating to entity manager\n";
++            return;
++        }
++        useCache = true;
++    }
++
++    for (const std::pair<sdbusplus::message::object_path, SensorData>& sensor :
++            sensorConfigurations)
++    {
++        const SensorData* sensorData = nullptr;
++        const std::string* interfacePath = nullptr;
++        const char* sensorType = nullptr;
++        const std::pair<std::string, boost::container::flat_map<
++        std::string, BasicVariantType>>*
++                                     baseConfiguration = nullptr;
++
++        sensorData = &(sensor.second);
++        for (const char* type : sensorTypes)
++        {
++            auto sensorBase = sensorData->find(type);
++            if (sensorBase != sensorData->end())
++            {
++                baseConfiguration = &(*sensorBase);
++                sensorType = type;
++                break;
++            }
++        }
++        if (baseConfiguration == nullptr)
++        {
++            std::cerr << "error finding base configuration for I2CDEV \n";
++            continue;
++        }
++
++        auto configurationBus = baseConfiguration->second.find("Bus");
++        auto configurationAddress = baseConfiguration->second.find("Address");
++
++        if (configurationBus == baseConfiguration->second.end() ||
++                configurationAddress == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find the bus, addr, cmd, or page in JSON\n";
++            continue;
++        }
++
++        uint8_t busId =
++            static_cast<uint8_t>(std::get<uint64_t>(configurationBus->second));
++        uint8_t slaveAddr = static_cast<uint8_t>(
++                                std::get<uint64_t>(configurationAddress->second));
++
++        if (0x80 <= slaveAddr)
++        {
++            std::cerr
++                    << "error i2c slave addr is out of the range (7-bit addr)\n";
++            continue;
++        }
++
++        char readPath[10];
++        std::memset(readPath, '\0',  sizeof(readPath));
++        std::sprintf(readPath, "/%d-00%x/", busId, slaveAddr);
++        std::string i2cBus = "/sys/class/i2c-dev/i2c-" + std::to_string(busId)
++                             + "/device" + readPath;
++        interfacePath = &(sensor.first.str);
++        if (interfacePath == nullptr)
++        {
++            std::cerr << " invalid sensor interface path\n";
++            continue;
++        }
++
++        auto findSensorName = baseConfiguration->second.find("Name");
++        if (findSensorName == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find sensor name in JSON\n";
++            continue;
++        }
++        std::string sensorName = std::get<std::string>(findSensorName->second);
++
++        // Sensor Type: power, curr, temp, volt
++        auto findSensorTypeJson = baseConfiguration->second.find("SensorType");
++        if (findSensorTypeJson == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find sensor type in JSON\n";
++            continue;
++        }
++        std::string SensorTypeJson =
++            std::get<std::string>(findSensorTypeJson->second);
++
++        auto findSensorType = sensorTable.find(SensorTypeJson);
++        if (findSensorType == sensorTable.end())
++        {
++            std::cerr << "fail to find match for I2CDEV sensorType: "
++                      << SensorTypeJson << "\n";
++            continue;
++        }
++
++        /* Label ad read file name */
++        auto findLabel = baseConfiguration->second.find("Label");
++        if (findLabel == baseConfiguration->second.end())
++        {
++            std::cerr << "fail to find ADCI2C label in JSON\n";
++            continue;
++        }
++        std::string readLabel =
++            std::get<std::string>(findLabel->second);
++
++        /* Initialize scale value */
++        double scaleVal = 1;
++        auto findScaleVal = baseConfiguration->second.find("ScaleValue");
++        if (findScaleVal != baseConfiguration->second.end())
++        {
++            scaleVal = std::visit(VariantToDoubleVisitor(),
++                                  findScaleVal->second);
++        }
++
++        // on rescans, only update sensors we were signaled by
++        auto findSensor = sensors.find(sensorName);
++
++        std::vector<thresholds::Threshold> storesensorThresholds;
++        double initvalue = std::numeric_limits<double>::quiet_NaN();
++        bool found = false;
++
++        if (!firstScan && findSensor != sensors.end())
++        {
++            storesensorThresholds = findSensor->second->thresholds;
++            initvalue = findSensor->second->value;
++            for (auto it = sensorsChanged->begin(); it != sensorsChanged->end();
++                    it++)
++            {
++                if (boost::ends_with(*it, findSensor->second->name))
++                {
++                    sensorsChanged->erase(it);
++                    findSensor->second = nullptr;
++                    found = true;
++                    break;
++                }
++            }
++            if (!found)
++            {
++                continue;
++            }
++        }
++
++        std::vector<thresholds::Threshold> sensorThresholds;
++        if (!parseThresholdsFromConfig(*sensorData, sensorThresholds))
++        {
++            std::cerr << "error populating thresholds for " << sensorName
++                      << "\n";
++        }
++
++        if(found)
++        {
++            sensorThresholds = storesensorThresholds;
++        }
++
++        constexpr double defaultMaxReading = 255;
++        constexpr double defaultMinReading = 0;
++        auto limits = std::make_pair(defaultMinReading, defaultMaxReading);
++
++        findLimits(limits, baseConfiguration);
++        /*muxSlaveAddr, muxCmdCode*/
++        sensors[sensorName] = std::make_unique<ADCI2CSensor>(
++                    i2cBus, sensorType, objectServer, dbusConnection,
++                    io, sensorName, std::move(sensorThresholds),
++                    *interfacePath, findSensorType->second, defaultMaxReading,
++                    defaultMinReading, busId, slaveAddr, scaleVal, readLabel);
++
++        sensors[sensorName]->value = initvalue;
++    }
++}
++
++void propertyInitialize(void)
++{
++    sensorTable = {{"power", "power/"},
++        {"curr", "current/"},
++        {"temp", "temperature/"},
++        {"volt", "voltage/"}
++    };
++}
++
++int main()
++{
++    boost::asio::io_service io;
++    auto systemBus = std::make_shared<sdbusplus::asio::connection>(io);
++    systemBus->request_name("xyz.openbmc_project.ADCI2CSensor");
++    sdbusplus::asio::object_server objectServer(systemBus);
++    boost::container::flat_map<std::string, std::unique_ptr<ADCI2CSensor>> sensors;
++    std::vector<std::unique_ptr<sdbusplus::bus::match::match>> matches;
++    std::unique_ptr<boost::container::flat_set<std::string>> sensorsChanged =
++                std::make_unique<boost::container::flat_set<std::string>>();
++
++    propertyInitialize();
++
++    io.post([&]() {
++        createSensors(io, objectServer, sensors, systemBus, nullptr);
++    });
++
++    boost::asio::steady_timer filterTimer(io);
++    std::function<void(sdbusplus::message::message&)> eventHandler =
++    [&](sdbusplus::message::message & message) {
++        if (message.is_method_error())
++        {
++            std::cerr << "callback method error\n";
++            return;
++        }
++        sensorsChanged->insert(message.get_path());
++        // this implicitly cancels the timer
++        filterTimer.expires_from_now(boost::asio::chrono::seconds(1));
++
++        filterTimer.async_wait([&](const boost::system::error_code & ec) {
++            if (ec == boost::asio::error::operation_aborted)
++            {
++                /* we were canceled*/
++                return;
++            }
++            else if (ec)
++            {
++                std::cerr << "timer error\n";
++                return;
++            }
++
++            createSensors(io, objectServer, sensors, systemBus,
++                          sensorsChanged);
++        });
++    };
++
++    for (const char* type : sensorTypes)
++    {
++        auto match = std::make_unique<sdbusplus::bus::match::match>(
++                         static_cast<sdbusplus::bus::bus&>(*systemBus),
++                         "type='signal',member='PropertiesChanged',path_namespace='" +
++                         std::string(inventoryPath) + "',arg0namespace='" + type + "'",
++                         eventHandler);
++        matches.emplace_back(std::move(match));
++    }
++    io.run();
++}

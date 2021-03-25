@@ -209,6 +209,10 @@
 		v1@1 {
 			single-channel = <1>;
 		};
+                // read P5V_STBY
+		v2@2 {
+			single-channel = <2>;
+		};
 		// read voltage
 		v23@2 {
 			diff-channels = <2 3>;
