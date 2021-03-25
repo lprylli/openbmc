@@ -30,7 +30,6 @@
 #include <chrono>
 
 static std::chrono::milliseconds pollInterval(500);
-static int power_pin = 202;
 static uint32_t power_off_times = 4;    // 2 seconds
 static uint32_t power_force_times = 12;    // 6 seconds
 static int pressEvent = 100;
@@ -55,9 +54,10 @@ enum gpio_line_event_type : uint8_t
 ButtonObject::ButtonObject(boost::asio::io_service& io,
     std::shared_ptr<sdbusplus::asio::connection>& conn,
     gpiod_line* line, gpiod_line_request_config& config,
-    std::string sensorName):
+    std::string sensorName, int gpioOutputNumber):
     gpioLine(line), gpioConfig(config), gpioEventDescriptor(io),
-    conn(conn), sensorName(sensorName), waitTimer(io)
+    conn(conn), sensorName(sensorName), waitTimer(io),
+    gpioOutputNumber(gpioOutputNumber)
 {
     int res = requestButtonEvent();
     if(0 == res && sensorName == "POWER_BUTTON") // only power_button need to run algorithm
@@ -98,7 +98,16 @@ void ButtonObject::buttonEventHandler()
     /* Reset pin be set*/
     if (sensorName == "RESET_BUTTON")
     {
-        addBtnSEL(EVENT_RESET);
+        const char * sName = sensorName.c_str();
+        if (gpioLineEvent.event_type == FALLING_EDGE )
+        {
+            gpiod_ctxless_set_value("0", gpioOutputNumber, 0, false, sName, NULL, NULL);
+            addBtnSEL(EVENT_RESET);
+        }
+        else if (gpioLineEvent.event_type == RISING_EDGE )
+        {
+            gpiod_ctxless_set_value("0", gpioOutputNumber, 1, false, sName, NULL, NULL);
+        }
     }
     /* Push power button event to queue*/
     else if (sensorName == "POWER_BUTTON")
@@ -159,21 +168,22 @@ void ButtonObject::runPowerButtonEventAlgorithm()
             if (power_off_set == true)  // power off from force shutdown
             {
                 power_off_set = false;
-                // addBtnSEL(EVENT_POWER_FORCE);
+                addBtnSEL(EVENT_POWER_FORCE);
                 std::cerr << "EVENT_POWER_FORCE\n";
             }
             else // when power off bypass all signals
             {
+                const char * sName = sensorName.c_str();
                 if (tmp_status >= pressEvent && hadPowerOn == false)
                 {
-                    gpiod_ctxless_set_value("0", power_pin, 0, false, "power-button-event", NULL, NULL);
+                    gpiod_ctxless_set_value("0", gpioOutputNumber, 0, false, sName, NULL, NULL);
                     addBtnSEL(EVENT_POWER_ON);
                     // Generate at lest 100ms pulse
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
                 else if (tmp_status < pressEvent && hadPowerOn == false)
                 {
-                    gpiod_ctxless_set_value("0", power_pin, 1, false, "power-button-event", NULL, NULL);
+                    gpiod_ctxless_set_value("0", gpioOutputNumber, 1, false, sName, NULL, NULL);
                     hadPowerOn = true;
                     power_off_set = false;
                 }
@@ -195,7 +205,8 @@ void ButtonObject::runPowerButtonEventAlgorithm()
 
                 if ((press_elapsed >= power_off_times) && (power_off_set == false))
                 {
-                    gpiod_ctxless_set_value("0", power_pin, 0, false, "power-button-event", NULL, NULL);
+                    const char * sName = sensorName.c_str();
+                    gpiod_ctxless_set_value("0", gpioOutputNumber, 0, false, sName, NULL, NULL);
                     addBtnSEL(EVENT_POWER_OFF);
                     power_off_set = true;
                 }
@@ -205,15 +216,16 @@ void ButtonObject::runPowerButtonEventAlgorithm()
                 press_elapsed = last_press - tmp_status - pressEvent;
                 if (press_elapsed < power_off_times)
                 {
-                    std::cerr << "testpassLess2s\n";
+                    std::cerr << "Power button press less than 2s\n";
                 }
                 else
                 {
-                    gpiod_ctxless_set_value("0", power_pin, 1, false, "power-button-event", NULL, NULL);
+                    const char * sName = sensorName.c_str();
+                    gpiod_ctxless_set_value("0", gpioOutputNumber, 1, false, sName, NULL, NULL);
                     power_off_set = false;
                     if (press_elapsed >= power_force_times)
                     {
-                        // addBtnSEL(EVENT_POWER_FORCE);
+                        addBtnSEL(EVENT_POWER_FORCE);
                         std::cerr << "EVENT_POWER_FORCE\n";
                     }                
                     last_press = 0;
@@ -253,32 +265,33 @@ void ButtonObject::addBtnSEL(int eventType)
     eventData.at(0) = 0x20;
     eventData.at(1) = 0x00;
     eventData.at(2) = 0x04;
-    eventData.at(3) = 0x14;  // sensorType;
-    eventData.at(4) = 0x00;  // sensorNum
-    eventData.at(5) = 0x6f;  // eventType;
-    eventData.at(6) = 0x00;  // Log Area Reset/Cleared
+    eventData.at(3) = 0x14;  // SensorType:
+    eventData.at(4) = 0xef;  // Button
+    eventData.at(5) = 0x6f;
+    eventData.at(6) = 0x00;
     eventData.at(7) = 0xFF;
     eventData.at(8) = 0xFF;
 
     switch (eventType)
     {
         case EVENT_RESET:
-            eventData.at(6) = 0x2;
+            eventData.at(6) = 0x2;  // Reset Button pressed
         break;
 
         case EVENT_POWER_ON:
-            eventData.at(6) = 0x0;
+            eventData.at(6) = 0x0;  // Power Button pressed
         break;
 
         case EVENT_POWER_OFF:
-            eventData.at(6) = 0x0;
+            eventData.at(6) = 0x0;  // Power Button pressed
         break;
-/*
+
         case EVENT_POWER_FORCE:
-            dbusPath = sensorAcpiPath;
-            eventData[0] = 0xA;
+            eventData.at(3) = 0x22;  // Sensor Type: System ACPI Power State
+            eventData.at(4) = 0xd4;  // ACPI Power State
+            eventData.at(6) = 0x0a;  // 0Ah - S5 entered by override
         break;
-*/
+
         default:
         break;
     }

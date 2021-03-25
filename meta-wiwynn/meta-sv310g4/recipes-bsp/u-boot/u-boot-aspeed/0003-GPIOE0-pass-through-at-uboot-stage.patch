@@ -1,0 +1,52 @@
+From 815243496a75b0ba855a985b0037c7041bf307bc Mon Sep 17 00:00:00 2001
+From: "Shao-Yu, Wang" <shaw_wang@wiwynn.com>
+Date: Tue, 9 Mar 2021 10:33:01 +0800
+Subject: [PATCH] GPIOE0 pass through at uboot stage
+
+---
+ board/aspeed/ast-g5/ast-g5.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/board/aspeed/ast-g5/ast-g5.c b/board/aspeed/ast-g5/ast-g5.c
+index 09f296cdda..42828d28bf 100755
+--- a/board/aspeed/ast-g5/ast-g5.c
++++ b/board/aspeed/ast-g5/ast-g5.c
+@@ -20,6 +20,7 @@ DECLARE_GLOBAL_DATA_PTR;
+ #define HW_STRAP_REG		0x1e6e2070
+ #define HW_STRAP_CLR_REG	0x1e6e207c
+ #define HW_STRAP_Bit19_CLR	0x80000
++#define MULTI_FUNC_PIN_CTL4 0x8c
+ 
+ void Unlock_SCU()
+ {
+@@ -54,6 +55,19 @@ void Set_Default_UART_Route(void)
+     *(volatile ulong *)(0x1E78909C) = 0x01A00000;
+ }
+ 
++void Set_GPIOE0_Passthru_to_GPIOE1()
++{
++    ulong reg_addr = 0;
++    ulong temp = 0;
++
++    // Modify bypass
++    reg_addr = SCU_REG_BASE + MULTI_FUNC_PIN_CTL4;
++    temp = *((volatile ulong *) reg_addr);
++    temp |= 0x00001000;
++    *((volatile ulong *) reg_addr) = temp;
++
++}
++
+ int board_init(void)
+ {
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+@@ -62,6 +76,7 @@ int board_init(void)
+ 	Unlock_SCU();
+ 	Clear_HW_Strap_Bit19();
+ 	Set_Default_UART_Route();
++	Set_GPIOE0_Passthru_to_GPIOE1();
+ 
+ 	return 0;
+ }
+-- 
+2.17.1
+

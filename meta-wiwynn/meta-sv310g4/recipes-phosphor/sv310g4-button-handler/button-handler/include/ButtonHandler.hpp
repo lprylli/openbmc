@@ -64,13 +64,14 @@ class ButtonObject
     ButtonObject(boost::asio::io_service& io,
                     std::shared_ptr<sdbusplus::asio::connection>& conn,
                     gpiod_line* line, gpiod_line_request_config& config,
-                    std::string sensorName);
+                    std::string sensorName, int gpioOutputNumber);
     ~ButtonObject();
 
     private:
         gpiod_line* gpioLine;
         gpiod_line_request_config gpioConfig;
         std::string sensorName;
+        int gpioOutputNumber;
         boost::asio::posix::stream_descriptor gpioEventDescriptor;
         std::shared_ptr<sdbusplus::asio::connection>& conn;
         boost::asio::steady_timer waitTimer;

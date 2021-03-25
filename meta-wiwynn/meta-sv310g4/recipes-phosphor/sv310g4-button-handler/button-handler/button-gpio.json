@@ -1,12 +1,14 @@
 [
     {
         "Name": "POWER_BUTTON",
-        "GpioNum": 34,
+        "GpioInputNum": 34,
+        "GpioOutputNum": 202,
         "EventMon": "BOTH"
     },
     {
         "Name": "RESET_BUTTON",
-        "GpioNum": 32,
-        "EventMon": "FALLING"    
+        "GpioInputNum": 32,
+        "GpioOutputNum": 33,
+        "EventMon": "BOTH"
     }
 ]

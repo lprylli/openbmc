@@ -145,9 +145,10 @@ bool createButtonObjects(
     while(!data[idx].is_null())
     {
         if(!data[idx]["Name"].is_null() &&
-           !data[idx]["GpioNum"].is_null())
+           !data[idx]["GpioInputNum"].is_null())
         {
-            int gpioNumber = static_cast<int>(data[idx]["GpioNum"]);
+            int gpioInputNumber = static_cast<int>(data[idx]["GpioInputNum"]);
+            int gpioOutputNumber = static_cast<int>(data[idx]["GpioOutputNum"]);
             std::string sensorName = data[idx]["Name"];
             std::string triggerType("BOTH");
             
@@ -157,18 +158,19 @@ bool createButtonObjects(
             }
 
             gpiod_line* line = nullptr;
+            const char * sName = sensorName.c_str();
             struct gpiod_line_request_config config
             {
-                "power-button-event", GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES, 0
+                sName, GPIOD_LINE_REQUEST_EVENT_BOTH_EDGES, 0
             };
 
-            line = gpiod_line_get("0", gpioNumber);
+            line = gpiod_line_get("0", gpioInputNumber);
             auto findEvent = polarityMap.find(triggerType);
             if (findEvent != polarityMap.end())
             {
                 config.request_type = findEvent->second;
             }
-            btnObjs.push_back(std::make_unique<ButtonObject>( io, conn, line, config, sensorName));
+            btnObjs.push_back(std::make_unique<ButtonObject>( io, conn, line, config, sensorName, gpioOutputNumber));
         }
         idx++;
     }
