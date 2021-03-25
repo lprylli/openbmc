@@ -1,0 +1,25 @@
+From cee3d7ffe8ab48a90e5f40cd4b8b9f4d2f94113a Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Wed, 24 Mar 2021 22:18:02 +0800
+Subject: [PATCH] Add StartLimitBurst to phosphor-reset-host-reboot-attempts
+ service
+
+---
+ service_files/phosphor-reset-host-reboot-attempts@.service | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/service_files/phosphor-reset-host-reboot-attempts@.service b/service_files/phosphor-reset-host-reboot-attempts@.service
+index 35de430..72dd4c9 100644
+--- a/service_files/phosphor-reset-host-reboot-attempts@.service
++++ b/service_files/phosphor-reset-host-reboot-attempts@.service
+@@ -7,6 +7,7 @@ ConditionPathExists=!/run/openbmc/host@%i-on
+ [Service]
+ Restart=no
+ Type=oneshot
++StartLimitBurst=7
+ ExecStart=/bin/sh -c "busctl set-property `mapper get-service /xyz/openbmc_project/state/host%i` /xyz/openbmc_project/state/host%i xyz.openbmc_project.Control.Boot.RebootAttempts AttemptsLeft u 3"
+ 
+ [Install]
+-- 
+2.17.1
+

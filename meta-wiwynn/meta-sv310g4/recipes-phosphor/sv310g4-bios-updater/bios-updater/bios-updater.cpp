@@ -235,7 +235,7 @@ int8_t BiosUpdateManager::biosUpdatePwrCtl(uint8_t state)
             request = State::Host::Transition::Off;
             break;
         case on:
-            interval = 5;
+            interval = 12;
             request = State::Host::Transition::On;
             break;
         default:
