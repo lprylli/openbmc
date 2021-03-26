@@ -27,5 +27,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_c600g5 +=   " c600g5-gpio-init \
                                               ipmitool \
                                               xinetd \
                                               netkit-telnet \
+					      cpldupdate-i2c \
                                             "
 
