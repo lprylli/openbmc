@@ -1,0 +1,312 @@
+From 32637e152c54900f2d480d9c3747b5063e07d533 Mon Sep 17 00:00:00 2001
+From: James Chang <Chang.JamesWC@inventec.com>
+Date: Fri, 26 Mar 2021 12:58:37 +0800
+Subject: [PATCH] Implement fan and PSU present sensor
+
+---
+ include/NVMESensor.hpp |   7 +-
+ src/NVMESensor.cpp     | 219 +++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 216 insertions(+), 10 deletions(-)
+
+diff --git a/include/NVMESensor.hpp b/include/NVMESensor.hpp
+index 3e01f67..0759e89 100644
+--- a/include/NVMESensor.hpp
++++ b/include/NVMESensor.hpp
+@@ -50,8 +50,11 @@ private:
+     uint8_t busId;
+     float senValue;
+     thresholds::ThresholdTimer thresholdTimer;
+-    void setupRead(void);
+-    bool visitNVMEReg(void);
++    void setupRead(const std::shared_ptr<sdbusplus::asio::connection>& conn);
++    bool visitNVMEReg(const std::shared_ptr<sdbusplus::asio::connection>& conn);
++    bool getFanPresentReg(const std::shared_ptr<sdbusplus::asio::connection>& conn);
++    bool getPSUPresentReg(const std::shared_ptr<sdbusplus::asio::connection>& conn);
++    bool addSEL(const std::shared_ptr<sdbusplus::asio::connection>& conn, char fanNum, char selType, char senType, char entType, char entData1);
+     int32_t ConvertToRealTemp(uint8_t rawValue, int8_t *realValue);
+     void handleResponse(void);
+     void checkThresholds(void) override;
+diff --git a/src/NVMESensor.cpp b/src/NVMESensor.cpp
+index 40db1f9..c5d36ce 100644
+--- a/src/NVMESensor.cpp
++++ b/src/NVMESensor.cpp
+@@ -10,13 +10,13 @@
+ #include <sdbusplus/asio/object_server.hpp>
+ #include <string>
+ 
++
+ static constexpr bool DEBUG = false;
+ static constexpr const char* sensorPathPrefix = "/xyz/openbmc_project/sensors/";
+ 
+ static constexpr unsigned int sensorPollMs = 1000;
+ static constexpr unsigned int sensorScaleFactor = 1000;
+ static constexpr size_t warnAfterErrorCount = 10;
+-
+ NVMESensor::NVMESensor(const std::string& path, const std::string& objectType,
+                        sdbusplus::asio::object_server& objectServer,
+                        std::shared_ptr<sdbusplus::asio::connection>& conn,
+@@ -34,7 +34,6 @@ NVMESensor::NVMESensor(const std::string& path, const std::string& objectType,
+     sensorUnit(sensorUnit), thresholdTimer(io, this)
+ {
+     std::string dbusPath = sensorPathPrefix + sensorTypeName + name;
+-
+     nvme_status = NVME_REPORTED_IN_RANGE;
+ 
+     sensorInterface = objectServer.add_interface(
+@@ -55,7 +54,7 @@ NVMESensor::NVMESensor(const std::string& path, const std::string& objectType,
+ 
+     setInitialProperties(conn);
+     setupPowerMatch(conn);
+-    setupRead();
++    setupRead(conn);
+ }
+ 
+ NVMESensor::~NVMESensor()
+@@ -68,23 +67,23 @@ NVMESensor::~NVMESensor()
+     objServer.remove_interface(association);
+ }
+ 
+-void NVMESensor::setupRead(void)
++void NVMESensor::setupRead(const std::shared_ptr<sdbusplus::asio::connection>& conn)
+ {
+-    bool res = visitNVMEReg();
++    bool res = visitNVMEReg(conn);
+     if (!res) {
+         incrementError();
+     }
+     else {
+         handleResponse();
+     }
+-
++    //std::cerr << "[IKL] >> setupRead\n";
+     waitTimer.expires_from_now(boost::asio::chrono::milliseconds(sensorPollMs));
+     waitTimer.async_wait([&](const boost::system::error_code & ec) {
+         if (ec == boost::asio::error::operation_aborted)
+         {
+             return; // we're being canceled
+         }
+-        setupRead();
++        setupRead(conn);
+     });
+ }
+ 
+@@ -136,7 +135,205 @@ int32_t NVMESensor::ConvertToRealTemp(uint8_t rawValue, int8_t *realValue)
+     }
+ }
+ 
+-bool NVMESensor::visitNVMEReg(void)
++static constexpr auto ipmiSelService = "xyz.openbmc_project.Logging.IPMI";
++static constexpr auto ipmiSelPath = "/xyz/openbmc_project/Logging/IPMI";
++static constexpr auto ipmiSelInterface = "xyz.openbmc_project.Logging.IPMI";
++
++#define CPLD_KERNEL_I2C_BUS 14
++#define CPLD_SLAVE_ADDRESS 0x7D
++#define FAN_PRESENT_OFFSET 0x40
++#define FAN1_SENSOR_NUMBER 0x6C
++#define PSU_PRESENT_OFFSET 0x31
++#define PSU1_SENSOR_NUMBER 0x72
++#define SEL_ASSERT 0x00
++#define SEL_DEASSERT 0x01
++static char fanRecord = 0;          //fan present assert record
++static char psuRecord = 0x00;       //psu present assert record
++bool NVMESensor::addSEL(const std::shared_ptr<sdbusplus::asio::connection>& conn,
++                        char fanNum, char selType, char senType, char entType, char entData1)
++{
++    uint16_t generatorID;
++    char evmRev,sensorType,sensorNum,eventType,eventData1,eventData2,eventData3,recordType;
++
++    if(selType == SEL_ASSERT)
++    {
++        generatorID = 0x20;
++        evmRev = 0x04;
++        sensorType = senType;
++        sensorNum = fanNum;
++        eventType = entType;
++        eventData1 = entData1;
++        eventData2 = 0xff;
++        eventData3 = 0xff;
++        recordType = 0x02;
++    }
++    else
++    {
++        generatorID = 0x20;
++        evmRev = 0x04;
++        sensorType = senType;
++        sensorNum = fanNum;
++        eventType = entType | 0x80;
++        eventData1 = entData1;
++        eventData2 = 0xff;
++        eventData3 = 0xff;
++        recordType = 0x02;
++    }
++    
++    std::vector<uint8_t> eventData(9, 0xFF);
++
++    eventData[0] = generatorID;
++    eventData[1] = generatorID >> 8;
++    eventData[2] = evmRev;
++    eventData[3] = sensorType;
++    eventData[4] = sensorNum;
++    eventData[5] = eventType;
++    eventData[6] = eventData1;
++    eventData[7] = eventData2;
++    eventData[8] = eventData3;
++            
++    auto writeSEL = conn->new_method_call(ipmiSelService, ipmiSelPath,ipmiSelInterface, "IpmiSelAddOem");
++    writeSEL.append("IPMI SEL Add Oem", eventData, (uint8_t)recordType);
++
++    uint16_t responseID = 0xFFFF;
++    try
++    {
++        auto ret = conn->call(writeSEL);
++        ret.read(responseID);
++    }
++    catch (sdbusplus::exception_t& e)
++    {
++        std::cerr << "Failed to call IpmiSelAddOem failed\n";
++    }
++    
++    return true;
++}
++
++bool NVMESensor::getFanPresentReg(const std::shared_ptr<sdbusplus::asio::connection>& conn)
++{
++    int fd = -1;
++    int res = -1;
++    std::vector<char> filename;
++    filename.assign(20, 0);
++
++    char temp,filterBit,i;
++    
++    fd = open_i2c_dev(CPLD_KERNEL_I2C_BUS, filename.data(), filename.size(), 0);
++    if (fd < 0)
++    {
++        std::cerr << "Fail to open I2C device for CPLD: " << path << "\n";
++        return false;
++    }
++
++    std::vector<uint8_t> cmdData;
++    cmdData.assign(1, FAN_PRESENT_OFFSET);
++    std::vector<uint8_t> readBuf;
++    readBuf.assign(1, 0x0);
++    res = i2c_master_write_read(fd, CPLD_SLAVE_ADDRESS, cmdData.size(), cmdData.data(),
++                                readBuf.size(), readBuf.data());
++    if (res < 0)
++    {
++        if (DEBUG)
++        {
++            std::cerr << "Path: " << path
++                      << ", Addr: " << CPLD_SLAVE_ADDRESS << "\n";
++        }
++        close_i2c_dev(fd);
++        return false;
++    }
++    uint8_t raw_value = readBuf.at(0);
++    close_i2c_dev(fd);
++    
++    filterBit = 0x01;
++    
++    for (i = 0 ; i < 6 ; i++)
++    {
++        temp = raw_value & filterBit;
++        //std::cerr << "For loop filterBit = 0x" << std::hex << (int)filterBit << "  temp = 0x" <<  (int)temp << "  fanRecord = 0x" <<  (int)fanRecord << "\n";
++        
++        if ((fanRecord & filterBit) != temp)    //Fan present change
++        {
++            if (temp > 0)
++            {
++                addSEL(conn, FAN1_SENSOR_NUMBER+i, SEL_ASSERT, 0x04, 0x08, 0x00);
++                fanRecord += temp;
++            }
++            else
++            {
++                addSEL(conn, FAN1_SENSOR_NUMBER+i, SEL_DEASSERT, 0x04, 0x08, 0x00);
++                fanRecord -= filterBit;
++            }
++        }
++
++        filterBit *= 2;
++    }
++    
++    return true;
++}
++
++bool NVMESensor::getPSUPresentReg(const std::shared_ptr<sdbusplus::asio::connection>& conn)
++{
++    int fd = -1;
++    int res = -1;
++    std::vector<char> filename;
++    filename.assign(20, 0);
++
++    char temp,filterBit,i;
++    
++    fd = open_i2c_dev(CPLD_KERNEL_I2C_BUS, filename.data(), filename.size(), 0);
++    if (fd < 0)
++    {
++        std::cerr << "Fail to open I2C device for CPLD: " << path << "\n";
++        return false;
++    }
++
++    std::vector<uint8_t> cmdData;
++    cmdData.assign(1, PSU_PRESENT_OFFSET);
++    std::vector<uint8_t> readBuf;
++    readBuf.assign(1, 0x0);
++    res = i2c_master_write_read(fd, CPLD_SLAVE_ADDRESS, cmdData.size(), cmdData.data(),
++                                readBuf.size(), readBuf.data());
++    if (res < 0)
++    {
++        if (DEBUG)
++        {
++            std::cerr << "Path: " << path
++                      << ", Addr: " << CPLD_SLAVE_ADDRESS << "\n";
++        }
++        close_i2c_dev(fd);
++        return false;
++    }
++    uint8_t raw_value = readBuf.at(0);
++    close_i2c_dev(fd);
++    
++    filterBit = 0x10;
++    
++    for (i = 0 ; i < 2 ; i++)
++    {
++        temp = raw_value & filterBit;
++        //std::cerr << "For loop filterBit = 0x" << std::hex << (int)filterBit << "  temp = 0x" <<  (int)temp << "  psuRecord = 0x" <<  (int)psuRecord << "\n";
++        
++        if ((psuRecord & filterBit) != temp)    //PSU present change
++        {
++            if (temp > 0)
++            {
++                addSEL(conn, PSU1_SENSOR_NUMBER+i, SEL_DEASSERT, 0x08, 0x6f, 0x00);
++                psuRecord += temp;
++            }
++            else
++            {
++                addSEL(conn, PSU1_SENSOR_NUMBER+i, SEL_ASSERT, 0x08, 0x6f, 0x00);
++                psuRecord -= filterBit;
++            }
++        }
++        
++        filterBit *= 2;
++    }
++    
++    return true;
++}
++
++bool NVMESensor::visitNVMEReg(const std::shared_ptr<sdbusplus::asio::connection>& conn)
+ {
+     int fd = -1;
+     int res = -1;
+@@ -151,6 +348,12 @@ bool NVMESensor::visitNVMEReg(void)
+             return false;
+         }
+ 
++        if ((int)busId == 17)
++        {
++            getFanPresentReg(conn);
++            getPSUPresentReg(conn);
++        }
++            
+         fd = open_i2c_dev(busId, filename.data(), filename.size(), 0);
+         if (fd < 0)
+         {

@@ -16,6 +16,7 @@ SRC_URI += "  file://0001-PATCH-Add-to-support-CPU-and-DIMM-sensors.patch \
               file://0013-Implement-P5V_STBY-sensor.patch \
               file://0014-Implement-event-sensor-for-log-BMC-events.patch \
               file://0015-Implement-BMC-Kernel-Panic-in-SEL-description.patch \
+              file://0016-Implement-fan-and-PSU-present-sensor.patch \
             "
 DEPENDS += "obmc-libi2c \
             obmc-libmisc \
