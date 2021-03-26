@@ -2434,7 +2434,7 @@
     sensorType: 0x03
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/current/CPU0_VccIN_IOUT
-    multiplierM: 0xBC
+    multiplierM: 0x22
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -2461,7 +2461,7 @@
     sensorType: 0x08
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/power/CPU0_VccIN_PIN
-    multiplierM: 0x29
+    multiplierM: 0x45
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -2488,7 +2488,7 @@
     sensorType: 0x08
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/power/CPU0_VccIN_POUT
-    multiplierM: 0x29
+    multiplierM: 0x45
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -2839,7 +2839,7 @@
     sensorType: 0x03
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/current/CPU1_VccIN_IOUT
-    multiplierM: 0xBC
+    multiplierM: 0x22
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -2866,7 +2866,7 @@
     sensorType: 0x08
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/power/CPU1_VccIN_PIN
-    multiplierM: 0x29
+    multiplierM: 0x45
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)
@@ -2893,7 +2893,7 @@
     sensorType: 0x08
     sensorReadingType: 0x01
     path: /xyz/openbmc_project/sensors/power/CPU1_VccIN_POUT
-    multiplierM: 0x29
+    multiplierM: 0x45
     offsetB: 0
     bExp: 0
     # Result exponent field in Type 1 SDR(2's complement, signed)

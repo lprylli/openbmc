@@ -1,0 +1,150 @@
+From dd362d476b919d2efaccad1f621babd901be0a6a Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Thu, 25 Mar 2021 23:40:18 +0800
+Subject: [PATCH] Add check-Thresholds-Power-Delay to fan sensor
+
+---
+ include/TachSensor.hpp |  2 ++
+ include/Thresholds.hpp |  2 +-
+ src/TachSensor.cpp     | 42 +++++++++++++++++++++++++++++++++++-------
+ src/Thresholds.cpp     | 16 ++++++++++++++++
+ 4 files changed, 54 insertions(+), 8 deletions(-)
+
+diff --git a/include/TachSensor.hpp b/include/TachSensor.hpp
+index 1e5347f..8be0980 100644
+--- a/include/TachSensor.hpp
++++ b/include/TachSensor.hpp
+@@ -90,9 +90,11 @@ class TachSensor : public Sensor
+     std::optional<std::string> led;
+     bool ledState = false;
+     size_t errCount;
++    size_t errCount2;
+     void setupRead(void);
+     void handleResponse(const boost::system::error_code& err);
+     void checkThresholds(void) override;
++    thresholds::ThresholdTimer thresholdTimer;
+ };
+ 
+ inline void logFanInserted(const std::string& device)
+diff --git a/include/Thresholds.hpp b/include/Thresholds.hpp
+index ca2b0a0..f72947b 100644
+--- a/include/Thresholds.hpp
++++ b/include/Thresholds.hpp
+@@ -174,5 +174,5 @@ void updateThresholds(Sensor* sensor);
+ // returns false if a critical threshold has been crossed, true otherwise
+ bool checkThresholds(Sensor* sensor);
+ void checkThresholdsPowerDelay(Sensor* sensor, ThresholdTimer& thresholdTimer);
+-
++bool checkThresholdsNoChangeStatus(Sensor* sensor);
+ } // namespace thresholds
+diff --git a/src/TachSensor.cpp b/src/TachSensor.cpp
+index 5a4c4d6..8b438d9 100644
+--- a/src/TachSensor.cpp
++++ b/src/TachSensor.cpp
+@@ -40,7 +40,7 @@
+ #include <vector>
+ 
+ static constexpr unsigned int pwmPollMs = 1000;
+-static constexpr size_t warnAfterErrorCount = 10;
++static constexpr size_t warnAfterErrorCount = 5;
+ 
+ TachSensor::TachSensor(const std::string& path, const std::string& objectType,
+                        sdbusplus::asio::object_server& objectServer,
+@@ -59,7 +59,7 @@ TachSensor::TachSensor(const std::string& path, const std::string& objectType,
+     objServer(objectServer), redundancy(redundancy),
+     presence(std::move(presenceSensor)),
+     inputDev(io, open(path.c_str(), O_RDONLY)), waitTimer(io), path(path),
+-    led(ledIn)
++    led(ledIn),thresholdTimer(io, this), errCount2(0)
+ {
+     sensorInterface = objectServer.add_interface(
+         "/xyz/openbmc_project/sensors/fan_tach/" + name,
+@@ -154,17 +154,37 @@ void TachSensor::handleResponse(const boost::system::error_code& err)
+                 rawValue = std::stod(response);
+                 responseStream.clear();
+                 updateValue(rawValue);
++                errCount2 = 0;
+             }
+             catch (const std::invalid_argument&)
+             {
+-                incrementError();
+-                pollTime = sensorFailedPollTimeMs;
++                errCount2++;
++                // incrementError();
++                // pollTime = sensorFailedPollTimeMs;
+             }
+         }
+         else
+         {
+-            incrementError();
+-            pollTime = sensorFailedPollTimeMs;
++            if (!readingStateGood())
++            {
++                incrementError();
++                pollTime = sensorFailedPollTimeMs;
++                errCount2 = 0;
++            }
++            else
++            {
++                errCount2++;
++            }
++
++            if (errCount2 >= warnAfterErrorCount)
++            {
++                if (errCount2 == warnAfterErrorCount)
++                {
++                    std::cerr << "Failure to read sensor " << name << " at " << path
++                            << " ec:" << err << "\n";
++                }
++                updateValue(0);
++            }
+         }
+     }
+     responseStream.clear();
+@@ -187,7 +207,15 @@ void TachSensor::handleResponse(const boost::system::error_code& err)
+ 
+ void TachSensor::checkThresholds(void)
+ {
+-    bool status = thresholds::checkThresholds(this);
++    if (!readingStateGood())
++    {
++        errCount2 = 0;
++        return;
++    }
++
++    thresholds::checkThresholdsPowerDelay(this, thresholdTimer);
++    
++    bool status = thresholds::checkThresholdsNoChangeStatus(this);
+ 
+     if (redundancy && *redundancy)
+     {
+diff --git a/src/Thresholds.cpp b/src/Thresholds.cpp
+index f4d4ed0..00dfd68 100644
+--- a/src/Thresholds.cpp
++++ b/src/Thresholds.cpp
+@@ -358,6 +358,22 @@ bool checkThresholds(Sensor* sensor)
+     return status;
+ }
+ 
++bool checkThresholdsNoChangeStatus(Sensor* sensor)
++{
++    bool status = true;
++    std::vector<ChangeParam> changes = checkThresholds(sensor, sensor->value);
++    for (const auto& change : changes)
++    {
++        if (change.threshold.level == thresholds::Level::CRITICAL &&
++            change.asserted)
++        {
++            status = false;
++        }
++    }
++    
++    return status;
++}
++
+ void checkThresholdsPowerDelay(Sensor* sensor, ThresholdTimer& thresholdTimer)
+ {
+ 
+-- 
+2.17.1
+
