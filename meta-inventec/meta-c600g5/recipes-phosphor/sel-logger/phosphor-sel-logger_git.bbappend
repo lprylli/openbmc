@@ -9,4 +9,5 @@ EXTRA_OECMAKE += "-DALMOST_FULL_PERCENTAGE=75"
 
 SRC_URI += " file://0001-Use-sensor-yaml-MBR-in-threshold-event-sel.patch \
              file://0002-Support-to-reset-SEL-ID-after-clear-list.patch \
+             file://0003-Implement-to-sync-BMC-system-time-with-ME.patch \
            "
