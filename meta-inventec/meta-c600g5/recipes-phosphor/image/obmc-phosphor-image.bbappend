@@ -8,7 +8,7 @@ OBMC_IMAGE_EXTRA_INSTALL_append_c600g5 +=   " c600g5-gpio-init \
 					      c600g5-powerctrl \
                                               c600g5-gpio-monitor-register \
                                               c600g5-ipmi-oem \
-					      common-service-oem \
+					      c600g5-service-oem \
 					      c600g5-bmc-update-sel \
 					      common-ipmi-oem \
 					      entity-manager \

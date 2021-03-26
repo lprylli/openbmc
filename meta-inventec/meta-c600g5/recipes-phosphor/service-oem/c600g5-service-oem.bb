@@ -10,14 +10,14 @@ DEPENDS += "systemd"
 RDEPENDS_${PN} += "bash"
 
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} += "common-bmcenv-init.service"
+SYSTEMD_SERVICE_${PN} += "bmcenv-init.service"
 
 S = "${WORKDIR}"
-SRC_URI = "file://common-bmcenv-init.sh \
-           file://common-bmcenv-init.service \
+SRC_URI = "file://bmcenv-init.sh \
+           file://bmcenv-init.service \
           "
 
 do_install() {
     install -d ${D}${sbindir}
-    install -m 0755 ${S}/common-bmcenv-init.sh ${D}${sbindir}/
+    install -m 0755 ${S}/bmcenv-init.sh ${D}${sbindir}/
 }

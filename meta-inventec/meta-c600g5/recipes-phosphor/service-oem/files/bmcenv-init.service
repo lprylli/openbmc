@@ -1,13 +1,13 @@
 [Unit]
-Description=Common BMC Environment Initialization
+Description=C600G5 BMC Environment Initialization
 Before=phosphor-discover-system-state@0.service
 After=xyz.openbmc_project.Logging.IPMI.service
 Before=xyz.openbmc_project.FruDevice.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/sbin/common-bmcenv-init.sh
-SyslogIdentifier=common-bmcenv-init
+ExecStart=/usr/sbin/bmcenv-init.sh
+SyslogIdentifier=bmcenv-init
 
 [Install]
 WantedBy=sysinit.target
