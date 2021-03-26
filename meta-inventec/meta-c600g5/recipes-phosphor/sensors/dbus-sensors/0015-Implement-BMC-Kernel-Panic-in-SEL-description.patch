@@ -1,0 +1,23 @@
+From 1b63c4deef11a89c1ec47d02acc2531f8bcea16d Mon Sep 17 00:00:00 2001
+From: James Chang <Chang.JamesWC@inventec.com>
+Date: Fri, 26 Mar 2021 11:06:57 +0800
+Subject: [PATCH] Implement "BMC Kernel Panic" in SEL description
+
+---
+ src/EventSensor.cpp | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/EventSensor.cpp b/src/EventSensor.cpp
+index fbf1c66..56041fb 100644
+--- a/src/EventSensor.cpp
++++ b/src/EventSensor.cpp
+@@ -123,6 +123,9 @@ void EventOnlySensor::bmcRebootEventLog(
+             // SRAM content clear
+             write_register(sRAMReg, 0x0);
+             write_register(sRAMReg + 4, 0x0);
++
++            // Set BMC_Kernel_Panic path
++            dbusPath = "/xyz/openbmc_project/sensors/mgmtsystemhealth/BMC_Kernel_Panic";
+         }
+         else
+         {

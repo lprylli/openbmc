@@ -9,6 +9,7 @@ SRC_URI += "file://c600g5.cfg \
             file://0005-Export-all-DIMMs-during-initialization.patch \
 	    file://0006-Read-BMC-MAC-address-from-EEPROM.patch \
             file://0007-Add-I2C-IPMB-support.patch \
+            file://0008-write-SRAM-panic-words-to-record-kernel-panic.patch \
            "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"

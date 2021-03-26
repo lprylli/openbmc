@@ -14,6 +14,8 @@ SRC_URI += "  file://0001-PATCH-Add-to-support-CPU-and-DIMM-sensors.patch \
               file://0011-Support-temp-n-reading-and-threshold-setting.patch \
               file://0012-Implement-NIC-card-temperature-with-MCTP-over-I2C.patch \
               file://0013-Implement-P5V_STBY-sensor.patch \
+              file://0014-Implement-event-sensor-for-log-BMC-events.patch \
+              file://0015-Implement-BMC-Kernel-Panic-in-SEL-description.patch \
             "
 DEPENDS += "obmc-libi2c \
             obmc-libmisc \
@@ -28,6 +30,7 @@ SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.nicsensor.service"
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.nvmesensor.service"
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.i2cdevsensor.service"
 SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.adci2csensor.service"
+SYSTEMD_SERVICE_${PN} += "xyz.openbmc_project.eventsensor.service"
 
 # Disable the CPU sensor Tcontrol threshold setting
 EXTRA_OECMAKE_append += " -DBMC_CPU_SENSOR_TCONTROL=OFF"

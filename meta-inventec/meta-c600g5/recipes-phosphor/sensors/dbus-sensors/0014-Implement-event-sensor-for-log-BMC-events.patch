@@ -1,0 +1,361 @@
+From 504a75f9720b133436ba8cfdcf81633522fea40e Mon Sep 17 00:00:00 2001
+From: James Chang <Chang.JamesWC@inventec.com>
+Date: Thu, 25 Mar 2021 16:51:47 +0800
+Subject: [PATCH] Implement event sensor for log BMC reset and internal error
+
+---
+ CMakeLists.txt                                |  18 +++
+ include/EventSensor.hpp                       |  56 +++++++
+ .../xyz.openbmc_project.eventsensor.service   |  15 ++
+ src/EventSensor.cpp                           | 151 ++++++++++++++++++
+ src/EventSensorMain.cpp                       |  44 +++++
+ 5 files changed, 284 insertions(+)
+ create mode 100644 include/EventSensor.hpp
+ create mode 100644 service_files/xyz.openbmc_project.eventsensor.service
+ create mode 100644 src/EventSensor.cpp
+ create mode 100644 src/EventSensorMain.cpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ce410f..7a2ed92 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -51,6 +51,7 @@ option (DISABLE_NIC "Disable installing NIC sensor" OFF)
+ option (DISABLE_I2CDEV "Disable installing I2CDEV sensor" OFF)
+ option (BMC_CPU_SENSOR_TCONTROL "Enable Tcontrol Threshold setting" ON)
+ option (DISABLE_ADCI2C "Disable installing ADCI2C sensor" OFF)
++option (DISABLE_EVENT "Disable installing EVENT sensor" OFF)
+ 
+ include ("cmake/HunterGate.cmake")
+ 
+@@ -90,6 +91,8 @@ set (I2CDEV_SRC_FILES src/Utils.cpp src/I2CDEVSensor.cpp src/Thresholds.cpp)
+ 
+ set (ADCI2C_SRC_FILES src/Utils.cpp src/ADCI2CSensor.cpp src/Thresholds.cpp)
+ 
++set (EVENT_SRC_FILES src/Utils.cpp src/EventSensor.cpp)
++
+ set (EXTERNAL_PACKAGES Boost sdbusplus-project nlohmann-json)
+ set (SENSOR_LINK_LIBS -lsystemd -lobmci2c -lobmcmisc stdc++fs sdbusplus)
+ 
+@@ -242,6 +245,12 @@ if (NOT DISABLE_ADCI2C)
+     target_link_libraries (adci2csensor ${SENSOR_LINK_LIBS})
+ endif()
+ 
++if (NOT DISABLE_EVENT)
++add_executable (eventsensor src/EventSensorMain.cpp ${EVENT_SRC_FILES})
++add_dependencies (eventsensor sdbusplus-project)
++target_link_libraries (eventsensor ${SENSOR_LINK_LIBS} pthread)
++endif()
++
+ if (NOT YOCTO)
+     add_dependencies (adcsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (cpusensor ${EXTERNAL_PACKAGES})
+@@ -256,6 +265,7 @@ if (NOT YOCTO)
+     add_dependencies (nvmesensor ${EXTERNAL_PACKAGES})
+     add_dependencies (i2cdevsensor ${EXTERNAL_PACKAGES})
+     add_dependencies (adci2csensor ${EXTERNAL_PACKAGES})
++    add_dependencies (eventsensor ${EXTERNAL_PACKAGES})
+ endif ()
+ 
+ set (SERVICE_FILE_SRC_DIR ${PROJECT_SOURCE_DIR}/service_files)
+@@ -368,3 +378,11 @@ if (NOT DISABLE_ADCI2C)
+ 	         ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.adci2csensor.service
+                  DESTINATION ${SERVICE_FILE_INSTALL_DIR})
+ endif ()
++
++if (NOT DISABLE_EVENT)
++    install (TARGETS eventsensor DESTINATION bin)
++    install (FILES
++            ${SERVICE_FILE_SRC_DIR}/xyz.openbmc_project.eventsensor.service
++            DESTINATION ${SERVICE_FILE_INSTALL_DIR})
++endif ()
++
+diff --git a/include/EventSensor.hpp b/include/EventSensor.hpp
+new file mode 100644
+index 0000000..0c1139d
+--- /dev/null
++++ b/include/EventSensor.hpp
+@@ -0,0 +1,56 @@
++#pragma once
++
++#include <unistd.h>
++#include <variant>
++#include <iostream>
++#include <systemd/sd-journal.h>
++#include <sdbusplus/asio/object_server.hpp>
++#include <boost/asio/io_service.hpp>
++
++static constexpr char const *ipmiSelService = "xyz.openbmc_project.Logging.IPMI";
++static constexpr char const *ipmiSelPath = "/xyz/openbmc_project/Logging/IPMI";
++static constexpr char const *ipmiSelAddInterface = "xyz.openbmc_project.Logging.IPMI";
++static const std::string ipmiSelAddMessage = "SEL Entry";
++
++static const std::string sensorPathPrefix = "/xyz/openbmc_project/sensors/";
++
++static const uint8_t peciCmdCCPass = 0x40;
++static const uint32_t maskIerr = 0x48000000;
++static const uint32_t maskMsmiIerr = 0x00480000;
++static const uint32_t maskMcerr = 0x24000000;
++static const uint32_t maskMsmiMcerr = 0x00240000;
++
++struct sensorTypeMap
++{
++    std::string sensorName;
++    std::string sensorType;
++};
++
++static const std::vector<struct sensorTypeMap> sensorList = {
++    {.sensorName = "BMC_Reboot", .sensorType = "mgmtsystemhealth/"},
++};
++
++enum class sensorListIdx : uint8_t
++{
++    BMC_Reboot = 0,
++};
++
++class EventOnlySensor
++{
++    public:
++        EventOnlySensor(sdbusplus::asio::object_server& objectServer,
++                        std::shared_ptr<sdbusplus::asio::connection>& conn,
++                        boost::asio::io_service& io, const std::string& sensorType,
++                        const std::string& sensorName);
++        ~EventOnlySensor();
++
++    private:
++        sdbusplus::asio::object_server& objServer;
++        std::string dbusPath;
++        std::shared_ptr<sdbusplus::asio::dbus_interface> sensorInterface;
++        std::shared_ptr<sdbusplus::asio::dbus_interface> senMethodInterface;
++
++        void bmcRebootEventLog(std::shared_ptr<sdbusplus::asio::connection>& conn);
++};
++
++bool isAcpiPowerOn(void);
+diff --git a/service_files/xyz.openbmc_project.eventsensor.service b/service_files/xyz.openbmc_project.eventsensor.service
+new file mode 100644
+index 0000000..46775ab
+--- /dev/null
++++ b/service_files/xyz.openbmc_project.eventsensor.service
+@@ -0,0 +1,15 @@
++[Unit]
++Description=IPMI Event-only Sensor
++StopWhenUnneeded=false
++Wants=com.intel.crashdump.service
++After=com.intel.crashdump.service
++Wants=mapper-wait@-xyz-openbmc_project-Logging-IPMI.service
++After=mapper-wait@-xyz-openbmc_project-Logging-IPMI.service
++
++[Service]
++Restart=always
++RestartSec=5
++ExecStart=/usr/bin/eventsensor
++
++[Install]
++WantedBy=multi-user.target
+diff --git a/src/EventSensor.cpp b/src/EventSensor.cpp
+new file mode 100644
+index 0000000..fbf1c66
+--- /dev/null
++++ b/src/EventSensor.cpp
+@@ -0,0 +1,151 @@
++#include "EventSensor.hpp"
++
++#include <unistd.h>
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <boost/date_time/posix_time/posix_time.hpp>
++#include <iostream>
++#include <limits>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++#include <string>
++#include <openbmc/libmisc.h>
++#include <future>
++#include <systemd/sd-journal.h>
++#include <filesystem>
++
++EventOnlySensor::EventOnlySensor(
++    sdbusplus::asio::object_server& objectServer,
++    std::shared_ptr<sdbusplus::asio::connection>& conn,
++    boost::asio::io_service& io, const std::string& sensorType,
++    const std::string& sensorName):objServer(objectServer)
++{
++    dbusPath = sensorPathPrefix + sensorType + sensorName;
++
++    sensorInterface = objectServer.add_interface(
++        dbusPath, "xyz.openbmc_project.Sensor.Value");
++    
++    double value = 0;
++    sensorInterface->register_property("Value", value);
++
++    if (!sensorInterface->initialize())
++    {
++        std::cerr << "error initializing value interface\n";
++    }
++
++    if (0 == sensorName.compare("BMC_Reboot"))
++    {
++        bmcRebootEventLog(conn);
++    }
++   
++}
++
++EventOnlySensor::~EventOnlySensor()
++{
++    objServer.remove_interface(sensorInterface);
++
++    if(senMethodInterface)
++    {
++        objServer.remove_interface(senMethodInterface);
++    }
++}
++
++/* BMC Reboot SEL Record */
++void EventOnlySensor::bmcRebootEventLog(
++    std::shared_ptr<sdbusplus::asio::connection>& conn)
++{
++    const uint32_t clsToCntValue = 0x76;
++    const uint32_t wdt1ToStusReg = 0x1e785010;
++    const uint32_t wdt2ToStusReg = 0x1e785030;
++    const uint32_t wdt3ToStusReg = 0x1e785050;
++    const uint32_t wdt1ClrToStusReg = 0x1e785014;
++    const uint32_t wdt2ClrToStusReg = 0x1e785034;
++    const uint32_t wdt3ClrToStusReg = 0x1e785054;
++
++    uint32_t regReadValueWDT1 = 0;
++    if (read_register(wdt1ToStusReg, &regReadValueWDT1) < 0)
++    {
++        std::cerr<<"failed to read register WDT10 \n";
++        return;
++    }
++
++    uint32_t regReadValueWDT2 = 0;
++    if (read_register(wdt2ToStusReg, &regReadValueWDT2) < 0)
++    {
++        std::cerr<<"failed to read register WDT30 \n";
++        return;
++    }
++
++    uint32_t regReadValueWDT3 = 0;
++    if (read_register(wdt3ToStusReg, &regReadValueWDT3) < 0)
++    {
++        std::cerr<<"failed to read register WDT50 \n";
++        return;
++    }
++
++    /* BMC reboots */
++    if (((regReadValueWDT1 & 0xFF00) != 0) ||
++        ((regReadValueWDT2 & 0xFF00) != 0) ||
++        ((regReadValueWDT3 & 0xFF00) != 0))
++    {
++        const uint32_t sRAMReg = 0x1e723000;
++        // ASCII pani
++        const uint32_t panicRegValue1 = 0x50414E49;
++        // ASCII c & checksum
++        const uint32_t panicRegValue2 = 0x43950000;
++
++        // Check if it was caused by BMC kernel panic
++        uint32_t sRAM1RegValue = 0;
++        uint32_t sRAM2RegValue = 0;
++
++        if (read_register(sRAMReg, &sRAM1RegValue) < 0)
++        {
++            std::cerr<<"failed to read register SRAM_1 \n";
++        }
++
++        if (read_register(sRAMReg + 4, &sRAM2RegValue) < 0)
++        {
++            std::cerr<<"failed to read register SRAM_2 \n";
++        }
++
++        // SEL Add
++        // Sensor type: Management Subsystem Health (0x28)
++        uint16_t genId = 0x20;
++        std::vector<uint8_t> eventData(3, 0xFF);
++        bool assert = true;
++
++        if (sRAM1RegValue == panicRegValue1 &&
++            sRAM2RegValue == panicRegValue2)
++        {
++            // Sensor specific offset: 01h - controller access degraded or unavailable
++            eventData.at(0) = 0x01;
++
++            // SRAM content clear
++            write_register(sRAMReg, 0x0);
++            write_register(sRAMReg + 4, 0x0);
++        }
++        else
++        {
++            // Sensor specific offset: 02h - management controller off-line
++            eventData.at(0) = 0x02;
++        }
++
++        sdbusplus::message::message writeSEL = conn->new_method_call(
++            ipmiSelService, ipmiSelPath, ipmiSelAddInterface, "IpmiSelAdd");
++        writeSEL.append(ipmiSelAddMessage, dbusPath, eventData, assert, genId);
++
++        try
++        {
++            conn->call_noreply(writeSEL);
++        }
++        catch (sdbusplus::exception_t& e)
++        {
++            std::cerr<<"failed to log BMC Reboot SEL\n";
++        }
++    }
++
++    // WDT event counter clear
++    write_register(wdt1ClrToStusReg, clsToCntValue);
++    write_register(wdt2ClrToStusReg, clsToCntValue);
++    write_register(wdt3ClrToStusReg, clsToCntValue);
++}
+diff --git a/src/EventSensorMain.cpp b/src/EventSensorMain.cpp
+new file mode 100644
+index 0000000..1d730d2
+--- /dev/null
++++ b/src/EventSensorMain.cpp
+@@ -0,0 +1,44 @@
++#include "EventSensor.hpp"
++
++#include <boost/algorithm/string/predicate.hpp>
++#include <boost/algorithm/string/replace.hpp>
++#include <boost/container/flat_set.hpp>
++#include <filesystem>
++#include <fstream>
++#include <regex>
++#include <sdbusplus/asio/connection.hpp>
++#include <sdbusplus/asio/object_server.hpp>
++
++void createEventSensors(
++    boost::asio::io_service& io, sdbusplus::asio::object_server& objectServer,
++    boost::container::flat_map<std::string, std::unique_ptr<EventOnlySensor>>& sensors,
++    std::shared_ptr<sdbusplus::asio::connection>& dbusConnection)
++{
++    std::string sName;
++    std::string sType;
++
++    // for (std::string sensorName : sensorNames)
++    for(int i=0; i<sensorList.size(); i++)
++    {
++        sName = sensorList[i].sensorName;
++        sType = sensorList[i].sensorType;
++
++        sensors[sName] = std::make_unique<EventOnlySensor>(
++            objectServer, dbusConnection, io, sType, sName);
++    }
++}
++
++int main(int argc, char *argv[])
++{
++    boost::asio::io_service io;
++    auto systemBus = std::make_shared<sdbusplus::asio::connection>(io);
++    systemBus->request_name("xyz.openbmc_project.EventOnlySensor");
++    sdbusplus::asio::object_server objectServer(systemBus);
++    boost::container::flat_map<std::string, std::unique_ptr<EventOnlySensor>> sensors;
++
++    io.post([&]() {
++        createEventSensors(io, objectServer, sensors, systemBus);
++    });
++
++    io.run();
++}
