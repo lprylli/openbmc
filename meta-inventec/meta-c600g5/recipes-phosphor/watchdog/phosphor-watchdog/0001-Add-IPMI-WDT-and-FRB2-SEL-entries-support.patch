@@ -1,0 +1,139 @@
+From 896dc0efc8ab3fc031cb81d7963de8bdb1ab1289 Mon Sep 17 00:00:00 2001
+From: Frederick Lee <Frederick_Lee@wiwynn.com>
+Date: Fri, 14 Aug 2020 16:02:38 +0800
+Subject: [PATCH] Add IPMI WDT and FRB2 SEL entries support
+
+---
+ watchdog.cpp | 82 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ watchdog.hpp |  2 ++
+ 2 files changed, 84 insertions(+)
+ mode change 100644 => 100755 watchdog.cpp
+ mode change 100644 => 100755 watchdog.hpp
+
+diff --git a/watchdog.cpp b/watchdog.cpp
+old mode 100644
+new mode 100755
+index 57e9050..e5bb308
+--- a/watchdog.cpp
++++ b/watchdog.cpp
+@@ -22,6 +22,22 @@ using sdbusplus::xyz::openbmc_project::Common::Error::InternalFailure;
+ constexpr auto SYSTEMD_SERVICE = "org.freedesktop.systemd1";
+ constexpr auto SYSTEMD_ROOT = "/org/freedesktop/systemd1";
+ constexpr auto SYSTEMD_INTERFACE = "org.freedesktop.systemd1.Manager";
++static const std::unordered_map<Watchdog::Action, uint8_t> actionIdxMap =
++{
++    {Watchdog::Action::None, 0x0},
++    {Watchdog::Action::HardReset, 0x1},
++    {Watchdog::Action::PowerOff, 0x2},
++    {Watchdog::Action::PowerCycle, 0x3}
++};
++static const std::unordered_map<Watchdog::TimerUse, uint8_t> timerUseIdxMap =
++{
++    {Watchdog::TimerUse::Reserved, 0x0},
++    {Watchdog::TimerUse::BIOSFRB2, 0x1},
++    {Watchdog::TimerUse::BIOSPOST, 0x2},
++    {Watchdog::TimerUse::OSLoad, 0x3},
++    {Watchdog::TimerUse::SMSOS, 0x4},
++    {Watchdog::TimerUse::OEM, 0x5}
++};
+ 
+ void Watchdog::resetTimeRemaining(bool enableWatchdog)
+ {
+@@ -115,6 +131,9 @@ void Watchdog::timeOutHandler()
+ 
+     expiredTimerUse(currentTimerUse());
+ 
++    // Add watchdog SEL with action and timer use at expiration
++    addWatchdogSel();
++
+     auto target = actionTargetMap.find(action);
+     if (target == actionTargetMap.end())
+     {
+@@ -152,6 +171,69 @@ void Watchdog::timeOutHandler()
+     tryFallbackOrDisable();
+ }
+ 
++void Watchdog::addWatchdogSel()
++{
++    // Watchdog2 SEL log
++    const uint16_t genId = 0x20;
++    bool assert = true;
++    const std::string wdt2Path = "/xyz/openbmc_project/sensors/watchdog2/Watchdog_2";
++    const std::string ipmiSELAddMessage = "SEL Entry";
++    std::vector<uint8_t> eventData(3, 0xFF);
++
++    auto findAction = actionIdxMap.find(expireAction());
++    if (findAction == actionIdxMap.end())
++    {
++        log<level::ERR>("Failed to find WDT action\n");
++        return;
++    }
++    eventData.at(0) = findAction->second;
++
++    auto findTimerUse = timerUseIdxMap.find(expiredTimerUse());
++    if (findTimerUse == timerUseIdxMap.end())
++    {
++        log<level::ERR>("Failed to find WDT TimerUse\n");
++        return;
++    }
++    eventData.at(1) = (0x0F & findTimerUse->second);
++
++    auto wdt2 = bus.new_method_call("xyz.openbmc_project.Logging.IPMI",
++                                    "/xyz/openbmc_project/Logging/IPMI",
++                                    "xyz.openbmc_project.Logging.IPMI",
++                                    "IpmiSelAdd");
++    wdt2.append(ipmiSELAddMessage, wdt2Path, eventData, assert, genId);
++    try
++    {
++        bus.call_noreply(wdt2);
++    }
++    catch (const sdbusplus::exception::SdBusError& e)
++    {
++        log<level::ERR>("Failed to add WDT2 SEL\n");
++    }
++
++    // FRB2 SEL log
++    if (expiredTimerUse() == Watchdog::TimerUse::BIOSFRB2)
++    {
++        std::string frb2Path = "/xyz/openbmc_project/sensors/processor/Processor_fail";
++        eventData.at(0) = 0x03; //FRB2
++        eventData.at(1) = 0xFF;
++        eventData.at(2) = 0xFF;
++
++        auto frb2 = bus.new_method_call("xyz.openbmc_project.Logging.IPMI",
++                                        "/xyz/openbmc_project/Logging/IPMI",
++                                        "xyz.openbmc_project.Logging.IPMI",
++                                        "IpmiSelAdd");
++        frb2.append(ipmiSELAddMessage, frb2Path, eventData, assert, genId);
++        try
++        {
++            bus.call_noreply(frb2);
++        }
++        catch (const sdbusplus::exception::SdBusError& e)
++        {
++            log<level::ERR>("Failed to add FRB2 SEL\n");
++        }
++    }
++}
++
+ void Watchdog::tryFallbackOrDisable()
+ {
+     // We only re-arm the watchdog if we were already enabled and have
+diff --git a/watchdog.hpp b/watchdog.hpp
+old mode 100644
+new mode 100755
+index 7de9bb3..9888abe
+--- a/watchdog.hpp
++++ b/watchdog.hpp
+@@ -149,6 +149,8 @@ class Watchdog : public WatchdogInherits
+         return timer.isEnabled();
+     }
+ 
++    void addWatchdogSel();
++
+   private:
+     /** @brief sdbusplus handle */
+     sdbusplus::bus::bus& bus;
+-- 
+2.24.1
+
