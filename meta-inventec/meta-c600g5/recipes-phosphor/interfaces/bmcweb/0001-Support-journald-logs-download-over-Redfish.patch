@@ -1,0 +1,46 @@
+From 76db4dabe5985868c979a5051c12473d11750542 Mon Sep 17 00:00:00 2001
+From: Brenda Huang <Huang.Brenda@inventec.com>
+Date: Fri, 26 Mar 2021 02:44:54 +0000
+Subject: [PATCH] Support journald logs download over Redfish
+
+Change-Id: I82d1952e29fbb1a8b89f440d600c79f0b45158a6
+---
+ redfish-core/include/redfish.hpp  | 4 ++--
+ redfish-core/lib/log_services.hpp | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/redfish-core/include/redfish.hpp b/redfish-core/include/redfish.hpp
+index 5d5eb7b..4103341 100644
+--- a/redfish-core/include/redfish.hpp
++++ b/redfish-core/include/redfish.hpp
+@@ -126,11 +126,11 @@ class RedfishService
+ #endif
+ 
+         nodes.emplace_back(std::make_unique<BMCLogServiceCollection>(app));
+-#ifdef BMCWEB_ENABLE_REDFISH_BMC_JOURNAL
++//#ifdef BMCWEB_ENABLE_REDFISH_BMC_JOURNAL
+         nodes.emplace_back(std::make_unique<BMCJournalLogService>(app));
+         nodes.emplace_back(std::make_unique<BMCJournalLogEntryCollection>(app));
+         nodes.emplace_back(std::make_unique<BMCJournalLogEntry>(app));
+-#endif
++//#endif
+ 
+ #ifdef BMCWEB_ENABLE_REDFISH_CPU_LOG
+         nodes.emplace_back(std::make_unique<CrashdumpService>(app));
+diff --git a/redfish-core/lib/log_services.hpp b/redfish-core/lib/log_services.hpp
+index adc1c80..e38de59 100644
+--- a/redfish-core/lib/log_services.hpp
++++ b/redfish-core/lib/log_services.hpp
+@@ -1702,10 +1702,10 @@ class BMCLogServiceCollection : public Node
+         logServiceArray.push_back(
+             {{"@odata.id", "/redfish/v1/Managers/bmc/LogServices/Dump"}});
+ #endif
+-#ifdef BMCWEB_ENABLE_REDFISH_BMC_JOURNAL
++//#ifdef BMCWEB_ENABLE_REDFISH_BMC_JOURNAL
+         logServiceArray.push_back(
+             {{"@odata.id", "/redfish/v1/Managers/bmc/LogServices/Journal"}});
+-#endif
++//#endif
+         asyncResp->res.jsonValue["Members@odata.count"] =
+             logServiceArray.size();
+     }

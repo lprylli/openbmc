@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+SRC_URI += "file://0001-Support-journald-logs-download-over-Redfish.patch"
+
 # Enable CPU Log and Raw PECI support
 EXTRA_OECMAKE_append += "-DBMCWEB_ENABLE_REDFISH_CPU_LOG=ON"
 EXTRA_OECMAKE_append += "-DBMCWEB_ENABLE_REDFISH_RAW_PECI=ON"
