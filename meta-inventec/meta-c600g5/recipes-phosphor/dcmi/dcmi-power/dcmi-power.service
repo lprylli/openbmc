@@ -1,0 +1,13 @@
+[Unit]
+Description=DCMI Power
+Requires=xyz.openbmc_project.psusensor.service
+After=xyz.openbmc_project.psusensor.service
+
+[Service]
+Restart=always
+ExecStart=/usr/bin/env dcmi-power
+SyslogIdentifier=dcmi-power
+TimeoutSec=infinity
+
+[Install]
+WantedBy={SYSTEMD_DEFAULT_TARGET}
