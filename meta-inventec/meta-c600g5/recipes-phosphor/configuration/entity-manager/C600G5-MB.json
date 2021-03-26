@@ -564,14 +564,14 @@
                 "Label": "temp1",
                 "Name": "upper critical",
                 "Severity": 1,
-                "Value": 37
+                "Value": 38
             },
             {
                 "Direction": "greater than",
                 "Label": "temp2",
                 "Name": "upper critical",
                 "Severity": 1,
-                "Value": 37
+                "Value": 38
             }
         ],
         "Type": "EMC1412"
@@ -586,7 +586,7 @@
                 "Label": "temp1",
                 "Name": "upper critical",
                 "Severity": 1,
-                "Value": 75
+                "Value": 70
             }
         ],
         "Type": "EMC1412"
@@ -986,7 +986,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
@@ -1002,7 +1002,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
@@ -1018,7 +1018,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
@@ -1034,7 +1034,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
@@ -1050,7 +1050,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
@@ -1066,7 +1066,7 @@
                 "Direction": "less than",
                 "Name": "lower critical",
                 "Severity": 1,
-                "Value": 2300
+                "Value": 6700
             }
         ],
         "Type": "AspeedFan"
