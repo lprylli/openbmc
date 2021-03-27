@@ -4002,8 +4002,26 @@
             # Sensor type specific offset
             0xFF:
               type: uint32_t
-0xf7: # Critical IRQ
-  - ownerID: 0x1
+0xf7:
+  - ownerID: 0x20 # Version Change
+    entityID: 0x22
+    entityInstance: 0x01
+    sensorType: 0x2b
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/Version_Change
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: Version Change
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+  - ownerID: 0x1 # Critical IRQ
     entityID: 0x20
     entityInstance: 0x1
     sensorType: 0x13
@@ -4013,6 +4031,25 @@
     serviceInterface: org.freedesktop.DBus.Properties
     readingType: readingAssertion
     sensorName: Critical IRQ
+    sdrType: SdrType::sdr_event_record
+    interfaces:
+      xyz.openbmc_project.Sensor.Value:
+        Value:
+          Offsets:
+            # Sensor type specific offset
+            0xFF:
+              type: uint32_t
+0xf8:
+  - ownerID: 0x20 # IB BMC FW UPDATE
+    entityID: 0x22
+    entityInstance: 0x02
+    sensorType: 0x2b
+    sensorReadingType: 0x6f
+    path: /xyz/openbmc_project/sensors/discrete/IB_BMC_FW_UPDATE
+    mutability: Mutability::Write|Mutability::Read
+    serviceInterface: org.freedesktop.DBus.Properties
+    readingType: readingAssertion
+    sensorName: IB BMC FW UPDATE
     sdrType: SdrType::sdr_event_record
     interfaces:
       xyz.openbmc_project.Sensor.Value:

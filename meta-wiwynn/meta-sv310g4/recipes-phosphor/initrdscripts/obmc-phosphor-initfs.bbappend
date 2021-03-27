@@ -1,0 +1,1 @@
+FILESEXTRAPATHS_prepend_sv310g4 := "${THISDIR}/${PN}:"

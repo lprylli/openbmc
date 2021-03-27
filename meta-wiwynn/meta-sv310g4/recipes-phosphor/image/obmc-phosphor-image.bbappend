@@ -20,5 +20,6 @@ OBMC_IMAGE_EXTRA_INSTALL_append_sv310g4 += " ipmitool \
                                              srvcfg-manager \
                                              bios-updater \
                                              discrete-sensor \
+                                             sv310g4-bmc-update-sel \
                                            "
 
