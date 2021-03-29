@@ -1,0 +1,11 @@
+[Unit]
+Description=turn on net usb gadget
+Wants=multi-user.target
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/netusb.sh
+
+[Install]
+WantedBy=multi-user.target
